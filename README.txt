@@ -32,5 +32,8 @@ Case study: SQLiteBoy
 (Bina Nusantara University, 2016-May-19)
 noprianto-example_unittest_python.pdf
 
+Introduction to concurrency and multithreading
+(Bina Nusantara University, 2016-Oct-19)
+noprianto-concurrency_multithreading.pdf
 
 
