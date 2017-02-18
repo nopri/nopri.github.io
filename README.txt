@@ -36,4 +36,8 @@ Introduction to concurrency and multithreading
 (Bina Nusantara University, 2016-Oct-19)
 noprianto-concurrency_multithreading.pdf
 
+You don’t have to code/configure/maintain it yourself
+(an opinion from a tired do-it-yourself programmer)
+(Bina Nusantara University, 2017-Feb-20)
+noprianto-you_dont_have_to_code_configure_maintain_it_yourself-an_opinion_from_a_tired_do_it_yourself_programmer.pdf
 
