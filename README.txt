@@ -17,7 +17,22 @@ form-dan-report-sederhana-dengan-sqliteboy.pdf
 form-dan-report-sederhana-dengan-sqliteboy.odt
 
 
-2. Presentation Slides in English
+2. Paper Presentation in English
+===================================
+Simple spreadsheet test case application to test spreadsheet formula in end-user software engineering
+The Eleventh 2016 International Conference on Knowledge, Information and Creativity Support Systems (KICSS 2016)
+noprianto-conference-kicss2016-spreadsheet_testcase.pdf
+
+Pangsit: spreadsheet-like domain-specific programming language for data entry application development
+The Eleventh 2016 International Conference on Knowledge, Information and Creativity Support Systems (KICSS 2016)
+noprianto-conference-kicss2016-pangsit.pdf
+
+Server for SQLite Database: Multithreaded HTTP Server with Synchronized Database Access and JSON Data-Interchange
+19th International Conference on Advanced Communication Technology (ICACT 2017)
+noprianto-conference-icact2017-multithreaded_sqlite_server_json.pdf
+
+
+3. Presentation Slides in English
 ===================================
 Differences between End-user software engineering and Professional software engineering
 (Bina Nusantara University, 2016-May-10)
