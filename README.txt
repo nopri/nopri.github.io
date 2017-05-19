@@ -1,6 +1,7 @@
 Publication
 (c) Noprianto <nop@noprianto.com>
 
+
 1. Books in Bahasa Indonesia
 ===================================
 wxWidgets Book (first edition, 2006):
@@ -22,6 +23,7 @@ form-dan-report-sederhana-dengan-sqliteboy.odt
 Simple spreadsheet test case application to test spreadsheet formula in end-user software engineering
 The Eleventh 2016 International Conference on Knowledge, Information and Creativity Support Systems (KICSS 2016)
 noprianto-conference-kicss2016-spreadsheet_testcase.pdf
+code: spreadsheet-testcase.py
 
 Pangsit: spreadsheet-like domain-specific programming language for data entry application development
 The Eleventh 2016 International Conference on Knowledge, Information and Creativity Support Systems (KICSS 2016)
@@ -30,6 +32,12 @@ noprianto-conference-kicss2016-pangsit.pdf
 Server for SQLite Database: Multithreaded HTTP Server with Synchronized Database Access and JSON Data-Interchange
 19th International Conference on Advanced Communication Technology (ICACT 2017)
 noprianto-conference-icact2017-multithreaded_sqlite_server_json.pdf
+code: sqlite-server-http-1.py
+code: test-1-sqlite-server-http-1.py
+code: test-2-sqlite-server-http-1.py
+code: test-3-sqlite-server-http-1.py
+code: test-4-sqlite-server-http-1.py
+code: test-alt-sqlite.py
 
 
 3. Presentation Slides in English
