@@ -64,3 +64,11 @@ You don’t have to code/configure/maintain it yourself
 (Bina Nusantara University, 2017-Feb-20)
 noprianto-you_dont_have_to_code_configure_maintain_it_yourself-an_opinion_from_a_tired_do_it_yourself_programmer.pdf
 
+
+4. Presentation Slides in Bahasa Indonesia
+=============================================
+Asiknya menjadi programmer!
+(Selamat datang, mahasiswa-mahasiswi baru S1 ilmu komputer)
+(Bina Nusantara University, 2017-Sep-28 (scheduled))
+noprianto-asiknya_menjadi_programmer.pdf
+
