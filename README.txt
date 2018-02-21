@@ -69,6 +69,14 @@ noprianto-you_dont_have_to_code_configure_maintain_it_yourself-an_opinion_from_a
 =============================================
 Asiknya menjadi programmer!
 (Selamat datang, mahasiswa-mahasiswi baru S1 ilmu komputer)
-(Bina Nusantara University, 2017-Sep-28 (scheduled))
+(Bina Nusantara University, 2017-Sep-28)
 noprianto-asiknya_menjadi_programmer.pdf
+
+Bahasa Pemrograman: antara Kebutuhan, Pilihan, dan Passion atau Pengalaman Pahit dan Manis
+(Bina Nusantara University, 2018-Feb-19)
+noprianto-bahasa_pemrograman_kebutuhan_pilihan_passion_atau_pengalaman_pahit_manis.pdf
+
+Beberapa bahasa pemrograman untuk membangun satu aplikasi
+(Bina Nusantara University, 2018-Feb-20)
+noprianto-beberapa_bahasa_pemrograman_membangun_satu_aplikasi.pdf
 
