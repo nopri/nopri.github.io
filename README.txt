@@ -17,6 +17,10 @@ Form dan Report Sederhana dengan SQLiteBoy
 form-dan-report-sederhana-dengan-sqliteboy.pdf
 form-dan-report-sederhana-dengan-sqliteboy.odt
 
+Mengenal dan Menggunakan Bahasa Pemrograman Java
+ISBN: 978-602-52770-0-9
+noprianto-mengenal_dan_menggunakan_java.pdf
+
 
 2. Paper Presentation in English
 ===================================
@@ -38,6 +42,17 @@ code: test-2-sqlite-server-http-1.py
 code: test-3-sqlite-server-http-1.py
 code: test-4-sqlite-server-http-1.py
 code: test-alt-sqlite.py
+
+Multi-platform Application User Interface Design based on Spreadsheet
+The International Conference on Advanced Management and Information Technology Services 2017
+noprianto-conference-admits_2017-multiplatform_application_user_interface_design.pdf
+code: generate-ui-spreadsheet-frontend.py
+code: generate-ui-spreadsheet.py
+
+Perkedel: Spreadsheet-inspired domain-specific programming language for data entry
+The 2017 IEEE International Conference on Cybernetics and Computational Intelligence
+noprianto-conference-cyberneticscom_2017-perkedel_data_entry_language.pdf
+code: perkedel_data_entry_language_prototype.py
 
 
 3. Presentation Slides in English
@@ -79,4 +94,8 @@ noprianto-bahasa_pemrograman_kebutuhan_pilihan_passion_atau_pengalaman_pahit_man
 Beberapa bahasa pemrograman untuk membangun satu aplikasi
 (Bina Nusantara University, 2018-Feb-20)
 noprianto-beberapa_bahasa_pemrograman_membangun_satu_aplikasi.pdf
+
+Pemodelan User Interface Multi-platform
+(Bina Nusantara University, 2018-Nov-27)
+noprianto-pemodelan_user_interface_multiplatform.pdf
 
