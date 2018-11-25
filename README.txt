@@ -99,3 +99,7 @@ Pemodelan User Interface Multi-platform
 (Bina Nusantara University, 2018-Nov-27)
 noprianto-pemodelan_user_interface_multiplatform.pdf
 
+Mengenal Compiler
+(Bina Nusantara University, 2018-Nov-27)
+noprianto-mengenal_compiler.pdf
+
