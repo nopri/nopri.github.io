@@ -103,3 +103,7 @@ Mengenal Compiler
 (Bina Nusantara University, 2018-Nov-27)
 noprianto-mengenal_compiler.pdf
 
+Class Diagram dan Code Generation
+(Bina Nusantara University, 2018-Nov-27)
+noprianto-class_diagram_dan_code_generation.pdf
+
