@@ -107,3 +107,7 @@ Class Diagram dan Code Generation
 (Bina Nusantara University, 2018-Nov-27)
 noprianto-class_diagram_dan_code_generation.pdf
 
+Kolaborasi lintas platform dan bahasa pemrograman
+(STT PLN, 2018-Dec-10)
+noprianto-kolaborasi_lintas_platform_dan_bahasa_pemrograman.pdf
+
