@@ -1,4 +1,6 @@
-Publication
+Publications and unmaintained codes
+(books, paper presentations, talks, unmaintained codes)
+ 
 (c) Noprianto <nop@noprianto.com>
 
 
@@ -16,6 +18,12 @@ SQLiteBoy Book (second edition, 2014):
 Form dan Report Sederhana dengan SQLiteBoy
 form-dan-report-sederhana-dengan-sqliteboy.pdf
 form-dan-report-sederhana-dengan-sqliteboy.odt
+
+Dasar-dasar OpenERP: sisi teknikal dan contoh kasus (2014)
+dasar-dasar-openerp_sisi-teknikal-dan-contoh-kasus.rst
+dasar-dasar-openerp_sisi-teknikal-dan-contoh-kasus.pdf
+dasar-dasar-openerp_sisi-teknikal-dan-contoh-kasus.odt
+(copied from https://github.com/nopri/buku-openerp, co-author, editor)
 
 Mengenal dan Menggunakan Bahasa Pemrograman Java
 ISBN: 978-602-52770-0-9
@@ -47,7 +55,7 @@ Multi-platform Application User Interface Design based on Spreadsheet
 The International Conference on Advanced Management and Information Technology Services 2017
 noprianto-conference-admits_2017-multiplatform_application_user_interface_design.pdf
 code: generate-ui-spreadsheet-frontend.py
-code: generate-ui-spreadsheet.py
+code: generate_ui_spreadsheet.py
 
 Perkedel: Spreadsheet-inspired domain-specific programming language for data entry
 The 2017 IEEE International Conference on Cybernetics and Computational Intelligence
@@ -86,28 +94,54 @@ Asiknya menjadi programmer!
 (Selamat datang, mahasiswa-mahasiswi baru S1 ilmu komputer)
 (Bina Nusantara University, 2017-Sep-28)
 noprianto-asiknya_menjadi_programmer.pdf
+noprianto-asiknya_menjadi_programmer.odp
 
 Bahasa Pemrograman: antara Kebutuhan, Pilihan, dan Passion atau Pengalaman Pahit dan Manis
 (Bina Nusantara University, 2018-Feb-19)
 noprianto-bahasa_pemrograman_kebutuhan_pilihan_passion_atau_pengalaman_pahit_manis.pdf
+noprianto-bahasa_pemrograman_kebutuhan_pilihan_passion_atau_pengalaman_pahit_manis.odp
 
 Beberapa bahasa pemrograman untuk membangun satu aplikasi
 (Bina Nusantara University, 2018-Feb-20)
 noprianto-beberapa_bahasa_pemrograman_membangun_satu_aplikasi.pdf
+noprianto-beberapa_bahasa_pemrograman_membangun_satu_aplikasi.odp
 
 Pemodelan User Interface Multi-platform
 (Bina Nusantara University, 2018-Nov-27)
 noprianto-pemodelan_user_interface_multiplatform.pdf
+noprianto-pemodelan_user_interface_multiplatform.odp
 
 Mengenal Compiler
 (Bina Nusantara University, 2018-Nov-27)
 noprianto-mengenal_compiler.pdf
+noprianto-mengenal_compiler.odp
 
 Class Diagram dan Code Generation
 (Bina Nusantara University, 2018-Nov-27)
 noprianto-class_diagram_dan_code_generation.pdf
+noprianto-class_diagram_dan_code_generation.odp
 
 Kolaborasi lintas platform dan bahasa pemrograman
 (STT PLN, 2018-Dec-10)
 noprianto-kolaborasi_lintas_platform_dan_bahasa_pemrograman.pdf
+noprianto-kolaborasi_lintas_platform_dan_bahasa_pemrograman.odp
+
+
+5. Unmaintained code
+===================================
+- System.jar (simple business and medical application)
+- barchart.py
+- diary.sh
+- image_viewer.py
+- kentang.py (simple network monitoring program)
+- nops2pdf.c (PS to PDF frontend)
+- notation.py
+- oerpapi.py
+- oerpapi2.py
+- simple_file_manager.py
+- simplestock.py (very simple stock control application)
+- splitjo.c 
+- sqliteweb.sh (web-based management tool for SQLite, shell script)
+- synedit.py
+
 
