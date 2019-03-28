@@ -126,6 +126,11 @@ Kolaborasi lintas platform dan bahasa pemrograman
 noprianto-kolaborasi_lintas_platform_dan_bahasa_pemrograman.pdf
 noprianto-kolaborasi_lintas_platform_dan_bahasa_pemrograman.odp
 
+Python untuk berbagai kebutuhan
+(Bina Nusantara University, 2019-Mar-29)
+noprianto-python_untuk_berbagai_kebutuhan.pdf
+noprianto-python_untuk_berbagai_kebutuhan.odp
+
 
 5. Unmaintained code
 ===================================
