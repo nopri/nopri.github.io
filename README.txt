@@ -150,3 +150,13 @@ noprianto-python_untuk_berbagai_kebutuhan.odp
 - synedit.py
 
 
+6. Misc
+===================================
+Fiction:
+Pangsit Perkedel: Tiga windu yang lalu
+(2019-Apr-06)
+pangsit_perkedel-tiga_windu_yang_lalu.odt
+pangsit_perkedel-tiga_windu_yang_lalu.pdf
+
+
+
