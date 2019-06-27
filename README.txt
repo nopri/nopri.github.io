@@ -131,6 +131,11 @@ Python untuk berbagai kebutuhan
 noprianto-python_untuk_berbagai_kebutuhan.pdf
 noprianto-python_untuk_berbagai_kebutuhan.odp
 
+Multithreading dan contoh pemrograman yang tidak thread-safe
+(Bina Nusantara University, 2019-Jun-28)
+noprianto-intro-not_thread_safe_code.pdf
+noprianto-intro-not_thread_safe_code.odp
+
 
 5. Unmaintained code
 ===================================
