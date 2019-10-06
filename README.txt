@@ -1,7 +1,7 @@
-Publications and unmaintained codes
-(books, paper presentations, talks, unmaintained codes)
+Publications, website, and unmaintained code
+(books, paper presentations, talks, stories, website, unmaintained code)
  
-(c) Noprianto <nop@noprianto.com>
+(c) Noprianto <nopri.anto@icloud.com>
 
 
 1. Books in Bahasa Indonesia
@@ -155,9 +155,8 @@ noprianto-intro-not_thread_safe_code.odp
 - synedit.py
 
 
-6. Misc
-===================================
-Fiction:
+6. Short Stories in Bahasa Indonesia
+=============================================
 Pangsit Perkedel: Tiga windu yang lalu
 (2019-Apr-06)
 pangsit_perkedel-tiga_windu_yang_lalu.odt
