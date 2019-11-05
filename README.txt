@@ -167,6 +167,6 @@ pangsit_perkedel-tiga_windu_yang_lalu.pdf
 7. Monkey Programming Language Interpreter
 =============================================
 - monkey.py
-- test file: monkey_test.py
+- test file: monkey_tests.py
 
 
