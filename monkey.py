@@ -5,7 +5,7 @@
 # monkey.py
 # (c) Noprianto <nopri.anto@icloud.com>, 2019
 # License: MIT
-# version: 0.1
+# version: 0.2
 #
 # Based on code (in Go programming language), in book:
 # WRITING AN INTERPRETER IN GO
@@ -14,7 +14,7 @@
 import sys
 import os
 
-MONKEYPY_VERSION = '0.1'
+MONKEYPY_VERSION = '0.2'
 MONKEYPY_TITLE = 'Monkey.py %s' %(MONKEYPY_VERSION)
 
 class MonkeyToken:
@@ -1141,6 +1141,22 @@ class MonkeyHashKey:
         self.type = type_
         self.value = value
 
+    def __eq__(self, other):
+        if isinstance(other, MonkeyHashKey):
+            if other.type == self.type and other.value == self.value:
+                return True
+        return False
+
+    def __ne__(self, other):
+        if isinstance(other, MonkeyHashKey):
+            if other.type == self.type and other.value == self.value:
+                return False
+        return True
+    
+    def __hash__(self):
+        h = '%s-%s' %(self.type, self.value)
+        return hash(h)
+
 
 class MonkeyHashPair:
     def __init__(self):
@@ -1601,7 +1617,7 @@ class MonkeyEvaluator:
             if self.is_error(val):
                 return val
             #
-            hashed = key.hash_key().value
+            hashed = key.hash_key()
             p = MonkeyHashPair()
             p.key = key
             p.value = val
@@ -1619,7 +1635,7 @@ class MonkeyEvaluator:
                 )
             )
         #
-        pair = hashtable.pairs.get(index.hash_key().value)
+        pair = hashtable.pairs.get(index.hash_key())
         if pair is None:
             return self.NULL
         #

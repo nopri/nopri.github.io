@@ -1222,12 +1222,12 @@ def test_hash_literals():
     '''
     evaluated = test_eval(inp)
     expected = {
-                    MonkeyObjectString(value='one').hash_key().value: 1,
-                    MonkeyObjectString(value='two').hash_key().value: 2,
-                    MonkeyObjectString(value='three').hash_key().value: 3,
-                    MonkeyObjectInteger(value=4).hash_key().value: 4,
-                    MonkeyEvaluator.TRUE.hash_key().value: 5,
-                    MonkeyEvaluator.FALSE.hash_key().value: 6,
+                    MonkeyObjectString(value='one').hash_key(): 1,
+                    MonkeyObjectString(value='two').hash_key(): 2,
+                    MonkeyObjectString(value='three').hash_key(): 3,
+                    MonkeyObjectInteger(value=4).hash_key(): 4,
+                    MonkeyEvaluator.TRUE.hash_key(): 5,
+                    MonkeyEvaluator.FALSE.hash_key(): 6,
                 }
     if len(evaluated.pairs) != len(expected):
         print('hash has wrong num of pairs, got %s' %(len(evaluated.pairs)))
