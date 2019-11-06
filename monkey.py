@@ -5,7 +5,10 @@
 # monkey.py
 # (c) Noprianto <nopri.anto@icloud.com>, 2019
 # License: MIT
-# version: 0.2
+# version: 0.3
+#
+# Compatible with Python 2 and Python 3
+# Minimum Python version: 2.3
 #
 # Based on code (in Go programming language), in book:
 # WRITING AN INTERPRETER IN GO
@@ -14,7 +17,7 @@
 import sys
 import os
 
-MONKEYPY_VERSION = '0.2'
+MONKEYPY_VERSION = '0.3'
 MONKEYPY_TITLE = 'Monkey.py %s' %(MONKEYPY_VERSION)
 
 class MonkeyToken:
@@ -216,12 +219,12 @@ class MonkeyLexer:
         while (self.ch in MonkeyLexer.WHITESPACES):
             self.read_char()
 
-    @staticmethod
     def new(s):
         l = MonkeyLexer()
         l.input = s
         l.read_char()
         return l
+    new = staticmethod(new)
 
 
 class MonkeyNode:
@@ -936,13 +939,13 @@ class MonkeyParser:
         #
         return self.LOWEST
 
-    @staticmethod
     def new(l):
         p = MonkeyParser()
         p.lexer = l
         p.next_token()
         p.next_token()
         return p
+    new = staticmethod(new)
 
 
 class MonkeyProgram(MonkeyNode):
@@ -1179,20 +1182,19 @@ class MonkeyEnvironment:
         self.store[name] = value
         return value
 
-    @staticmethod
     def new():
         e = MonkeyEnvironment()
         return e
+    new = staticmethod(new)
 
-    @staticmethod
     def new_enclosed(outer):
         e = MonkeyEnvironment()
         e.outer = outer
         return e
+    new_enclosed = staticmethod(new_enclosed)
 
 
 class MonkeyBuiltinFunctions:
-    @staticmethod
     def len(evaluator, args):
         if len(args) != 1:
             return evaluator.new_error(
@@ -1216,8 +1218,8 @@ class MonkeyBuiltinFunctions:
                     a.type()       
                 )
             )
+    len = staticmethod(len)
 
-    @staticmethod
     def first(evaluator, args):
         if len(args) != 1:
             return evaluator.new_error(
@@ -1238,8 +1240,8 @@ class MonkeyBuiltinFunctions:
             return a.elements[0]
         #
         return evaluator.NULL
+    first = staticmethod(first)
 
-    @staticmethod
     def last(evaluator, args):
         if len(args) != 1:
             return evaluator.new_error(
@@ -1261,8 +1263,8 @@ class MonkeyBuiltinFunctions:
             return a.elements[length-1]
         #
         return evaluator.NULL
+    last = staticmethod(last)
 
-    @staticmethod
     def rest(evaluator, args):
         if len(args) != 1:
             return evaluator.new_error(
@@ -1286,8 +1288,8 @@ class MonkeyBuiltinFunctions:
             return o
         #
         return evaluator.NULL
+    rest = staticmethod(rest)
 
-    @staticmethod
     def push(evaluator, args):
         if len(args) != 2:
             return evaluator.new_error(
@@ -1308,13 +1310,14 @@ class MonkeyBuiltinFunctions:
         o.elements = a.elements[:]
         o.elements.append(args[1])
         return o
+    push = staticmethod(push)
 
-    @staticmethod
     def puts(evaluator, args):
         for a in args:
             MonkeyUtil.output(a.inspect())
         #
         return evaluator.NULL
+    puts = staticmethod(puts)
 
 
 class MonkeyBuiltins:
@@ -1327,9 +1330,9 @@ class MonkeyBuiltins:
         'puts': MonkeyObjectBuiltin(MonkeyBuiltinFunctions.puts),
     }
 
-    @staticmethod
     def get(f):
         return MonkeyBuiltins.BUILTINS.get(f)
+    get = staticmethod(get)
 
 
 class MonkeyEvaluator:
@@ -1686,27 +1689,26 @@ class MonkeyEvaluator:
         #
         return False
 
-    @staticmethod
     def new():
         e = MonkeyEvaluator()
         return e
+    new = staticmethod(new)
 
 
 class MonkeyUtil:
     PROMPT = '>> '
 
-    @staticmethod
     def input(s):
         try:
             return raw_input(s)
         except:
             return input(s)
+    input = staticmethod(input)
 
-    @staticmethod
     def output(s, f=sys.stdout):
         f.write('%s%s' %(s, os.linesep))
+    output = staticmethod(output)
 
-    @staticmethod
     def lexer():
         MonkeyUtil.output(MONKEYPY_TITLE)
         while True:
@@ -1720,8 +1722,8 @@ class MonkeyUtil:
                     break
                 MonkeyUtil.output(
                     'Type: %s, Literal: %s' %(t.type, t.literal))
+    lexer = staticmethod(lexer)
 
-    @staticmethod
     def parser():
         MonkeyUtil.output(MONKEYPY_TITLE)
         while True:
@@ -1737,13 +1739,13 @@ class MonkeyUtil:
                 continue
             #
             MonkeyUtil.output(program.string())
+    parser = staticmethod(parser)
 
-    @staticmethod
     def print_parse_errors(e):
         for i in e:
             MonkeyUtil.output('PARSER ERROR: %s' %(i))
+    print_parse_errors = staticmethod(print_parse_errors)
 
-    @staticmethod
     def evaluator():
         MonkeyUtil.output(MONKEYPY_TITLE)
         env = MonkeyEnvironment.new()
@@ -1763,8 +1765,8 @@ class MonkeyUtil:
             evaluated = evaluator.eval(program, env)
             if evaluated:
                 MonkeyUtil.output(evaluated.inspect())
+    evaluator = staticmethod(evaluator)
 
-    @staticmethod
     def evaluator_string(s):
         env = MonkeyEnvironment.new()
         l = MonkeyLexer.new(s)
@@ -1779,6 +1781,7 @@ class MonkeyUtil:
         evaluated = evaluator.eval(program, env)
         if evaluated:
             MonkeyUtil.output(evaluated.inspect())
+    evaluator_string = staticmethod(evaluator_string)
 
 
 def monkey_main(argv):
