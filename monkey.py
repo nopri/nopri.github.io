@@ -4,8 +4,9 @@
 # interpreter in Python
 # monkey.py
 # (c) Noprianto <nopri.anto@icloud.com>, 2019
+# Website: nopri.github.io
 # License: MIT
-# version: 0.3
+# version: 0.4
 #
 # Compatible with Python 2 and Python 3
 # Minimum Python version: 2.3
@@ -17,7 +18,7 @@
 import sys
 import os
 
-MONKEYPY_VERSION = '0.3'
+MONKEYPY_VERSION = '0.4'
 MONKEYPY_TITLE = 'Monkey.py %s' %(MONKEYPY_VERSION)
 
 class MonkeyToken:
@@ -1504,8 +1505,11 @@ class MonkeyEvaluator:
             o.value = left_val * right_val
             return o
         elif operator == '/':
-            o.value = left_val / right_val
-            return o
+            try:
+                o.value = left_val // right_val
+                return o
+            except:
+                return self.NULL
         elif operator == '<':
             return self.get_boolean(left_val < right_val)
         elif operator == '>':
@@ -1767,8 +1771,11 @@ class MonkeyUtil:
                 MonkeyUtil.output(evaluated.inspect())
     evaluator = staticmethod(evaluator)
 
-    def evaluator_string(s):
-        env = MonkeyEnvironment.new()
+    def evaluator_string(s, environ=None):
+        if environ is None or not isinstance(environ, MonkeyEnvironment):
+            env = MonkeyEnvironment.new()
+        else:
+            env = environ
         l = MonkeyLexer.new(s)
         p = MonkeyParser.new(l)
         program = p.parse_program()
