@@ -6,7 +6,7 @@
 # (c) Noprianto <nopri.anto@icloud.com>, 2019
 # Website: nopri.github.io
 # License: MIT
-# version: 0.4
+# version: 0.5
 #
 # Compatible with Python 2 and Python 3
 # Minimum Python version: 2.3
@@ -14,12 +14,30 @@
 # Based on code (in Go programming language), in book:
 # WRITING AN INTERPRETER IN GO
 #
+# In monkey.py, it is possible to set initial environment
+# when the interpreter is started. This allows integration
+# with external applications. For example:
+# code:
+#
+#   from monkey import *
+#
+#   d = {'hello': 'Hello, World', 'test': True}
+#   e = MonkeyEnvironment.from_dictionary(d)
+#   MonkeyUtil.evaluator_string('puts(hello); puts(test)', e)
+#
+# output:
+#
+#   Hello, World
+#   true
+#   null
+#
+#
 
 import sys
 import os
 
-MONKEYPY_VERSION = '0.4'
-MONKEYPY_TITLE = 'Monkey.py %s' %(MONKEYPY_VERSION)
+MONKEYPY_VERSION = '0.5'
+MONKEYPY_TITLE = 'monkey.py %s' %(MONKEYPY_VERSION)
 
 class MonkeyToken:
     ILLEGAL = 'ILLEGAL'
@@ -993,6 +1011,9 @@ class MonkeyObject:
     def inspect(self):
         return ''
 
+    def inspect_value(self):
+        return self.inspect()
+
 
 class MonkeyObjectInteger(MonkeyObject, MonkeyHashable):
     def type(self):
@@ -1016,6 +1037,9 @@ class MonkeyObjectString(MonkeyObject, MonkeyHashable):
     def hash_key(self):
         o = MonkeyHashKey(type_=self.type(), value=hash(self.value))
         return o
+
+    def inspect_value(self):
+        return self.value
 
 
 class MonkeyObjectBoolean(MonkeyObject, MonkeyHashable):
@@ -1183,6 +1207,16 @@ class MonkeyEnvironment:
         self.store[name] = value
         return value
 
+    def debug(self):
+        for k in self.store.keys():
+            v = self.store.get(k)
+            if v is not None:
+                MonkeyUtil.output('%s: %s' %(
+                        k,
+                        v.inspect(),
+                    )
+                )
+
     def new():
         e = MonkeyEnvironment()
         return e
@@ -1193,6 +1227,36 @@ class MonkeyEnvironment:
         e.outer = outer
         return e
     new_enclosed = staticmethod(new_enclosed)
+
+    def from_dictionary(d):
+        e = MonkeyEnvironment()
+        if not isinstance(d, dict):
+            return e
+        #
+        for k in d.keys():
+            v = d.get(k)
+            key = None
+            value = None
+            if type(k) == type('') or \
+                type(k) == type(1) or \
+                type(k) == type(True):
+                key = k
+            else:
+                key = str(k)
+            #
+            if type(v) == type(''):
+                value = MonkeyObjectString(value=v)
+            elif type(v) == type(1):
+                value = MonkeyObjectInteger(value=v)
+            elif type(v) == type(True):
+                value = MonkeyObjectBoolean(value=v)
+            else:
+                value = MonkeyObjectString(value=str(v))
+            #
+            if key is not None and value is not None:
+                e.set(key, value)
+        return e
+    from_dictionary = staticmethod(from_dictionary)
 
 
 class MonkeyBuiltinFunctions:
@@ -1315,7 +1379,7 @@ class MonkeyBuiltinFunctions:
 
     def puts(evaluator, args):
         for a in args:
-            MonkeyUtil.output(a.inspect())
+            MonkeyUtil.output(a.inspect_value())
         #
         return evaluator.NULL
     puts = staticmethod(puts)
