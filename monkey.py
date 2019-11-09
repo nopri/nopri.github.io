@@ -6,7 +6,7 @@
 # (c) Noprianto <nopri.anto@icloud.com>, 2019
 # Website: nopri.github.io
 # License: MIT
-# version: 0.5
+# version: 0.6
 #
 # Compatible with Python 2 and Python 3
 # Minimum Python version: 2.3
@@ -14,30 +14,59 @@
 # Based on code (in Go programming language), in book:
 # WRITING AN INTERPRETER IN GO
 #
+#
+# How to use monkey.py:
+# - Standalone
+#   - No command line argument: interactive
+#       python monkey.py
+#       monkey.py 0.6
+#       Press ENTER to quit
+#       >> let hello = "Hello World"
+#       >> hello
+#       "Hello World"
+#       >> 
+#   - Command line argument: try to interpret as file
+#       python monkey.py test.monkey
+#     If exception occurred: interpret the argument as monkey code 
+#       python monkey.py 'let hello = "Hello World"; puts(hello);'
+#       Hello World
+#       null
+# - Library
+#   Please see the example below
+#
 # In monkey.py, it is possible to set initial environment
 # when the interpreter is started. This allows integration
 # with external applications. For example:
 # code:
 #
-#   from monkey import *
+#    try:
+#        from StringIO import StringIO
+#    except:
+#        from io import StringIO
 #
-#   d = {'hello': 'Hello, World', 'test': True}
-#   e = MonkeyEnvironment.from_dictionary(d)
-#   MonkeyUtil.evaluator_string('puts(hello); puts(test)', e)
+#    from monkey import *
+#
+#    d = {'hello': 'Hello, World', 'test': True}
+#    e = MonkeyEnvironment.from_dictionary(d)
+#    o = StringIO()
+#    MonkeyUtil.evaluator_string('puts(hello); puts(test); ERROR;', e, output=o)
+#    r = o.getvalue()
+#    print(r)
 #
 # output:
 #
-#   Hello, World
-#   true
-#   null
+#    Hello, World
+#    true
+#    ERROR: identifier not found: ERROR
 #
 #
 
 import sys
 import os
 
-MONKEYPY_VERSION = '0.5'
+MONKEYPY_VERSION = '0.6'
 MONKEYPY_TITLE = 'monkey.py %s' %(MONKEYPY_VERSION)
+MONKEYPY_MESSAGE = 'Press ENTER to quit'
 
 class MonkeyToken:
     ILLEGAL = 'ILLEGAL'
@@ -1379,7 +1408,7 @@ class MonkeyBuiltinFunctions:
 
     def puts(evaluator, args):
         for a in args:
-            MonkeyUtil.output(a.inspect_value())
+            MonkeyUtil.output(a.inspect_value(), evaluator.output)
         #
         return evaluator.NULL
     puts = staticmethod(puts)
@@ -1404,6 +1433,9 @@ class MonkeyEvaluator:
     NULL = MonkeyObjectNull()
     TRUE = MonkeyObjectBoolean(True)
     FALSE = MonkeyObjectBoolean(False)
+
+    def __init__(self):
+        self.output = sys.stdout
 
     def eval(self, node, env):
         if isinstance(node, MonkeyProgram):
@@ -1774,11 +1806,15 @@ class MonkeyUtil:
     input = staticmethod(input)
 
     def output(s, f=sys.stdout):
-        f.write('%s%s' %(s, os.linesep))
+        try:
+            f.write('%s%s' %(s, os.linesep))
+        except:
+            pass
     output = staticmethod(output)
 
     def lexer():
         MonkeyUtil.output(MONKEYPY_TITLE)
+        MonkeyUtil.output(MONKEYPY_MESSAGE)
         while True:
             inp = MonkeyUtil.input(MonkeyUtil.PROMPT).strip()
             if not inp:
@@ -1794,6 +1830,7 @@ class MonkeyUtil:
 
     def parser():
         MonkeyUtil.output(MONKEYPY_TITLE)
+        MonkeyUtil.output(MONKEYPY_MESSAGE)
         while True:
             inp = MonkeyUtil.input(MonkeyUtil.PROMPT).strip()
             if not inp:
@@ -1809,13 +1846,14 @@ class MonkeyUtil:
             MonkeyUtil.output(program.string())
     parser = staticmethod(parser)
 
-    def print_parse_errors(e):
+    def print_parse_errors(e, output=sys.stdout):
         for i in e:
-            MonkeyUtil.output('PARSER ERROR: %s' %(i))
+            MonkeyUtil.output('PARSER ERROR: %s' %(i), output)
     print_parse_errors = staticmethod(print_parse_errors)
 
     def evaluator():
         MonkeyUtil.output(MONKEYPY_TITLE)
+        MonkeyUtil.output(MONKEYPY_MESSAGE)
         env = MonkeyEnvironment.new()
         while True:
             inp = MonkeyUtil.input(MonkeyUtil.PROMPT).strip()
@@ -1835,7 +1873,7 @@ class MonkeyUtil:
                 MonkeyUtil.output(evaluated.inspect())
     evaluator = staticmethod(evaluator)
 
-    def evaluator_string(s, environ=None):
+    def evaluator_string(s, environ=None, output=sys.stdout):
         if environ is None or not isinstance(environ, MonkeyEnvironment):
             env = MonkeyEnvironment.new()
         else:
@@ -1845,13 +1883,14 @@ class MonkeyUtil:
         program = p.parse_program()
         #
         if p.errors:
-            MonkeyUtil.print_parse_errors(p.errors)
+            MonkeyUtil.print_parse_errors(p.errors, output)
             return
         #
         evaluator = MonkeyEvaluator.new()
+        evaluator.output = output
         evaluated = evaluator.eval(program, env)
         if evaluated:
-            MonkeyUtil.output(evaluated.inspect())
+            MonkeyUtil.output(evaluated.inspect(), output)
     evaluator_string = staticmethod(evaluator_string)
 
 
