@@ -975,8 +975,8 @@ def test_function_object():
         print('parameter is not x, got %s' %(evaluated.parameter[0].string()))
         return
 
-    expect_body = '(x + 2)'
-    if evaluated.body.string() != expect_body:
+    expect_body = '{%s(x + 2);%s}' %(os.linesep, os.linesep)
+    if evaluated.body.string().strip() != expect_body:
         print('body is not %s, got %s' %(
             expect_body, evaluated.body.string())
         )

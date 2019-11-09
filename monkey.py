@@ -6,7 +6,7 @@
 # (c) Noprianto <nopri.anto@icloud.com>, 2019
 # Website: nopri.github.io
 # License: MIT
-# version: 0.6
+# Version: 0.7
 #
 # Compatible with Python 2 and Python 3
 # Minimum Python version: 2.3
@@ -19,7 +19,7 @@
 # - Standalone
 #   - No command line argument: interactive
 #       python monkey.py
-#       monkey.py 0.6
+#       monkey.py 0.7
 #       Press ENTER to quit
 #       >> let hello = "Hello World"
 #       >> hello
@@ -28,8 +28,10 @@
 #   - Command line argument: try to interpret as file
 #       python monkey.py test.monkey
 #     If exception occurred: interpret the argument as monkey code 
-#       python monkey.py 'let hello = "Hello World"; puts(hello);'
-#       Hello World
+#       python monkey.py "puts(1,2,3)"
+#       1
+#       2
+#       3
 #       null
 # - Library
 #   Please see the example below
@@ -64,9 +66,10 @@
 import sys
 import os
 
-MONKEYPY_VERSION = '0.6'
+MONKEYPY_VERSION = '0.7'
 MONKEYPY_TITLE = 'monkey.py %s' %(MONKEYPY_VERSION)
 MONKEYPY_MESSAGE = 'Press ENTER to quit'
+MONKEYPY_LINESEP = os.linesep
 
 class MonkeyToken:
     ILLEGAL = 'ILLEGAL'
@@ -379,11 +382,12 @@ class MonkeyBlockStatement(MonkeyStatement):
         return self.token.literal
 
     def string(self):
-        ret = ''
+        ret = '%s{%s' %(MONKEYPY_LINESEP, MONKEYPY_LINESEP)
         #
         for s in self.statements:
-            ret += s.string()
+            ret += '%s;%s' %(s.string(), MONKEYPY_LINESEP)
         #
+        ret += '}%s' %(MONKEYPY_LINESEP)
         return ret
 
 
@@ -1134,9 +1138,8 @@ class MonkeyObjectFunction(MonkeyObject):
         ret = 'fn'
         ret += '('
         ret += ', '.join(params)
-        ret += ') {'
+        ret += ')'
         ret += self.body.string()
-        ret += '}'
         #
         return ret
 
@@ -1807,7 +1810,7 @@ class MonkeyUtil:
 
     def output(s, f=sys.stdout):
         try:
-            f.write('%s%s' %(s, os.linesep))
+            f.write('%s%s' %(s, MONKEYPY_LINESEP))
         except:
             pass
     output = staticmethod(output)
