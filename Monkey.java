@@ -5,7 +5,7 @@ Monkey.java
 (c) Noprianto <nopri.anto@icloud.com>, 2019
 Website: nopri.github.io
 License: MIT
-Version: 0.8
+Version: 0.2
 
 Minimum Java version: 5.0
 
@@ -22,7 +22,7 @@ Use precompiled Monkey.jar (please download it from my website)
 How to use Monkey.java:
 - Standalone
   - No command line argument: interactive
-        Monkey.java 0.1
+        Monkey.java 0.2
         Press ENTER to quit
         >> let hello = "Hello World"
         >> hello
@@ -1550,7 +1550,6 @@ class MonkeyObjectInteger extends MonkeyObject implements MonkeyHashable {
         this.value = value;
     }
     
-    @Override
     public MonkeyHashKey hashKey() {
         return new MonkeyHashKey(type, value);
     }
@@ -1591,7 +1590,6 @@ class MonkeyObjectString extends MonkeyObject implements MonkeyHashable {
         return value;
     }
 
-    @Override
     public MonkeyHashKey hashKey() {
         return new MonkeyHashKey(type, value.hashCode());
     }
@@ -1615,7 +1613,6 @@ class MonkeyObjectBoolean extends MonkeyObject implements MonkeyHashable {
         return String.format("%s", value);
     }
 
-    @Override
     public MonkeyHashKey hashKey() {
         int hashValue;
         if (value) {
@@ -2657,7 +2654,7 @@ class MonkeyUtil {
 }
 
 class Monkey {
-    public static final String VERSION = "0.1";
+    public static final String VERSION = "0.2";
     public static final String TITLE = "Monkey.java " + VERSION;
     public static final String MESSAGE = "Press ENTER to quit";
     public static final String LINESEP = System.getProperty("line.separator");
