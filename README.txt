@@ -1,5 +1,5 @@
 books, paper presentations, talks, stories,
-monkey programming language interpreter,
+monkey programming language interpreters (in Java and Python),
 website, unmaintained code
  
 (c) Noprianto <nopri.anto@icloud.com>
@@ -164,9 +164,11 @@ pangsit_perkedel-tiga_windu_yang_lalu.odt
 pangsit_perkedel-tiga_windu_yang_lalu.pdf
 
 
-7. Monkey Programming Language Interpreter
+7. Monkey Programming Language Interpreters
 =============================================
 - monkey.py
 - test file: monkey_tests.py
+- Monkey.java
+- Monkey.jar (compiled)
 
 
