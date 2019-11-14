@@ -1,11 +1,11 @@
 /*
 Simple implementation of The Monkey Programming Language
-interpreter in Python
+interpreter in Java
 Monkey.java
 (c) Noprianto <nopri.anto@icloud.com>, 2019
 Website: nopri.github.io
 License: MIT
-Version: 0.3
+Version: 0.4
 
 Minimum Java version: 5.0
 
@@ -15,25 +15,29 @@ monkey.py is based on code (in Go programming language) in book:
 WRITING AN INTERPRETER IN GO
 
 How to compile Monkey.java:
-javac Monkey.java
+javac Monkey.java -d .
     or
 Use precompiled Monkey.jar (please download it from my website)
 
 How to use Monkey.java:
 - Standalone
   - No command line argument: interactive
-        Monkey.java 0.3
+        java monkey.Monkey
+        or
+        java -jar Monkey.jar
+
+        Monkey.java 0.4
         Press ENTER to quit
         >> let hello = "Hello World"
         >> hello
         "Hello World"
         >> 
   - Command line argument: try to interpret as file
-        java Monkey test.monkey 
+        java monkey.Monkey test.monkey
         or
         java -jar Monkey.jar test.monkey
     If exception occurred: interpret the argument as monkey code
-        java Monkey "puts(1,2,3)"
+        java monkey.Monkey "puts(1,2,3)"
         or
         java -jar Monkey.jar "puts(1,2,3)"
 
@@ -2624,7 +2628,7 @@ class MonkeyUtil {
 }
 
 public class Monkey {
-    public static final String VERSION = "0.3";
+    public static final String VERSION = "0.4";
     public static final String TITLE = "Monkey.java " + VERSION;
     public static final String MESSAGE = "Press ENTER to quit";
     public static final String LINESEP = System.getProperty("line.separator");
