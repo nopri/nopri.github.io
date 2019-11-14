@@ -5,7 +5,7 @@ Monkey.java
 (c) Noprianto <nopri.anto@icloud.com>, 2019
 Website: nopri.github.io
 License: MIT
-Version: 0.2
+Version: 0.3
 
 Minimum Java version: 5.0
 
@@ -22,7 +22,7 @@ Use precompiled Monkey.jar (please download it from my website)
 How to use Monkey.java:
 - Standalone
   - No command line argument: interactive
-        Monkey.java 0.2
+        Monkey.java 0.3
         Press ENTER to quit
         >> let hello = "Hello World"
         >> hello
@@ -47,14 +47,15 @@ How to use Monkey.java:
 In Monkey.java, it is possible to set initial environment
 when the interpreter is started. This allows integration
 with external applications. For example:
-code:
+code (Test.java):
 
     import java.io.ByteArrayOutputStream;
     import java.io.PrintStream;
     import java.util.HashMap;
     import java.util.Map;
+    import monkey.Monkey;
 
-    public class External {
+    public class Test {
         public static void main(String[] args) {
             String result = "";
 
@@ -62,12 +63,11 @@ code:
             map.put("hello", "Hello, World");
             map.put("test", true);
 
-            MonkeyEnvironment env = MonkeyEnvironment.fromMap(map);
-
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             try {
                 PrintStream output = new PrintStream(outputStream);
-                Monkey.evaluatorString("puts(hello); puts(test); ERROR;", env, output);
+                Monkey.evaluatorString("puts(hello); puts(test); ERROR;", 
+                        Monkey.environmentFromMap(map), output);
                 result = outputStream.toString();
             } catch (Exception e) {
             }
@@ -76,13 +76,19 @@ code:
         }
     }
 
+compile:
+    javac -cp Monkey.jar Test.java 
+
 output:
+    java -cp Monkey.jar:. Test
 
     Hello, World
     true
     ERROR: identifier not found: ERROR
 
 */
+
+package monkey;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -1950,42 +1956,6 @@ class MonkeyEnvironment {
         }
         return ret;
     }
-    
-    public static MonkeyEnvironment fromMap(Map<String, Object> map) {
-        MonkeyEnvironment e = new MonkeyEnvironment();
-
-        for (String k: map.keySet()) {
-            Object v = map.get(k);
-            String key = null;
-            MonkeyObject value = null;
-            //
-            if (k instanceof String) {
-                key = k;
-            } else {
-                key = k.toString();
-            }
-            //
-            if (v instanceof String) {
-                value = new MonkeyObjectString((String) v);
-            } else if (v instanceof Boolean) {
-                value = new MonkeyObjectBoolean((Boolean) v);
-            } else if (v instanceof Integer) {
-                value = new MonkeyObjectInteger((Integer) v);
-            } else {
-                value = new MonkeyObjectString(v.toString());
-            }
-            //
-            if (key != null && value != null) {
-                e.set(key, value);
-            }
-        }
-        return e;
-    }
-    
-    public static MonkeyEnvironment fromDictionary(Map<String, Object> dictionary) {
-        return MonkeyEnvironment.fromMap(dictionary);
-    }
-    
 }
 
 interface MonkeyBuiltinCallable {
@@ -2653,8 +2623,8 @@ class MonkeyUtil {
     }
 }
 
-class Monkey {
-    public static final String VERSION = "0.2";
+public class Monkey {
+    public static final String VERSION = "0.3";
     public static final String TITLE = "Monkey.java " + VERSION;
     public static final String MESSAGE = "Press ENTER to quit";
     public static final String LINESEP = System.getProperty("line.separator");
@@ -2677,7 +2647,42 @@ class Monkey {
     public static void output(String s, PrintStream output) {
         output.println(s);
     }
+
+    public static MonkeyEnvironment environmentFromMap(Map<String, Object> map) {
+        MonkeyEnvironment e = new MonkeyEnvironment();
+
+        for (String k: map.keySet()) {
+            Object v = map.get(k);
+            String key = null;
+            MonkeyObject value = null;
+            //
+            if (k instanceof String) {
+                key = k;
+            } else {
+                key = k.toString();
+            }
+            //
+            if (v instanceof String) {
+                value = new MonkeyObjectString((String) v);
+            } else if (v instanceof Boolean) {
+                value = new MonkeyObjectBoolean((Boolean) v);
+            } else if (v instanceof Integer) {
+                value = new MonkeyObjectInteger((Integer) v);
+            } else {
+                value = new MonkeyObjectString(v.toString());
+            }
+            //
+            if (key != null && value != null) {
+                e.set(key, value);
+            }
+        }
+        return e;
+    }
     
+    public static MonkeyEnvironment environmentFromDictionary(Map<String, Object> dictionary) {
+        return Monkey.environmentFromMap(dictionary);
+    }
+
     public static void lexer() {
         Monkey.output(TITLE);
         Monkey.output(MESSAGE);
