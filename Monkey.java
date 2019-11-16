@@ -5,7 +5,7 @@ Monkey.java
 (c) Noprianto <nopri.anto@icloud.com>, 2019
 Website: nopri.github.io
 License: MIT
-Version: 0.4
+Version: 0.5
 
 Minimum Java version: 5.0
 
@@ -14,10 +14,13 @@ Based on monkey.py
 monkey.py is based on code (in Go programming language) in book:
 WRITING AN INTERPRETER IN GO
 
+Note: INTEGER type in Monkey.java is implemented using java.math.BigDecimal.
+(since version 0.5)
+
 How to compile Monkey.java:
 javac Monkey.java -d .
     or
-Use precompiled Monkey.jar (please download it from my website)
+Use compiled Monkey.jar (please download it from my website)
 
 How to use Monkey.java:
 - Standalone
@@ -26,7 +29,7 @@ How to use Monkey.java:
         or
         java -jar Monkey.jar
 
-        Monkey.java 0.4
+        Monkey.java 0.5
         Press ENTER to quit
         >> let hello = "Hello World"
         >> hello
@@ -96,6 +99,8 @@ package monkey;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,37 +108,37 @@ import java.util.Map;
 import java.util.Scanner;
 
 class MonkeyToken {
-    static final String ILLEGAL = "ILLEGAL";
-    static final String EOF = "EOF";
-    static final String IDENT = "IDENT";
-    static final String INT = "INT";
-    static final String ASSIGN = "=";
-    static final String PLUS = "+";
-    static final String MINUS = "-";
-    static final String BANG = "!";
-    static final String ASTERISK = "*";
-    static final String SLASH = "/";
-    static final String LT = "<";
-    static final String GT = ">";
-    static final String COMMA = ",";
-    static final String SEMICOLON = ";";
-    static final String LPAREN = "(";
-    static final String RPAREN = ")";
-    static final String LBRACE = "{";
-    static final String RBRACE = "}";
-    static final String FUNCTION = "FUNCTION";
-    static final String LET = "LET";
-    static final String TRUE = "true";
-    static final String FALSE = "false";
-    static final String IF = "if";
-    static final String ELSE = "else";
-    static final String RETURN = "return";
-    static final String EQ = "==";
-    static final String NOT_EQ = "!=";
-    static final String STRING = "STRING";
-    static final String LBRACKET = "[";
-    static final String RBRACKET = "]";
-    static final String COLON = ":";
+    public static final String ILLEGAL = "ILLEGAL";
+    public static final String EOF = "EOF";
+    public static final String IDENT = "IDENT";
+    public static final String INT = "INT";
+    public static final String ASSIGN = "=";
+    public static final String PLUS = "+";
+    public static final String MINUS = "-";
+    public static final String BANG = "!";
+    public static final String ASTERISK = "*";
+    public static final String SLASH = "/";
+    public static final String LT = "<";
+    public static final String GT = ">";
+    public static final String COMMA = ",";
+    public static final String SEMICOLON = ";";
+    public static final String LPAREN = "(";
+    public static final String RPAREN = ")";
+    public static final String LBRACE = "{";
+    public static final String RBRACE = "}";
+    public static final String FUNCTION = "FUNCTION";
+    public static final String LET = "LET";
+    public static final String TRUE = "true";
+    public static final String FALSE = "false";
+    public static final String IF = "if";
+    public static final String ELSE = "else";
+    public static final String RETURN = "return";
+    public static final String EQ = "==";
+    public static final String NOT_EQ = "!=";
+    public static final String STRING = "STRING";
+    public static final String LBRACKET = "[";
+    public static final String RBRACKET = "]";
+    public static final String COLON = ":";
 
     private String type = "";
     private String literal = "";
@@ -164,10 +169,10 @@ class MonkeyToken {
 }
 
 class MonkeyLexer {
-    static final Map<String, String> KEYWORDS;
-    static final String VALID_IDENTS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
-    static final String VALID_NUMBERS = "0123456789";
-    static final String WHITESPACES = " \t\r\n";
+    public static final Map<String, String> KEYWORDS;
+    public static final String VALID_IDENTS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
+    public static final String VALID_NUMBERS = "0123456789";
+    public static final String WHITESPACES = " \t\r\n";
     static {
         KEYWORDS = new HashMap<String, String>();
         KEYWORDS.put("fn", MonkeyToken.FUNCTION);
@@ -565,14 +570,14 @@ class MonkeyBlockStatement extends MonkeyStatement {
 }
 
 class MonkeyIntegerLiteral extends MonkeyExpression {
-    private int value;
+    private BigDecimal value;
 
-    public MonkeyIntegerLiteral(int value) {
+    public MonkeyIntegerLiteral(BigDecimal value) {
         this.token = new MonkeyToken();
         this.value = value;
     }
     
-    public int getValue() {
+    public BigDecimal getValue() {
         return value;
     }
     
@@ -1000,10 +1005,10 @@ class MonkeyParser {
 
     class ParseIntegerLiteral implements MonkeyParserPrefixCallable {
         public MonkeyExpression call() {
-            int test;
+            BigDecimal test;
             try {
-                test = Integer.parseInt(curToken.getLiteral());
-            } catch (NumberFormatException e) {
+                test = new BigDecimal(curToken.getLiteral());
+            } catch (Exception e) {
                 String msg = String.format("could not parse %s as integer", curToken.getLiteral());
                 errors.add(msg);
                 return null;
@@ -1541,27 +1546,36 @@ class MonkeyObject {
 }
 
 class MonkeyObjectInteger extends MonkeyObject implements MonkeyHashable {
-    private int value;
+    private BigDecimal value;
 
     public MonkeyObjectInteger() {
         type = INTEGER_OBJ;
     }
 
-    public MonkeyObjectInteger(int value) {
+    public MonkeyObjectInteger(BigDecimal value) {
         this();
         this.value = value;
     }
 
-    public int getValue() {
+    public MonkeyObjectInteger(int value) {
+        this();
+        this.value = BigDecimal.valueOf(value);
+    }
+
+    public BigDecimal getValue() {
         return value;
     }
     
-    public void setValue(int value) {
+    public int getIntegerValue() {
+        return value.intValue();
+    }
+    
+    public void setValue(BigDecimal value) {
         this.value = value;
     }
     
     public MonkeyHashKey hashKey() {
-        return new MonkeyHashKey(type, value);
+        return new MonkeyHashKey(type, value.hashCode());
     }
 
     @Override
@@ -2335,34 +2349,38 @@ class MonkeyEvaluator {
     
     MonkeyObject evalIntegerInfixExpression(String operator, 
             MonkeyObjectInteger left, MonkeyObjectInteger right) {
-        int leftVal = left.getValue();
-        int rightVal = right.getValue();
+        BigDecimal leftVal = left.getValue();
+        BigDecimal rightVal = right.getValue();
         //
         MonkeyObjectInteger o = new MonkeyObjectInteger();
         if (operator.equals("+")) {
-            o.setValue(leftVal + rightVal);
+            o.setValue(leftVal.add(rightVal));
             return o;
         } else if (operator.equals("-")) {
-            o.setValue(leftVal - rightVal);
+            o.setValue(leftVal.subtract(rightVal));
             return o;
         } else if (operator.equals("*")) {
-            o.setValue(leftVal * rightVal);
-            return o;
+            try {
+                o.setValue(leftVal.multiply(rightVal));
+                return o;
+            } catch (Exception e) {
+                return NULL; 
+            }
         } else if (operator.equals("/")) {
             try {
-                o.setValue(leftVal / rightVal);
+                o.setValue(leftVal.divide(rightVal, RoundingMode.DOWN));
                 return o;
-            } catch (ArithmeticException e) {
+            } catch (Exception e) {
                 return NULL;
             }
         } else if (operator.equals("<")) {
-            return getBoolean(leftVal < rightVal);
+            return getBoolean(leftVal.compareTo(rightVal) < 0);
         } else if (operator.equals(">")) {
-            return getBoolean(leftVal > rightVal);
+            return getBoolean(leftVal.compareTo(rightVal) > 0);
         } else if (operator.equals("==")) {
-            return getBoolean(leftVal == rightVal);
+            return getBoolean(leftVal.compareTo(rightVal) == 0);
         } else if (operator.equals("!=")) {
-            return getBoolean(leftVal != rightVal);
+            return getBoolean(leftVal.compareTo(rightVal) != 0);
         }
         return newError(String.format("unknown operator: %s %s %s", left.getType(),
                 operator, right.getType()));
@@ -2400,8 +2418,8 @@ class MonkeyEvaluator {
         }
         //
         MonkeyObjectInteger o = new MonkeyObjectInteger();
-        int val = ((MonkeyObjectInteger) right).getValue();
-        o.setValue(-val);
+        BigDecimal val = ((MonkeyObjectInteger) right).getValue();
+        o.setValue(val.multiply(BigDecimal.valueOf(-1)));
         return o;
     }
 
@@ -2463,7 +2481,7 @@ class MonkeyEvaluator {
     
     MonkeyObject evalArrayIndexExpression(MonkeyObjectArray array, 
             MonkeyObjectInteger index) {
-        int idx = index.getValue();
+        int idx = index.getIntegerValue();
         int max = array.getElements().size() - 1;
         //
         if (idx < 0 || idx > max) {
@@ -2628,7 +2646,7 @@ class MonkeyUtil {
 }
 
 public class Monkey {
-    public static final String VERSION = "0.4";
+    public static final String VERSION = "0.5";
     public static final String TITLE = "Monkey.java " + VERSION;
     public static final String MESSAGE = "Press ENTER to quit";
     public static final String LINESEP = System.getProperty("line.separator");
