@@ -5,7 +5,7 @@ Monkey.java
 (c) Noprianto <nopri.anto@icloud.com>, 2019
 Website: nopri.github.io
 License: MIT
-Version: 0.5
+Version: 0.6
 
 Minimum Java version: 5.0
 
@@ -29,7 +29,7 @@ How to use Monkey.java:
         or
         java -jar Monkey.jar
 
-        Monkey.java 0.5
+        Monkey.java 0.6
         Press ENTER to quit
         >> let hello = "Hello World"
         >> hello
@@ -2107,7 +2107,11 @@ class MonkeyBuiltinFunctionPush implements MonkeyBuiltinCallable {
         for (int i=0; i<length; i++) {
             list.add(elements.get(i));
         }
-        list.add(args.get(1));
+        try {
+            list.add(args.get(1));
+        } catch (Exception e) {
+                return MonkeyEvaluator.NULL; 
+        }
         
         MonkeyObjectArray o = new MonkeyObjectArray();
         o.setElements(list);
@@ -2354,11 +2358,19 @@ class MonkeyEvaluator {
         //
         MonkeyObjectInteger o = new MonkeyObjectInteger();
         if (operator.equals("+")) {
-            o.setValue(leftVal.add(rightVal));
-            return o;
+            try {
+                o.setValue(leftVal.add(rightVal));
+                return o;
+            } catch (Exception e) {
+                return NULL; 
+            }
         } else if (operator.equals("-")) {
-            o.setValue(leftVal.subtract(rightVal));
-            return o;
+            try {
+                o.setValue(leftVal.subtract(rightVal));
+                return o;
+            } catch (Exception e) {
+                return NULL; 
+            }
         } else if (operator.equals("*")) {
             try {
                 o.setValue(leftVal.multiply(rightVal));
@@ -2515,7 +2527,11 @@ class MonkeyEvaluator {
             MonkeyHashPair p = new MonkeyHashPair();
             p.setKey(key);
             p.setValue(val);
-            pairs.put(hashed, p);
+            try {
+                pairs.put(hashed, p);
+            } catch (Exception e) {
+                return NULL; 
+            }
         }
         //
         MonkeyObjectHash o = new MonkeyObjectHash();
@@ -2646,7 +2662,7 @@ class MonkeyUtil {
 }
 
 public class Monkey {
-    public static final String VERSION = "0.5";
+    public static final String VERSION = "0.6";
     public static final String TITLE = "Monkey.java " + VERSION;
     public static final String MESSAGE = "Press ENTER to quit";
     public static final String LINESEP = System.getProperty("line.separator");
