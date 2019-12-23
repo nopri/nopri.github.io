@@ -1,0 +1,315 @@
+Singkong Programming Language Interpreter
+(c) Noprianto <nopri.anto@icloud.com>, 2019
+Website: nopri.github.io
+License: Free to use or redistribute
+Version: 0.1 (2019-Dec-23 +07:00)
+
+Singkong is based on Monkey.java: an open source, simple implementation of 
+Monkey programming language interpreter in Java.
+Monkey.java is based on monkey.py: an open source, simple implementation of 
+Monkey programming language interpreter in Python.
+Monkey.java and monkey.py, (c) Noprianto <nopri.anto@icloud.com>, 2019.
+
+monkey.py is based on code (in Go programming language) in book: 
+WRITING AN INTERPRETER IN GO
+
+=============================================================================
+
+ 1. What is Singkong Programming Language
+ 2. System requirements
+ 3. Getting started
+ 4. Identifier, data types, and operators
+ 5. Builtin functions
+ 6. If condition
+ 7. Repeat loop
+ 8. Embedding Singkong into another applications
+ 9. Differences with Monkey Programming Language
+10. Future developments and compatibility
+
+-----------------------------------------------------------------------------
+
+1. What is Singkong Programming Language
+Singkong is case-insensitive, dynamically typed, procedural, and interpreted 
+programming language that runs on Java Virtual Machine (version 5.0 or later). 
+It supports number, boolean, string, array, hash, date, first-class function, 
+builtin functions, and other features. Singkong also comes with simple GUI 
+editor/interactive evaluator. 
+
+Singkong can be run on graphical or text user interfaces. It can also embedded
+and integrated into another applications. Singkong is distributed as single jar
+file. 
+
+Singkong is based on Monkey.java, inspired by and syntax-compatible with 
+Monkey Programming Language.
+
+
+2. System requirements
+Singkong should be run wherever Java is available. It only requires Java 5.0 
+(which was released in 2004) and can even be run on Windows 95 (which was 
+released in 1995). 
+
+If only text-based environment is available, Singkong interactive evaluator 
+will fallback to text only version and builtin functions will adapt 
+appropriately.
+
+
+3. Getting started
+Please download Singkong.jar from its website. The jar file can be saved into
+any directory - no system wide installation is required. Using portable Java 
+installation, Singkong can be run from external/portable storage device. 
+
+If GUI is available, Singkong.jar comes with interactive evaluator, 
+variable inspector, simple text editor, and this documentation.
+
+- Standalone
+  - No command line argument: interactive
+        java -jar Singkong.jar
+
+        Singkong
+        Press ENTER to quit
+        >> let hello = "Hello World"
+        >> hello
+        "Hello World"
+        >> 
+        
+  - No command line argument: interactive (GUI available)
+        java -jar Singkong.jar
+
+        (double-clicking Singkong.jar may also work)
+
+  - Command line argument: try to interpret as file
+        java -jar Singkong.jar test.singkong
+
+    If exception occurred: interpret the argument as Singkong code
+        java -jar Singkong.jar "puts(1,2,3)"
+
+        1
+        2
+        3
+        null
+
+- Library
+  Please read: Embedding Singkong into another applications 
+
+
+4. Identifier, data types, and operators
+Identifier starts with letter or underscore and optionally followed by letters,
+numbers, or underscores. 
+
+Assignment is done using let statements:
+let name = "singkong";
+
+Note:
+- Statements end with ; 
+- Blocks enclosed in { and }.
+
+Data types:
+- NULL
+  - null
+  - null may also returned from builtin functions
+- NUMBER
+  - any integer and decimal
+  - precision: 10240, scale: 4
+  - operators: + - * / == != %(remainder) ^(power)
+- BOOLEAN
+  - true or false
+  - operators: == !=
+- STRING
+  - double-quoted
+  - arbitrary length string
+  - operators: +(concatenation) -(remove) == != *(repeat)
+- ARRAY
+  - []
+  - array of mixed data types
+  - operators: +(add), -(remove) == !=
+- HASH
+  - {}
+  - hash table/dictionary
+  - any data type can be used as key
+  - hash maintains insertion-order
+  - operators: +(add dictionary), -(remove) == !=
+- DATE
+  - @ @Y @YY @YYY @YYYY @YYYYM @YYYYMM @ YYYYMMD @YYYYMMDD @YYYYMMDDh 
+    @YYYYMMDDhh @YYYYMMDDhhm @YYYYMMDDhhmm @YYYYMMDDhhmms @YYYYMMDDhhmmss
+- FUNCTION
+  - fn
+
+
+5. Builtin functions
+To get a list of builtin functions, please call builtins()
+["ABS", "ARGUMENTS", "BUILTINS", "CONFIRM", "DATE", "DATE_DAY", "DATE_DIFF", 
+"DATE_DIFF_FORMAT", "DATE_FORMAT", "DATE_HOUR", "DATE_MINUTE", "DATE_MONTH", 
+"DATE_SECOND", "DATE_YEAR", "DATETIME", "DATETIME_FORMAT", "DELAY", "DO", 
+"FILE_APPEND", "FILE_READ", "FILE_WRITE", "FIRST", "HASH", "INFO", "INPUT", 
+"INTEGER", "LAST", "LEN", "MESSAGE", "NEWLINE", "NUMBER", "NUMBER_TO_WORDS_EN", 
+"NUMBER_TO_WORDS_ID", "PASSWORD", "PRINT", "PRINTLN", "PROPERTIES_READ", 
+"PROPERTIES_WRITE", "PUSH", "PUTS", "REST", "SET", "SLICE", "STRING", 
+"STRING_EQUALS", "STRING_LOWER", "STRING_REPLACE", "STRING_SPLIT", 
+"STRING_TRIM", "STRING_UPPER", "TYPE"]
+
+To get basic information of each builtin function, please enter its name in
+interactive evaluator, without ( and ). For example:
+
+>>  date_second
+builtin function: date_second, date_minute, date_hour, date_day, date_month, 
+date_year
+
+Future developments may include another documentations such as parameters and
+return value. 
+
+Some functions support arbitrary number of parameters.
+
+
+6. If condition
+Syntax: if (condition) {consequences} else {alternatives}
+
+condition: BOOLEAN
+
+Example:
+let name = "singkong";
+if (name == "singkong") {
+  print(name);
+}
+
+
+7. Repeat loop
+repeat { statements }
+
+To exit from loop, use return
+
+Example:
+let i = 0;
+repeat {
+  print(" " + i);
+  let i = i + 1;
+  if (i > 5) { return i };
+}
+
+
+8. Embedding Singkong into another applications
+Java applications:
+- Class: com.noprianto.singkong.Singkong
+- Methods: 
+  public static void evaluatorString(java.lang.String,
+    com.noprianto.singkong.SingkongEnvironment,
+    java.io.PrintStream);
+
+  public static java.lang.String evaluatorString(java.lang.String,
+    com.noprianto.singkong.SingkongEnvironment);
+
+  public static java.lang.String evaluatorString(java.lang.String);
+
+- From java.util.Map to SingkongEnvironment:
+  public static com.noprianto.singkong.SingkongEnvironment environmentFromMap(
+    java.util.Map);
+
+Example 1: Test.java
+import com.noprianto.singkong.Singkong;
+
+public class Test {
+    public static void main(String[] args) {
+        String code = "let list = [1,2,3]; println(list);";
+        String output = Singkong.evaluatorString(code);
+        System.out.println(output);
+    }
+}
+
+javac -cp Singkong.jar Test.java 
+java -cp Singkong.jar:. Test
+[1, 2, 3]
+null
+
+Example 2: Test.java
+import java.util.Map;
+import java.util.HashMap;
+import com.noprianto.singkong.Singkong;
+
+public class Test {
+    public static void main(String[] args) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("hello", "Hello, World");
+        map.put("test", true);
+
+        String code = "println(hello); println(test);";
+        String output = Singkong.evaluatorString(code,
+            Singkong.environmentFromMap(map));
+
+        System.out.println(output);
+    }
+}
+
+javac -cp Singkong.jar Test.java 
+java -cp Singkong.jar:. Test
+Hello, World
+true
+null
+
+Example 3: Test.java
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
+import com.noprianto.singkong.Singkong;
+
+public class Test {
+    public static void main(String[] args) {
+        String result = "";
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("hello", "Hello, World");
+        map.put("test", true);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            PrintStream output = new PrintStream(outputStream);
+            Singkong.evaluatorString("println(hello); println(test)", 
+                    Singkong.environmentFromMap(map), output);
+            result = outputStream.toString();
+        } catch (Exception e) {
+        }
+
+        System.out.println(result);
+    }
+}
+
+javac -cp Singkong.jar Test.java 
+java -cp Singkong.jar:. Test
+Hello, World
+true
+null
+
+Another applications:
+Example 4: Python
+>>> import subprocess
+>>> c = ['java', '-jar', 'Singkong.jar', 'puts("singkong")']
+>>> o = subprocess.check_output(c)
+>>> print(o)
+singkong
+null
+
+
+9. Differences with Monkey Programming Language
+- Singkong is case-insensitive
+- Identifier starts with letter or underscore and optionally followed by 
+  letters, numbers, or underscores
+- null assignment
+- Singkong has no INTEGER data type. Singkong has NUMBER data type that is
+  compatible with INTEGER in Monkey, but supports decimal numbers.
+- Additional operators for NUMBER: % and ^
+- HASH: any data type can be used as key, maintains insertion-order
+- Additional builtin functions
+- Additional data types: DATE
+- Singkong use overloaded operators for data types, as much as possible
+  (for example, * for string repetition, - for string remove, - for array 
+  remove, and many more).
+- Repeat loop
+
+
+10. Future developments and compatibility
+For the foreseeable future developments:
+- Singkong will be developed using Java 8 but will be compatible with Java 5.0
+- Run test will also be done on latest Java version 
+- Old Singkong code will be run in later Singkong versions
+
+
+Thank you for using Singkong Programming Language
