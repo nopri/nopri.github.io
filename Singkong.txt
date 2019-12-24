@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 0.2 (2019-Dec-24 +07:00)
+Version: 0.3 (2019-Dec-24 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -58,6 +58,10 @@ installation, Singkong can be run from external/portable storage device.
 If GUI is available, Singkong.jar comes with interactive evaluator, 
 variable inspector, simple text editor, and documentation viewer.
 
+To run Singkong in text mode when GUI is available, please set property
+SINGKONG=0 (-DSINGKONG=0). This setting has no effect when GUI is not 
+available.
+
 - Standalone
   - No command line argument: interactive
         java -jar Singkong.jar
@@ -73,6 +77,9 @@ variable inspector, simple text editor, and documentation viewer.
         java -jar Singkong.jar
 
         (double-clicking Singkong.jar may also work)
+
+  - No command line argument: interactive (run in text mode, GUI available)
+        java -DSINGKONG=0 -jar Singkong.jar
 
   - Command line argument: try to interpret as file
         java -jar Singkong.jar test.singkong
@@ -98,8 +105,8 @@ let name = "singkong";
 let f = fn(name) { puts(name) }
 
 Note:
-- Statements end with ; 
-- Blocks enclosed in { and }.
+- Statement ends with ; 
+- Block statement starts with { and ends with }
 
 Data types:
 - NULL
@@ -116,7 +123,8 @@ Data types:
 - STRING
   - double-quoted
   - arbitrary length string
-  - operators: +(concatenation) -(remove) == != *(repeat)
+  - operators: +(concatenation) -(remove) ==(equals,case-sensitive) != *(repeat)
+  - equals (case-insensitive): please use builtin function string_equals
 - ARRAY
   - []
   - array of mixed data types
@@ -147,11 +155,11 @@ To get a list of builtin functions, please call builtins()
 "DATE_DIFF_FORMAT", "DATE_FORMAT", "DATE_HOUR", "DATE_MINUTE", "DATE_MONTH", 
 "DATE_SECOND", "DATE_YEAR", "DATETIME", "DATETIME_FORMAT", "DELAY", "DO", 
 "FILE_APPEND", "FILE_READ", "FILE_WRITE", "FIRST", "HASH", "INFO", "INPUT", 
-"INTEGER", "LAST", "LEN", "MESSAGE", "NEWLINE", "NUMBER", "NUMBER_TO_WORDS_EN", 
-"NUMBER_TO_WORDS_ID", "PASSWORD", "PRINT", "PRINTLN", "PROPERTIES_READ", 
-"PROPERTIES_WRITE", "PUSH", "PUTS", "REST", "SET", "SLICE", "STRING", 
-"STRING_EQUALS", "STRING_LOWER", "STRING_REPLACE", "STRING_SPLIT", 
-"STRING_TRIM", "STRING_UPPER", "TYPE"]
+"INTEGER", "KEYS", "LAST", "LEN", "MESSAGE", "NEWLINE", "NUMBER", 
+"NUMBER_TO_WORDS_EN", "NUMBER_TO_WORDS_ID", "PASSWORD", "PRINT", "PRINTLN", 
+"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "REST", "ROUND", "SET", 
+"SINGKONG", "SLICE", "STRING", "STRING_EQUALS", "STRING_LOWER", 
+"STRING_REPLACE", "STRING_SPLIT", "STRING_TRIM", "STRING_UPPER", "TYPE"]
 
 To get basic information of each builtin function, please enter its name in
 interactive evaluator, without ( and ). For example:
@@ -313,7 +321,7 @@ null
 
 10. Development and compatibility
 - Singkong is developed on Java 8 with -source 1.5 -target 1.5
-- Tests will be done on Java 5.0, Java 8, and latest Java version 
+- Run tests: Java 5.0, Java 8, and latest Java version 
 - Singkong maintains backward compatibility
 
 
