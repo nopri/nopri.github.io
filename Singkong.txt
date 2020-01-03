@@ -1,8 +1,8 @@
 Singkong Programming Language Interpreter
-(c) Noprianto <nopri.anto@icloud.com>, 2019
+(c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 0.3 (2019-Dec-24 +07:00)
+Version: 0.4 (2020-Jan-03 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -66,12 +66,12 @@ available.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong
+        Singkong 0.4
         Press ENTER to quit
-        >> let hello = "Hello World"
-        >> hello
+        > let hello = "Hello World"
+        > hello
         "Hello World"
-        >> 
+        > 
         
   - No command line argument: interactive (GUI available)
         java -jar Singkong.jar
@@ -109,6 +109,7 @@ Note:
 - Block statement starts with { and ends with }
 
 Data types:
+Related functions: builtins, is, hash, print, println, puts, string, type, types
 - NULL
   - null
   - null literal
@@ -116,20 +117,32 @@ Data types:
 - NUMBER
   - any integer and decimal
   - precision: 10240, scale: 4
-  - operators: + - * / == != %(remainder) ^(power)
+  - operators: + - * / == != %(remainder) ^(power) < <= > >=
+  - related functions: abs, integer, number, random, round, words_en, words_id
+  - system related functions: delay
 - BOOLEAN
   - true or false
-  - operators: == !=
+  - operators: == != & |
 - STRING
   - double-quoted
   - arbitrary length string
   - operators: +(concatenation) -(remove) ==(equals,case-sensitive) != *(repeat)
-  - equals (case-insensitive): please use builtin function string_equals
+  - equals (case-insensitive): please use builtin function equals
+  - related functions: center, cr, crlf, dir, empty, equals, join, left,
+    len, lf, lower, md5, newline, quote, replace, right, set,
+    sha1, sha256, sha384, sha512, slice, split, stat, tab, trim, upper
+  - file related functions: abs, append, read, write
+  - system related functions: cwd, separator, user
+  - Singkong related functions: load
 - ARRAY
   - []
   - array of mixed data types
   - operators: +(add), -(remove) == !=
   - modify ARRAY: please use builtin function set()
+  - related functions: average, count, each, empty, first, join, last, len, 
+    max, min, pop, push, random, range, rest, slice, sum
+  - file related functions: dir
+  - system related functions: arguments, system
 - HASH
   - {}
   - hash table/dictionary
@@ -137,9 +150,16 @@ Data types:
   - hash maintains insertion-order
   - operators: +(add dictionary), -(remove) == !=
   - modify HASH: please use builtin function set()
+  - related functions: empty, keys, len, random, values
+  - file related functions: properties_read, properties_write, stat
+  - system related functions: info
+  - Singkong related functions: singkong
 - DATE
-  - @ @Y @YY @YYY @YYYY @YYYYM @YYYYMM @ YYYYMMD @YYYYMMDD @YYYYMMDDh 
+  - @ @Y @YY @YYY @YYYY @YYYYM @YYYYMM @YYYYMMD @YYYYMMDD @YYYYMMDDh 
     @YYYYMMDDhh @YYYYMMDDhhm @YYYYMMDDhhmm @YYYYMMDDhhmms @YYYYMMDDhhmmss
+  - related functions: date, datetime, day, diff, format_date, format_datetime,
+    format_diff, hour, minute, month, part, second, year
+  - file related functions: stat
 - FUNCTION
   - fn()
   - fn(arg)
@@ -147,37 +167,45 @@ Data types:
   - function definition: let statement
   - function call: function name followed by (, optional comma-separated 
     arguments, and )
+  - related functions: do, each
 
 
 5. Builtin functions
 To get a list of builtin functions, please call builtins()
-["ABS", "ARGUMENTS", "BUILTINS", "CONFIRM", "DATE", "DATE_DAY", "DATE_DIFF", 
-"DATE_DIFF_FORMAT", "DATE_FORMAT", "DATE_HOUR", "DATE_MINUTE", "DATE_MONTH", 
-"DATE_SECOND", "DATE_YEAR", "DATETIME", "DATETIME_FORMAT", "DELAY", "DO", 
-"FILE_APPEND", "FILE_READ", "FILE_WRITE", "FIRST", "HASH", "INFO", "INPUT", 
-"INTEGER", "KEYS", "LAST", "LEN", "MESSAGE", "NEWLINE", "NUMBER", 
-"NUMBER_TO_WORDS_EN", "NUMBER_TO_WORDS_ID", "PASSWORD", "PRINT", "PRINTLN", 
-"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "REST", "ROUND", "SET", 
-"SINGKONG", "SLICE", "STRING", "STRING_EQUALS", "STRING_LOWER", 
-"STRING_REPLACE", "STRING_SPLIT", "STRING_TRIM", "STRING_UPPER", "TYPE"]
+["ABS", "APPEND", "ARGUMENTS", "AVERAGE", "BUILTINS", "CENTER", "CONFIRM", 
+"COUNT", "CR", "CRLF", "CWD", "DATE", "DATETIME", "DAY", "DELAY", "DIFF", 
+"DIR", "DO", "EACH", "EMPTY", "EQUALS", "EXIT", "FIRST", "FORMAT_DATE", 
+"FORMAT_DATETIME", "FORMAT_DIFF", "HASH", "HOUR", "INFO", "INPUT", "INTEGER", 
+"IS", "JOIN", "KEYS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", "MAX", 
+"MD5", "MESSAGE", "MIN", "MINUTE", "MONTH", "NEWLINE", "NUMBER", "PART", 
+"PASSWORD", "POP", "PRINT", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", 
+"PUSH", "PUTS", "QUOTE", "RANDOM", "RANGE", "READ", "REPLACE", "REST", "RIGHT", 
+"ROUND", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", 
+"SINGKONG", "SLICE", "SPLIT", "STAT", "STRING", "SUM", "SYSTEM", "TAB", "TRIM", 
+"TYPE", "TYPES", "UPPER", "USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", 
+"YEAR"]
 
 To get basic information of each builtin function, please enter its name in
 interactive evaluator, without ( and ). For example:
 
->>  date_second
-builtin function: date_second, date_minute, date_hour, date_day, date_month, 
-date_year
-
-Future developments may include additional documentations such as parameters and
-return value. 
+>  random
+builtin function: random: returns random number (between 0 inclusive and 1 
+exclusive), random number between min and max (both inclusive), random element 
+in ARRAY, random key in HASH
+arguments: 0, 1 (ARRAY or HASH), 2: (NUMBER and NUMBER)
+return value: <any type>
 
 Some functions support arbitrary number of parameters.
+
+GUI related functions: confirm, input, message, password
+(fallback to simpler text-based version if GUI is not available)
 
 
 6. If condition
 Syntax: if (condition) {consequences} else {alternatives}
 
 condition: BOOLEAN
+operators: &(and) |(or)
 
 Example:
 let name = "singkong";
@@ -198,6 +226,12 @@ repeat {
   let i = i + 1;
   if (i > 5) { return i };
 }
+
+Please also use do and each functions for simple repetitions:
+- do: calls a function a number of times, optionally with arguments
+- each: for each element in an ARRAY, calls a function a number of times 
+  (with arguments). Specified function must accept two arguments: 
+  the element and index (zero based).
 
 
 8. Embedding Singkong into another applications
@@ -309,7 +343,8 @@ null
 - null literal
 - Singkong has no INTEGER data type. Singkong has NUMBER data type that is
   compatible with INTEGER in Monkey, with support for decimal numbers.
-- Additional operators for NUMBER: % and ^
+- Additional operators for NUMBER: % ^ <= >=
+- Additional operators for BOOLEAN: & |
 - HASH: any data type can be used as key, maintains insertion-order
 - Additional builtin functions
 - Additional data types: DATE
@@ -321,7 +356,7 @@ null
 
 10. Development and compatibility
 - Singkong is developed on Java 8 with -source 1.5 -target 1.5
-- Run tests: Java 5.0, Java 8, and latest Java version 
+- Run tests: Java 5.0, Java 8 (main), and latest Java version 
 - Singkong maintains backward compatibility
 
 
