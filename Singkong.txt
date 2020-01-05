@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 0.4 (2020-Jan-03 +07:00)
+Version: 0.5 (2020-Jan-05 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -62,6 +62,9 @@ To run Singkong in text mode when GUI is available, please set property
 SINGKONG=0 (-DSINGKONG=0). This setting has no effect when GUI is not 
 available.
 
+To disable some builtin functions, please set property DISABLE (-DDISABLE) to 
+comma-separated list of functions. 
+
 - Standalone
   - No command line argument: interactive
         java -jar Singkong.jar
@@ -80,6 +83,12 @@ available.
 
   - No command line argument: interactive (run in text mode, GUI available)
         java -DSINGKONG=0 -jar Singkong.jar
+
+  - No command line argument: interactive (disable builtin: system)
+        java -DDISABLE=system -jar Singkong.jar
+
+  - No command line argument: interactive (disable builtins: system and info)
+        java -DDISABLE=system,info -jar Singkong.jar
 
   - Command line argument: try to interpret as file
         java -jar Singkong.jar test.singkong
@@ -109,7 +118,9 @@ Note:
 - Block statement starts with { and ends with }
 
 Data types:
-Related functions: builtins, is, hash, print, println, puts, string, type, types
+Related functions: builtins, eval, is, hash, print, println, puts, string, type, 
+types
+
 - NULL
   - null
   - null literal
@@ -128,9 +139,10 @@ Related functions: builtins, is, hash, print, println, puts, string, type, types
   - arbitrary length string
   - operators: +(concatenation) -(remove) ==(equals,case-sensitive) != *(repeat)
   - equals (case-insensitive): please use builtin function equals
-  - related functions: center, cr, crlf, dir, empty, equals, join, left,
-    len, lf, lower, md5, newline, quote, replace, right, set,
+  - related functions: center, count, cr, crlf, dir, empty, equals, eval, in, 
+    index, join, left, len, lf, lower, md5, newline, quote, replace, right, set,
     sha1, sha256, sha384, sha512, slice, split, stat, tab, trim, upper
+  - special characters: cr, crlf, lf, newline, quote, tab
   - file related functions: abs, append, read, write
   - system related functions: cwd, separator, user
   - Singkong related functions: load
@@ -139,8 +151,8 @@ Related functions: builtins, is, hash, print, println, puts, string, type, types
   - array of mixed data types
   - operators: +(add), -(remove) == !=
   - modify ARRAY: please use builtin function set()
-  - related functions: average, count, each, empty, first, join, last, len, 
-    max, min, pop, push, random, range, rest, slice, sum
+  - related functions: average, count, each, empty, first, in, index, 
+    join, last, len, max, min, pop, push, random, range, rest, slice, sum
   - file related functions: dir
   - system related functions: arguments, system
 - HASH
@@ -167,23 +179,29 @@ Related functions: builtins, is, hash, print, println, puts, string, type, types
   - function definition: let statement
   - function call: function name followed by (, optional comma-separated 
     arguments, and )
-  - related functions: do, each
+  - related functions: do, each, param
+- BUILTIN
+  - builtin functions
+  - related functions: builtins, disabled, help, param
 
 
 5. Builtin functions
 To get a list of builtin functions, please call builtins()
 ["ABS", "APPEND", "ARGUMENTS", "AVERAGE", "BUILTINS", "CENTER", "CONFIRM", 
 "COUNT", "CR", "CRLF", "CWD", "DATE", "DATETIME", "DAY", "DELAY", "DIFF", 
-"DIR", "DO", "EACH", "EMPTY", "EQUALS", "EXIT", "FIRST", "FORMAT_DATE", 
-"FORMAT_DATETIME", "FORMAT_DIFF", "HASH", "HOUR", "INFO", "INPUT", "INTEGER", 
-"IS", "JOIN", "KEYS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", "MAX", 
-"MD5", "MESSAGE", "MIN", "MINUTE", "MONTH", "NEWLINE", "NUMBER", "PART", 
-"PASSWORD", "POP", "PRINT", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", 
-"PUSH", "PUTS", "QUOTE", "RANDOM", "RANGE", "READ", "REPLACE", "REST", "RIGHT", 
-"ROUND", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", 
-"SINGKONG", "SLICE", "SPLIT", "STAT", "STRING", "SUM", "SYSTEM", "TAB", "TRIM", 
-"TYPE", "TYPES", "UPPER", "USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", 
-"YEAR"]
+"DIR", "DISABLED", "DO", "EACH", "EMPTY", "EQUALS", "EVAL", "EXIT", "FIRST", 
+"FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "GUI", "HASH", "HELP", "HOUR", 
+"IN", "INDEX", "INFO", "INPUT", "INTEGER", "IS", "JOIN", "KEYS", "LAST", 
+"LEFT", "LEN", "LF", "LOAD", "LOWER", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", 
+"MONTH", "NEWLINE", "NUMBER", "PARAM", "PART", "PASSWORD", "POP", "PRINT", 
+"PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUOTE", 
+"RANDOM", "RANGE", "READ", "REPLACE", "REST", "RIGHT", "ROUND", "SECOND", 
+"SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SINGKONG", "SLICE", 
+"SPLIT", "STAT", "STRING", "SUM", "SYSTEM", "TAB", "TRIM", "TYPE", "TYPES", 
+"UPPER", "USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+
+Note: a builtin function may be disabled when the interpreter in run. In such
+case, an error will be returned when the function is called. 
 
 To get basic information of each builtin function, please enter its name in
 interactive evaluator, without ( and ). For example:
@@ -197,8 +215,9 @@ return value: <any type>
 
 Some functions support arbitrary number of parameters.
 
-GUI related functions: confirm, input, message, password
-(fallback to simpler text-based version if GUI is not available)
+GUI related functions: confirm, gui, input, message, password
+(some of those functions will fallback to simpler text-based version if GUI 
+is not available)
 
 
 6. If condition
@@ -238,18 +257,27 @@ Please also use do and each functions for simple repetitions:
 Java applications:
 - Class: com.noprianto.singkong.Singkong
 - Methods: 
-  public static void evaluatorString(java.lang.String,
-    com.noprianto.singkong.SingkongEnvironment,
-    java.io.PrintStream);
+    public static java.lang.String evaluatorString(java.lang.String);
 
-  public static java.lang.String evaluatorString(java.lang.String,
-    com.noprianto.singkong.SingkongEnvironment);
+    public static java.lang.String evaluatorString(java.lang.String,
+        java.lang.String[]);
 
-  public static java.lang.String evaluatorString(java.lang.String);
+    public static java.lang.String evaluatorString(java.lang.String,
+        com.noprianto.singkong.SingkongEnvironment);
+
+    public static java.lang.String evaluatorString(java.lang.String,
+        com.noprianto.singkong.SingkongEnvironment,java.lang.String[]);
+
+    public static void evaluatorString(java.lang.String,
+        com.noprianto.singkong.SingkongEnvironment,java.io.PrintStream);
+
+    public static void evaluatorString(java.lang.String,
+        com.noprianto.singkong.SingkongEnvironment,java.io.PrintStream,
+        java.lang.String[]);
 
 - From java.util.Map to SingkongEnvironment:
-  public static com.noprianto.singkong.SingkongEnvironment environmentFromMap(
-    java.util.Map);
+    public static com.noprianto.singkong.SingkongEnvironment environmentFromMap(
+        java.util.Map);
 
 Example 1: Test.java
 import com.noprianto.singkong.Singkong;
@@ -268,6 +296,22 @@ java -cp Singkong.jar:. Test
 null
 
 Example 2: Test.java
+import com.noprianto.singkong.Singkong;
+  
+public class Test {
+    public static void main(String[] args) {
+        String code = "println([1,2,3]); system();";
+        String output = Singkong.evaluatorString(code, new String[]{"system"});
+        System.out.println(output);
+    }
+}
+
+javac -cp Singkong.jar Test.java 
+java -cp Singkong.jar:. Test
+[1, 2, 3]
+ERROR: builtin function "system" is disabled
+
+Example 3: Test.java
 import java.util.Map;
 import java.util.HashMap;
 import com.noprianto.singkong.Singkong;
@@ -292,7 +336,31 @@ Hello, World
 true
 null
 
-Example 3: Test.java
+Example 4: Test.java
+import java.util.Map;
+import java.util.HashMap;
+import com.noprianto.singkong.Singkong;
+
+public class Test {
+    public static void main(String[] args) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("hello", "Hello, World");
+
+        String code = "println(hello); info();";
+        String output = Singkong.evaluatorString(code,
+            Singkong.environmentFromMap(map),
+            new String[]{"system", "info"});
+
+        System.out.println(output);
+    }
+}
+
+javac -cp Singkong.jar Test.java
+java -cp Singkong.jar:. Test
+Hello, World
+ERROR: builtin function "info" is disabled
+
+Example 5: Test.java
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -326,14 +394,54 @@ Hello, World
 true
 null
 
+Example 6: Test.java
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
+import com.noprianto.singkong.Singkong;
+
+public class Test {
+    public static void main(String[] args) {
+        String result = "";
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("hello", "Hello, World");
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            PrintStream output = new PrintStream(outputStream);
+            Singkong.evaluatorString("println(hello); info();",
+                    Singkong.environmentFromMap(map), output,
+                    new String[]{"system", "info"});
+            result = outputStream.toString();
+        } catch (Exception e) {
+        }
+
+        System.out.println(result);
+    }
+}
+
+javac -cp Singkong.jar Test.java
+java -cp Singkong.jar:. Test
+Hello, World
+ERROR: builtin function "info" is disabled
+
 Another applications:
-Example 4: Python
+Example 7: Python
 >>> import subprocess
 >>> c = ['java', '-jar', 'Singkong.jar', 'puts("singkong")']
 >>> o = subprocess.check_output(c)
 >>> print(o)
 singkong
 null
+
+Example 8: Python
+>>> import subprocess
+>>> c = ['java', '-DDISABLE=info', '-jar', 'Singkong.jar', 'info()']
+>>> o = subprocess.check_output(c)
+>>> print(o)
+ERROR: builtin function "info" is disabled
 
 
 9. Differences with Monkey Programming Language
@@ -352,11 +460,13 @@ null
   (for example, * for string repetition, - for string remove, - for array 
   remove, and many more).
 - Repeat loop
+- Some builtin functions may be disabled when the interpreter in run 
 
 
 10. Development and compatibility
 - Singkong is developed on Java 8 with -source 1.5 -target 1.5
-- Run tests: Java 5.0, Java 8 (main), and latest Java version 
+  (using Java 5.0-compatible application programming interface)
+- Run tests: Java 5.0, Java 8 (main testing), and latest Java version 
 - Singkong maintains backward compatibility
 
 
