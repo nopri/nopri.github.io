@@ -1,0 +1,15 @@
+let b = component("button", "Hello");
+let c = component("checkbox", "Singkong?");
+let m = component("combobox", "Singkong,Programming,Language");
+let e = component("edit", "Hello, World");
+let l = component("label", "Singkong Programming Language");
+let p = component("password", "test");
+let r = component("radio", "Radio Button");
+let t = component("table", "A,B,C,D,E");
+let x = component("text", "Singkong");
+
+add([e, t]);
+add_n([l, x, p, c, r, m, b]);
+
+closing("Are you sure you want to quit this application?", "Please confirm");
+show();

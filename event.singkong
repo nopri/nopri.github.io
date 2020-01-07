@@ -1,0 +1,28 @@
+let b = component("button", "Hello, World");
+let c = component("checkbox", "Singkong?");
+let r = component("radio", "Radio Button");
+let m = component("combobox","Singkong,Programming,Language");
+
+let bb = fn() {
+    message(get(b,"text"));
+};
+event(b, bb);
+
+let cc = fn() {
+    message(get(c,"active"));
+};
+event(c, cc);
+
+let rr = fn() {
+    message(get(r,"active"));
+};
+event(r, rr);
+
+let mm = fn() {
+    message(get(m, "contents")[get(m,"active")]);
+};
+event(m, mm);
+
+add_s([b, c, r, m]);
+show();
+

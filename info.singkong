@@ -1,0 +1,16 @@
+let t = component("table","KEY,VALUE,TYPE", true);
+let l = component("label", "Singkong Programming Language information");
+
+add_n(l);
+add(t);
+
+let s = singkong();
+let a = []
+let f = fn(x,i) {
+    let v = s[x];
+    let a = a + [x, v, type(v)]; 
+}
+each(keys(s), f);
+
+config(t, "contents", a);
+show();

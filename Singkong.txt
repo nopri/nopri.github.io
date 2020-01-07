@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 0.5 (2020-Jan-05 +07:00)
+Version: 0.6 (2020-Jan-08 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -22,9 +22,15 @@ WRITING AN INTERPRETER IN GO
  5. Builtin functions
  6. If condition
  7. Repeat loop
- 8. Embedding Singkong into another applications
- 9. Differences with Monkey Programming Language
-10. Development and compatibility
+ 8. GUI application development
+ 9. Embedding Singkong into another applications
+10. Differences with Monkey Programming Language
+11. Development and compatibility
+12. Example: GUI: all supported components
+13. Example: GUI: layout
+14. Example: GUI: display Singkong information in table
+15. Example: GUI: event handlers
+16. Example: GUI: printing
 
 -----------------------------------------------------------------------------
 
@@ -32,8 +38,9 @@ WRITING AN INTERPRETER IN GO
 Singkong is case-insensitive, dynamically typed, procedural, and interpreted 
 programming language that runs on Java Virtual Machine (Java 5.0 or later). 
 It supports number, boolean, string, array, hash, date, first-class function, 
-builtin functions, and other features. Singkong also comes with simple GUI 
-editor/interactive evaluator. 
+builtin functions, GUI components, and other features. 
+
+Singkong also comes with simple GUI editor/interactive evaluator. 
 
 Singkong can be run on graphical or text user interfaces. It can also be 
 embedded and integrated into another applications. Singkong is distributed as 
@@ -69,7 +76,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 0.4
+        Singkong 0.6
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -151,7 +158,7 @@ types
   - array of mixed data types
   - operators: +(add), -(remove) == !=
   - modify ARRAY: please use builtin function set()
-  - related functions: average, count, each, empty, first, in, index, 
+  - related functions: array, average, count, each, empty, first, in, index, 
     join, last, len, max, min, pop, push, random, range, rest, slice, sum
   - file related functions: dir
   - system related functions: arguments, system
@@ -187,18 +194,22 @@ types
 
 5. Builtin functions
 To get a list of builtin functions, please call builtins()
-["ABS", "APPEND", "ARGUMENTS", "AVERAGE", "BUILTINS", "CENTER", "CONFIRM", 
-"COUNT", "CR", "CRLF", "CWD", "DATE", "DATETIME", "DAY", "DELAY", "DIFF", 
-"DIR", "DISABLED", "DO", "EACH", "EMPTY", "EQUALS", "EVAL", "EXIT", "FIRST", 
-"FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "GUI", "HASH", "HELP", "HOUR", 
-"IN", "INDEX", "INFO", "INPUT", "INTEGER", "IS", "JOIN", "KEYS", "LAST", 
-"LEFT", "LEN", "LF", "LOAD", "LOWER", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", 
-"MONTH", "NEWLINE", "NUMBER", "PARAM", "PART", "PASSWORD", "POP", "PRINT", 
-"PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUOTE", 
-"RANDOM", "RANGE", "READ", "REPLACE", "REST", "RIGHT", "ROUND", "SECOND", 
-"SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SINGKONG", "SLICE", 
-"SPLIT", "STAT", "STRING", "SUM", "SYSTEM", "TAB", "TRIM", "TYPE", "TYPES", 
-"UPPER", "USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+["ABS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", "APPEND", "ARGUMENTS", 
+"ARRAY", "AVERAGE", "BUILTINS", "CENTER", "CLOSING", "COMPONENT", 
+"COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COUNT", "CR", "CRLF", 
+"CWD", "DATE", "DATETIME", "DAY", "DELAY", "DIFF", "DIR", "DIRECTORY", 
+"DISABLED", "DO", "EACH", "EMPTY", "EQUALS", "EVAL", "EVENT", "EXIT", "FIRST", 
+"FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "GET", "GUI", "HASH", "HELP", 
+"HIDE", "HOUR", "IN", "INDEX", "INFO", "INPUT", "INTEGER", "IS", "JOIN", 
+"KEYS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", "MAX", "MD5", "MESSAGE", 
+"MIN", "MINUTE", "MONTH", "NEWLINE", "NUMBER", "OPEN", "PARAM", "PART", 
+"PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
+"PROPERTIES_WRITE", "PUSH", "PUTS", "QUOTE", "RADIO_GROUP", "RANDOM", 
+"RANGE", "READ", "REPLACE", "REST", "RIGHT", "ROUND", "SAVE", "SECOND", 
+"SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SINGKONG", 
+"SLICE", "SPLIT", "STAT", "STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", 
+"TABLE_REMOVE", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "USER", "VALUES", 
+"WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 Note: a builtin function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -215,7 +226,8 @@ return value: <any type>
 
 Some functions support arbitrary number of parameters.
 
-GUI related functions: confirm, gui, input, message, password
+GUI/text related functions: confirm, directory, gui, input, open, message, 
+password, save
 (some of those functions will fallback to simpler text-based version if GUI 
 is not available)
 
@@ -253,7 +265,80 @@ Please also use do and each functions for simple repetitions:
   the element and index (zero based).
 
 
-8. Embedding Singkong into another applications
+8. GUI application development
+Singkong supports simple graphical user interface application development. 
+To keep it as simple as possible:
+- There is only one frame for each Singkong program. No other frames
+  or dialogs can be created. An application can only have at most one top-level
+  frame and no other dialogs. To show common dialogs, please use related
+  builtin functions (confirm, directory, input, open, message, password, save).
+  To set frame title, please use builtin function title.
+- Every user interface component is a COMPONENT in Singkong.
+- To create a user interface component, builtin function component must be used.
+  This function accepts two arguments: component type and name, both as string.
+  Component type must be a valid component type, and name will be used both as
+  name and important properties. For example, to create a button, "button" must
+  be passed as component type and name is used as label of that button. 
+  Different component may use name for different purposes. For example: when 
+  creating a table, name (comma-separated string) is used as column names. 
+  This function also accepts optional argument BOOLEAN: if true, created 
+  component will be read-only (default: false). However, this only applicable 
+  when creating edit, password, table, or text. 
+- To get a list of supported component types, builtin function components can be
+  used. Currently, this function returns:
+  ["button", "checkbox", "combobox", "edit", "label", "password", "radio", 
+  "table", "text"]
+- To get type of a COMPONENT, please use component_type builtin function. This
+  function returns component type as STRING (one of values returned by 
+  components function, as above). 
+- To add a COMPONENT or an ARRAY of COMPONENT to frame, please use one of the
+  following builtin functions: add, add_e, add_n, add_s, add_w (which adds a 
+  COMPONENT or an ARRAY of COMPONENT to specific region 
+  (center, east, north, south, west) of frame. Existing components in that 
+  region will be removed, prior to addition).
+- To enable or disable frame closing confirmation, please use closing builtin
+  function.
+- To configure a COMPONENT, please use config builtin function. This function
+  accepts three arguments: COMPONENT, STRING (key), and <any type> (value). 
+  Different component may have different keys, but common keys are: 
+  - enabled (for all components, expects value as BOOLEAN)
+  - text (label of button/checkbox/label/radio, expects value as STRING)
+  - active (checkbox/radio expects value as BOOLEAN, combobox/table expects
+    value as NUMBER (selected index))
+  - contents (contents of combobox/edit/password/table/text, expects value as 
+    STRING, ARRAY of ARRAY (table), or ARRAY (combobox))
+  (configuration may be ignored if it is not applicable -- no errors will be
+   returned).
+- To get a configuration of a COMPONENT configured using config, please use
+  builtin function get. This function accepts two arguments: COMPONENT and 
+  STRING (key). 
+  - enabled (for all components, returns a BOOLEAN)
+  - text (label of button/checkbox/label/radio, returns a STRING)
+  - active (checkbox/radio returns a BOOLEAN, combobox/table returns a NUMBER)
+  - contents (contents of combobox/edit/password/table/text, returns a STRING, 
+    an ARRAY of ARRAY (of STRING, table), or ARRAY (of STRING, combobox))
+  (configuration may be ignored if it is not applicable and NULL will be
+   returned).
+- table: to add rows or remove a row, please use builtin function table_add or
+  table_remove. 
+- radio: to group an ARRAY of COMPONENT radio buttons (mutual-exclusion set), 
+  please use builtin function radio_group.
+- The following COMPONENTs have default event:
+  - button: pressed
+  - combobox: item changed
+  - checkbox: checked/unchecked
+  - radio: selected/deselected
+  Event handlers for these events can be registered using builtin function
+  event. This function accepts two arguments: COMPONENT and FUNCTION.
+  Registered FUNCTION will be called whenever the default event for specified
+  COMPONENT should be handled. 
+  Please note that specified FUNCTION must not require any arguments.
+- Printing: simple printing can be done using print dialog. To show a print
+  dialog, please use builtin function printer. Basic settings such as font name,
+  font size, left/top margin are supported. 
+
+
+9. Embedding Singkong into another applications
 Java applications:
 - Class: com.noprianto.singkong.Singkong
 - Methods: 
@@ -444,7 +529,7 @@ Example 8: Python
 ERROR: builtin function "info" is disabled
 
 
-9. Differences with Monkey Programming Language
+10. Differences with Monkey Programming Language
 - Singkong is case-insensitive
 - Identifier starts with letter or underscore and optionally followed by 
   letters, numbers, or underscores
@@ -463,11 +548,108 @@ ERROR: builtin function "info" is disabled
 - Some builtin functions may be disabled when the interpreter in run 
 
 
-10. Development and compatibility
+11. Development and compatibility
 - Singkong is developed on Java 8 with -source 1.5 -target 1.5
   (using Java 5.0-compatible application programming interface)
 - Run tests: Java 5.0, Java 8 (main testing), and latest Java version 
 - Singkong maintains backward compatibility
 
 
+12. Example: GUI: all supported components
+let b = component("button", "Hello");
+let c = component("checkbox", "Singkong?");
+let m = component("combobox", "Singkong,Programming,Language");
+let e = component("edit", "Hello, World");
+let l = component("label", "Singkong Programming Language");
+let p = component("password", "test");
+let r = component("radio", "Radio Button");
+let t = component("table", "A,B,C,D,E");
+let x = component("text", "Singkong");
+
+add([e, t]);
+add_n([l, x, p, c, r, m, b]);
+
+closing("Are you sure you want to quit this application?", "Please confirm");
+show();
+
+
+13. Example: GUI: layout
+let c = component("button", "C");
+let e = component("button", "E");
+let n = component("button", "N");
+let w = component("button", "W");
+
+let s1 = component("button", "S 1");
+let s2 = component("button", "S 2");
+let s3 = component("button", "S 3");
+let s = [s1, s2, s3];
+
+add(c);
+add_e(e);
+add_n(n);
+add_s(s);
+add_w(w);
+
+show();
+
+
+14. Example: GUI: display Singkong information in table
+let t = component("table","KEY,VALUE,TYPE", true);
+let l = component("label", "Singkong Programming Language information");
+
+add_n(l);
+add(t);
+
+let s = singkong();
+let a = []
+let f = fn(x,i) {
+    let v = s[x];
+    let a = a + [x, v, type(v)]; 
+}
+each(keys(s), f);
+
+config(t, "contents", a);
+show();
+
+
+15. Example: GUI: event handlers
+let b = component("button", "Hello, World");
+let c = component("checkbox", "Singkong?");
+let r = component("radio", "Radio Button");
+let m = component("combobox","Singkong,Programming,Language");
+
+let bb = fn() {
+    message(get(b,"text"));
+};
+event(b, bb);
+
+let cc = fn() {
+    message(get(c,"active"));
+};
+event(c, cc);
+
+let rr = fn() {
+    message(get(r,"active"));
+};
+event(r, rr);
+
+let mm = fn() {
+    message(get(m, "contents")[get(m,"active")]);
+};
+event(m, mm);
+
+add_s([b, c, r, m]);
+show();
+
+
+16. Example: GUI: printing
+let t = ["Singkong", "Programming", "Language"];
+let size = 12;
+let x = 100;
+let y = 50;
+let font = "monospaced";
+printer(t, size, x, y, font);
+
+
+=============================================================================
 Thank you for using Singkong Programming Language.

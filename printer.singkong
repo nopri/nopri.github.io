@@ -1,0 +1,7 @@
+let t = ["Singkong", "Programming", "Language"];
+let size = 12;
+let x = 100;
+let y = 50;
+let font = "monospaced";
+printer(t, size, x, y, font);
+
