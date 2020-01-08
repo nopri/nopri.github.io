@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 0.6 (2020-Jan-08 +07:00)
+Version: 0.7 (2020-Jan-08 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -23,22 +23,28 @@ WRITING AN INTERPRETER IN GO
  6. If condition
  7. Repeat loop
  8. GUI application development
- 9. Embedding Singkong into another applications
-10. Differences with Monkey Programming Language
-11. Development and compatibility
-12. Example: GUI: all supported components
-13. Example: GUI: layout
-14. Example: GUI: display Singkong information in table
-15. Example: GUI: event handlers
-16. Example: GUI: printing
+ 9. Database application development
+10. Embedding Singkong into another applications
+11. Differences with Monkey Programming Language
+12. Development and compatibility
+13. Example: GUI: all supported components
+14. Example: GUI: layout
+15. Example: GUI: display Singkong information in table
+16. Example: GUI: event handlers
+17. Example: GUI: printing
+18. Example: GUI: simple text file editor
+19. Example: Database: create table
+20. Example: Database: insert, update, select
+21. Example: GUI/Database: select
 
 -----------------------------------------------------------------------------
 
 1. What is Singkong Programming Language
 Singkong is case-insensitive, dynamically typed, procedural, and interpreted 
 programming language that runs on Java Virtual Machine (Java 5.0 or later). 
-It supports number, boolean, string, array, hash, date, first-class function, 
-builtin functions, GUI components, and other features. 
+It has numbers, booleans, strings, arrays, hash maps, dates, first-class 
+functions, builtin functions, GUI components, database connections, and 
+other features. 
 
 Singkong also comes with simple GUI editor/interactive evaluator. 
 
@@ -49,6 +55,8 @@ single jar file.
 Singkong is based on Monkey.java and inspired by Monkey Programming Language.
 
 
+-----------------------------------------------------------------------------
+
 2. System requirements
 Java Runtime Environment version 5.0 or later.  
 
@@ -56,6 +64,8 @@ If only text-based environment is available, Singkong interactive evaluator
 will fallback to text only version and builtin functions will adapt 
 appropriately.
 
+
+-----------------------------------------------------------------------------
 
 3. Getting started
 Please download Singkong.jar from its website. The jar file can be saved into
@@ -76,7 +86,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 0.6
+        Singkong 0.7
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -108,9 +118,21 @@ comma-separated list of functions.
         3
         null
 
+  - Run directly the main class (please also read: Database application 
+    development):
+        java -cp Singkong.jar com.noprianto.singkong.Singkong
+
+        java -cp Singkong.jar com.noprianto.singkong.Singkong test.singkong
+
+        java -cp Singkong.jar com.noprianto.singkong.Singkong "puts(1,2,3)"
+        
+        java -DSINGKONG=0 -cp Singkong.jar com.noprianto.singkong.Singkong "puts(1,2,3)"
+
 - Library
   Please read: Embedding Singkong into another applications 
 
+
+-----------------------------------------------------------------------------
 
 4. Identifier, data types, and operators
 Identifier starts with letter or underscore and optionally followed by letters,
@@ -190,31 +212,44 @@ types
 - BUILTIN
   - builtin functions
   - related functions: builtins, disabled, help, param
+- COMPONENT
+  - Please read: GUI application development
+  - related functions: add, add_e, add_n, add_s, add_w, closing, component, 
+    component_type, components, config, event, get, gui, hide, printer, show, 
+    radio_group, table_add, table_remove, title 
+  - GUI input/output functions: confirm, directory, input, open, message, 
+    password, save
+    (if GUI is not available: simpler text-based version)
+- DATABASE
+  - Please read: Database application development
+  - related functions: database, database_connected, query
 
+
+-----------------------------------------------------------------------------
 
 5. Builtin functions
 To get a list of builtin functions, please call builtins()
 ["ABS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", "APPEND", "ARGUMENTS", 
 "ARRAY", "AVERAGE", "BUILTINS", "CENTER", "CLOSING", "COMPONENT", 
 "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COUNT", "CR", "CRLF", 
-"CWD", "DATE", "DATETIME", "DAY", "DELAY", "DIFF", "DIR", "DIRECTORY", 
-"DISABLED", "DO", "EACH", "EMPTY", "EQUALS", "EVAL", "EVENT", "EXIT", "FIRST", 
-"FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "GET", "GUI", "HASH", "HELP", 
-"HIDE", "HOUR", "IN", "INDEX", "INFO", "INPUT", "INTEGER", "IS", "JOIN", 
-"KEYS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", "MAX", "MD5", "MESSAGE", 
-"MIN", "MINUTE", "MONTH", "NEWLINE", "NUMBER", "OPEN", "PARAM", "PART", 
-"PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
-"PROPERTIES_WRITE", "PUSH", "PUTS", "QUOTE", "RADIO_GROUP", "RANDOM", 
-"RANGE", "READ", "REPLACE", "REST", "RIGHT", "ROUND", "SAVE", "SECOND", 
-"SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SINGKONG", 
-"SLICE", "SPLIT", "STAT", "STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", 
-"TABLE_REMOVE", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "USER", "VALUES", 
-"WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+"CWD", "DATABASE", "DATABASE_CONNECTED", "DATE", "DATETIME", "DAY", "DELAY", 
+"DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "EQUALS", 
+"EVAL", "EVENT", "EXIT", "FIRST", "FORMAT_DATE", "FORMAT_DATETIME", 
+"FORMAT_DIFF", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "IN", "INDEX", 
+"INFO", "INPUT", "INTEGER", "IS", "JOIN", "KEYS", "LAST", "LEFT", "LEN", "LF", 
+"LOAD", "LOWER", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", "MONTH", "NEWLINE", 
+"NUMBER", "OPEN", "PARAM", "PART", "PASSWORD", "POP", "PRINT", "PRINTER", 
+"PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", 
+"QUOTE", "RADIO_GROUP", "RANDOM", "RANGE", "READ", "REPLACE", "REST", "RIGHT", 
+"ROUND", "SAVE", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", 
+"SHA512", "SHOW", "SINGKONG", "SLICE", "SPLIT", "STAT", "STRING", "SUM", 
+"SYSTEM", "TAB", "TABLE_ADD", "TABLE_REMOVE", "TITLE", "TRIM", "TYPE", "TYPES", 
+"UPPER", "USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 Note: a builtin function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
 
-To get basic information of each builtin function, please enter its name in
+To get basic information of a builtin function, please enter its name in
 interactive evaluator, without ( and ). For example:
 
 >  random
@@ -224,13 +259,8 @@ in ARRAY, random key in HASH
 arguments: 0, 1 (ARRAY or HASH), 2: (NUMBER and NUMBER)
 return value: <any type>
 
-Some functions support arbitrary number of parameters.
 
-GUI/text related functions: confirm, directory, gui, input, open, message, 
-password, save
-(some of those functions will fallback to simpler text-based version if GUI 
-is not available)
-
+-----------------------------------------------------------------------------
 
 6. If condition
 Syntax: if (condition) {consequences} else {alternatives}
@@ -244,6 +274,8 @@ if (name == "singkong") {
   print(name);
 }
 
+
+-----------------------------------------------------------------------------
 
 7. Repeat loop
 repeat { statements }
@@ -264,6 +296,8 @@ Please also use do and each functions for simple repetitions:
   (with arguments). Specified function must accept two arguments: 
   the element and index (zero based).
 
+
+-----------------------------------------------------------------------------
 
 8. GUI application development
 Singkong supports simple graphical user interface application development. 
@@ -338,7 +372,51 @@ To keep it as simple as possible:
   font size, left/top margin are supported. 
 
 
-9. Embedding Singkong into another applications
+-----------------------------------------------------------------------------
+
+9. Database application development
+Singkong supports simple database application development (SQL relational 
+database management system). 
+- Every connection to a database system is a DATABASE in Singkong.
+- To connect to a database system, please use builtin function database. This
+  function accepts four arguments:
+  - STRING: database driver, Java class found in class path
+  - STRING: database URL
+  - STRING: user
+  - STRING: password
+- Singkong.jar does not contain any database driver. In order to use database
+  driver from another jar file, please run Singkong using the following command:
+  java -cp Singkong.jar:<jar> com.noprianto.singkong.Singkong
+  or
+  java -cp Singkong.jar;<jar> com.noprianto.singkong.Singkong
+  where <jar> is a jar file containing database driver class. Please note that 
+  classpath separator character is operating system dependent (: or ;).
+- Database connection example:
+  - Singkong.jar and h2.jar are located in the same directory, on a system which
+    : character is used as class path separator
+  - java -cp Singkong.jar:h2.jar com.noprianto.singkong.Singkong
+    >  let db = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin")
+    >  db
+    DATABASE (URL=jdbc:h2:/tmp/test, user=admin, driver=org.h2.Driver)     
+- To test whether a database connection is valid, please use builtin function
+  database_connected.
+- Supported Singkong and Java/SQL type mapping:
+  - BOOLEAN -> Java: boolean
+  - DATE -> Java: java.sql.Date
+  - NUMBER -> Java: int (if a NUMBER looks like an integer) or 
+              Java: java.math.BigDecimal
+  - STRING -> Java: String
+  Unsupported Singkong data type in query: returns error
+- To run an ARRAY of SQL queries, please use builtin function query. This
+  function accepts two arguments: DATABASE and ARRAY of ARRAY. Each element 
+  in the specified ARRAY must be an ARRAY of two elements: STRING (SQL command
+  and ARRAY of arguments). SQL queries are run in transaction, which will
+  be committed if no errors occurred. 
+
+
+-----------------------------------------------------------------------------
+
+10. Embedding Singkong into another applications
 Java applications:
 - Class: com.noprianto.singkong.Singkong
 - Methods: 
@@ -364,6 +442,7 @@ Java applications:
     public static com.noprianto.singkong.SingkongEnvironment environmentFromMap(
         java.util.Map);
 
+
 Example 1: Test.java
 import com.noprianto.singkong.Singkong;
 
@@ -380,6 +459,7 @@ java -cp Singkong.jar:. Test
 [1, 2, 3]
 null
 
+
 Example 2: Test.java
 import com.noprianto.singkong.Singkong;
   
@@ -395,6 +475,7 @@ javac -cp Singkong.jar Test.java
 java -cp Singkong.jar:. Test
 [1, 2, 3]
 ERROR: builtin function "system" is disabled
+
 
 Example 3: Test.java
 import java.util.Map;
@@ -421,6 +502,7 @@ Hello, World
 true
 null
 
+
 Example 4: Test.java
 import java.util.Map;
 import java.util.HashMap;
@@ -444,6 +526,7 @@ javac -cp Singkong.jar Test.java
 java -cp Singkong.jar:. Test
 Hello, World
 ERROR: builtin function "info" is disabled
+
 
 Example 5: Test.java
 import java.io.ByteArrayOutputStream;
@@ -479,6 +562,7 @@ Hello, World
 true
 null
 
+
 Example 6: Test.java
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -512,6 +596,7 @@ java -cp Singkong.jar:. Test
 Hello, World
 ERROR: builtin function "info" is disabled
 
+
 Another applications:
 Example 7: Python
 >>> import subprocess
@@ -521,6 +606,7 @@ Example 7: Python
 singkong
 null
 
+
 Example 8: Python
 >>> import subprocess
 >>> c = ['java', '-DDISABLE=info', '-jar', 'Singkong.jar', 'info()']
@@ -529,7 +615,9 @@ Example 8: Python
 ERROR: builtin function "info" is disabled
 
 
-10. Differences with Monkey Programming Language
+-----------------------------------------------------------------------------
+
+11. Differences with Monkey Programming Language
 - Singkong is case-insensitive
 - Identifier starts with letter or underscore and optionally followed by 
   letters, numbers, or underscores
@@ -540,22 +628,27 @@ ERROR: builtin function "info" is disabled
 - Additional operators for BOOLEAN: & |
 - HASH: any data type can be used as key, maintains insertion-order
 - Additional builtin functions
-- Additional data types: DATE
-- Singkong use overloaded operators for data types, as much as possible
+- Additional data types: DATE, COMPONENT (GUI application development), and
+  DATABASE (database connection, database application development)
+- Singkong uses overloaded operators for data types, as much as possible
   (for example, * for string repetition, - for string remove, - for array 
   remove, and many more).
 - Repeat loop
 - Some builtin functions may be disabled when the interpreter in run 
 
 
-11. Development and compatibility
+-----------------------------------------------------------------------------
+
+12. Development and compatibility
 - Singkong is developed on Java 8 with -source 1.5 -target 1.5
   (using Java 5.0-compatible application programming interface)
 - Run tests: Java 5.0, Java 8 (main testing), and latest Java version 
 - Singkong maintains backward compatibility
 
 
-12. Example: GUI: all supported components
+-----------------------------------------------------------------------------
+
+13. Example: GUI: all supported components
 let b = component("button", "Hello");
 let c = component("checkbox", "Singkong?");
 let m = component("combobox", "Singkong,Programming,Language");
@@ -573,7 +666,9 @@ closing("Are you sure you want to quit this application?", "Please confirm");
 show();
 
 
-13. Example: GUI: layout
+-----------------------------------------------------------------------------
+
+14. Example: GUI: layout
 let c = component("button", "C");
 let e = component("button", "E");
 let n = component("button", "N");
@@ -593,7 +688,9 @@ add_w(w);
 show();
 
 
-14. Example: GUI: display Singkong information in table
+-----------------------------------------------------------------------------
+
+15. Example: GUI: display Singkong information in table
 let t = component("table","KEY,VALUE,TYPE", true);
 let l = component("label", "Singkong Programming Language information");
 
@@ -612,7 +709,9 @@ config(t, "contents", a);
 show();
 
 
-15. Example: GUI: event handlers
+-----------------------------------------------------------------------------
+
+16. Example: GUI: event handlers
 let b = component("button", "Hello, World");
 let c = component("checkbox", "Singkong?");
 let r = component("radio", "Radio Button");
@@ -642,13 +741,95 @@ add_s([b, c, r, m]);
 show();
 
 
-16. Example: GUI: printing
+-----------------------------------------------------------------------------
+
+17. Example: GUI: printing
 let t = ["Singkong", "Programming", "Language"];
 let size = 12;
 let x = 100;
 let y = 50;
 let font = "monospaced";
 printer(t, size, x, y, font);
+
+
+-----------------------------------------------------------------------------
+
+18. Example: GUI: simple text file editor
+let e = component("edit", "");
+let o = component("button", "open");
+let s = component("button", "save");
+let l = component("label", "");
+
+let oo = fn() {
+    let f = open();
+    if (!empty(f)) {
+        config(e, "contents", read(f));
+        config(l, "text", f);
+    }
+}
+event(o, oo);
+
+let ss = fn() {
+    let f = save();
+    if (!empty(f)) {
+        let t = get(e, "contents");
+        write(f, t);
+        config(l, "text", f);
+    }
+}
+event(s, ss);
+
+add_n(l);
+add(e);
+add_s([o, s]);
+show();
+
+
+-----------------------------------------------------------------------------
+
+19. Example: Database: create table
+let d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin");
+if (database_connected(d)) {
+    let q = [ ["create table test(a integer, b varchar(64))", []] ]
+    let r = query(d, q);
+    println(r);
+}
+
+
+-----------------------------------------------------------------------------
+
+20. Example: Database: insert, update, select
+let d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin");
+if (database_connected(d)) {
+    let q = [
+        ["insert into test(a,b) values(?, ?)", [random(1,10), "hello"]],
+        ["update test set b=? where b=?", ["Hello World", "hello"]]
+    ]
+    let r = query(d, q);
+    println(r);
+
+    let q = [ ["select * from test", []] ]
+    let r = query(d, q);
+    println(r);
+}
+
+
+-----------------------------------------------------------------------------
+
+21. Example: GUI/Database: select
+let t = component("table", "A,B", true);
+add(t);
+
+let d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin");
+if (database_connected(d)) {
+    let q = [ ["select a,b from test", []] ]
+    let r = query(d, q);
+    if (!empty(r)) {
+        config(t, "contents", r[0]);
+    }
+}
+
+show();
 
 
 =============================================================================

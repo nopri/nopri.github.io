@@ -1,0 +1,6 @@
+let d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin");
+if (database_connected(d)) {
+    let q = [ ["create table test(a integer, b varchar(64))", []] ]
+    let r = query(d, q);
+    println(r);
+}

@@ -1,0 +1,13 @@
+let t = component("table", "A,B", true);
+add(t);
+
+let d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin");
+if (database_connected(d)) {
+    let q = [ ["select a,b from test", []] ]
+    let r = query(d, q);
+    if (!empty(r)) {
+        config(t, "contents", r[0]);
+    }
+}
+
+show();

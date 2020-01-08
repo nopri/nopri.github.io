@@ -1,0 +1,28 @@
+let e = component("edit", "");
+let o = component("button", "open");
+let s = component("button", "save");
+let l = component("label", "");
+
+let oo = fn() {
+    let f = open();
+    if (!empty(f)) {
+        config(e, "contents", read(f));
+        config(l, "text", f);
+    }
+}
+event(o, oo);
+
+let ss = fn() {
+    let f = save();
+    if (!empty(f)) {
+        let t = get(e, "contents");
+        write(f, t);
+        config(l, "text", f);
+    }
+}
+event(s, ss);
+
+add_n(l);
+add(e);
+add_s([o, s]);
+show();
