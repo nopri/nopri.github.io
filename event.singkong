@@ -1,7 +1,11 @@
 let b = component("button", "Hello, World");
 let c = component("checkbox", "Singkong?");
 let r = component("radio", "Radio Button");
-let m = component("combobox","Singkong,Programming,Language");
+let m = component("combobox", "Singkong,Programming,Language");
+let t = component("table", "A,B", true);
+let e = component("edit", "");
+let p = component("password", "");
+let x = component("text", "");
 
 let bb = fn() {
     message(get(b,"text"));
@@ -19,10 +23,33 @@ let rr = fn() {
 event(r, rr);
 
 let mm = fn() {
-    message(get(m, "contents")[get(m,"active")]);
+    message(get(m, "text"));
 };
 event(m, mm);
 
+config(t, "contents", [[1,2],[3,4],[5,6]]);
+let tt = fn() {
+    message(get(t, "contents")[get(t, "active")]);
+};
+event(t, tt);
+
+let ee = fn() {
+    message(get(e, "contents"));
+};
+event(e, ee);
+
+let pp = fn() {
+    message(get(p, "contents"));
+};
+event(p, pp);
+
+let xx = fn() {
+    message(get(x, "contents"));
+};
+event(x, xx);
+
+add_n([p, x]);
 add_s([b, c, r, m]);
+add([t, e]);
 show();
 
