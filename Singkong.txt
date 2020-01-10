@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 0.9 (2020-Jan-10 +07:00)
+Version: 1.0 (2020-Jan-11 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -24,19 +24,20 @@ WRITING AN INTERPRETER IN GO
  7. Repeat loop
  8. GUI application development
  9. Database application development
-10. Embedding Singkong into another applications
-11. Differences with Monkey Programming Language
-12. Development and compatibility
-13. Example: GUI: all supported components
-14. Example: GUI: layout
-15. Example: GUI: display Singkong information in table
-16. Example: GUI: event handlers
-17. Example: GUI: printing
-18. Example: GUI: simple text file editor
-19. Example: GUI: timer
-20. Example: Database: create table
-21. Example: Database: insert, update, select
-22. Example: GUI/Database: select
+10. Calling Java method
+11. Embedding Singkong into another applications
+12. Differences with Monkey Programming Language
+13. Development and compatibility
+14. Example: GUI: all supported components
+15. Example: GUI: layout
+16. Example: GUI: display Singkong information in table
+17. Example: GUI: event handlers
+18. Example: GUI: printing
+19. Example: GUI: simple text file editor
+20. Example: GUI: timer
+21. Example: Database: create table
+22. Example: Database: insert, update, select
+23. Example: GUI/Database: select
 
 -----------------------------------------------------------------------------
 
@@ -45,9 +46,9 @@ Singkong is case-insensitive, dynamically typed, procedural, and interpreted
 programming language that runs on Java Virtual Machine (Java 5.0 or later). 
 It has numbers, booleans, strings, arrays, hash maps, dates, first-class 
 functions, builtin functions, GUI components, database connections, and 
-other features. 
+other features. Singkong program can also call Java method. 
 
-Singkong also comes with simple GUI editor/interactive evaluator. 
+Singkong interpreter comes with simple GUI editor/interactive evaluator. 
 
 Singkong can be run on graphical or text user interfaces. It can also be 
 embedded and integrated into another applications. Singkong is distributed as 
@@ -87,7 +88,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 0.9
+        Singkong 1.0
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -120,7 +121,7 @@ comma-separated list of functions.
         null
 
   - Run directly the main class (please also read: Database application 
-    development):
+    development and Calling Java method):
         java -cp Singkong.jar com.noprianto.singkong.Singkong
 
         java -cp Singkong.jar com.noprianto.singkong.Singkong test.singkong
@@ -172,9 +173,9 @@ types
   - arbitrary length string
   - operators: +(concatenation) -(remove) ==(equals,case-sensitive) != *(repeat)
   - equals (case-insensitive): please use builtin function equals
-  - related functions: center, count, cr, crlf, dir, empty, equals, eval, in, 
-    index, join, left, len, lf, lower, md5, newline, quote, replace, right, set,
-    sha1, sha256, sha384, sha512, slice, split, stat, tab, trim, upper
+  - related functions: call, center, count, cr, crlf, dir, empty, equals, eval, 
+    in, index, join, left, len, lf, lower, md5, newline, quote, replace, right, 
+    set, sha1, sha256, sha384, sha512, slice, split, stat, tab, trim, upper
   - special characters: cr, crlf, lf, newline, quote, tab
   - file related functions: abs, append, read, write
   - system related functions: cwd, separator, user
@@ -184,8 +185,8 @@ types
   - array of mixed data types
   - operators: +(add), -(remove) == !=
   - modify ARRAY: please use builtin function set()
-  - related functions: array, average, count, each, empty, first, in, index, 
-    join, last, len, max, min, pop, push, random, range, rest, slice, sum
+  - related functions: array, average, call, count, each, empty, first, in, 
+    index, join, last, len, max, min, pop, push, random, range, rest, slice, sum
   - file related functions: dir
   - system related functions: arguments, system
 - HASH
@@ -235,11 +236,11 @@ types
 5. Builtin functions
 To get a list of builtin functions, please call builtins()
 ["ABS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", "APPEND", "ARGUMENTS", 
-"ARRAY", "AVERAGE", "BUILTINS", "CENTER", "CLEAR", "CLOSING", "COMPONENT", 
-"COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COUNT", "CR", "CRLF", 
-"CWD", "DATABASE", "DATABASE_CONNECTED", "DATE", "DATETIME", "DAY", "DELAY", 
-"DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "EQUALS", 
-"EVAL", "EVENT", "EXIT", "FIRST", "FORMAT_DATE", "FORMAT_DATETIME", 
+"ARRAY", "AVERAGE", "BUILTINS", "CALL", "CENTER", "CLEAR", "CLOSING", 
+"COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COUNT", 
+"CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", "DATE", "DATETIME", 
+"DAY", "DELAY", "DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", 
+"EQUALS", "EVAL", "EVENT", "EXIT", "FIRST", "FORMAT_DATE", "FORMAT_DATETIME", 
 "FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "IN", 
 "INDEX", "INFO", "INPUT", "INTEGER", "INTERACTIVE", "IS", "JOIN", "KEYS", 
 "LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", "MAX", "MD5", "MESSAGE", "MIN", 
@@ -254,7 +255,7 @@ To get a list of builtin functions, please call builtins()
 "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-136
+137
 
 Note: a builtin function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -413,12 +414,20 @@ database management system).
   - STRING: user
   - STRING: password
 - Singkong.jar does not contain any database driver. In order to use database
-  driver from another jar file, please run Singkong using the following command:
+  driver from another jar file/directory, please run Singkong using the 
+  following command:
   java -cp Singkong.jar:<jar> com.noprianto.singkong.Singkong
   or
+  java -cp Singkong.jar:<dir> com.noprianto.singkong.Singkong
+  or
   java -cp Singkong.jar;<jar> com.noprianto.singkong.Singkong
-  where <jar> is a jar file containing database driver class. Please note that 
-  class path separator character is operating system dependent (: or ;).
+  or
+  java -cp Singkong.jar;<dir> com.noprianto.singkong.Singkong
+  where <jar> is a jar file and <dir> is a directory containing database driver 
+  class. Please note that class path separator character is operating system 
+  dependent (: or ;). If the driver class file is located in current working 
+  directory, <dir> might be replaced with a ., for example:
+  java -cp Singkong.jar:. com.noprianto.singkong.Singkong
 - Database connection example:
   - Singkong.jar and h2.jar are located in current directory, on a system which
     : character is used as class path separator
@@ -444,7 +453,70 @@ database management system).
 
 -----------------------------------------------------------------------------
 
-10. Embedding Singkong into another applications
+10. Calling Java method
+It is possible to call static Java method and use the returned value, to 
+provide functionalities in Java Programming Language. 
+- To call static Java method, please use builtin function call. This function
+  accepts two-arguments: STRING (Java class name found in class path) and
+  ARRAY. This function returns an ARRAY (of STRING) or NULL (error). 
+- Please note that Java class name must be found in class path. In order to use
+  class from another jar file/directory, please run Singkong using the 
+  following command:
+  java -cp Singkong.jar:<jar> com.noprianto.singkong.Singkong
+  or
+  java -cp Singkong.jar:<dir> com.noprianto.singkong.Singkong
+  or
+  java -cp Singkong.jar;<jar> com.noprianto.singkong.Singkong
+  or
+  java -cp Singkong.jar;<dir> com.noprianto.singkong.Singkong
+  where <jar> is a jar file and <dir> is a directory containing the 
+  class. Please note that class path separator character is operating system 
+  dependent (: or ;). If the class file is located in current working directory,
+  <dir> might be replaced with a ., for example:
+  java -cp Singkong.jar:. com.noprianto.singkong.Singkong
+- Called method must be static method named: singkong. It must require/return
+  a java.lang.String[]. 
+- When the method is called, Singkong interpreter will use STRING representation
+  of each element in ARRAY. Singkong will never pass a Java null to this method.
+- If there is any error when calling this method, NULL will be returned. If 
+  the method returns something other than String[], NULL will be returned. If
+  an exception occurred, NULL will be returned.
+- For example: HelloWorld.java in examples directory. Please make sure there is
+  a static method: public static String[] singkong(String[] args)
+
+public class HelloWorld {
+    public static String[] singkong(String[] args) {
+        String[] ret = new String[args.length];
+        for (int i=0; i<args.length; i++) {
+            ret[i] = "[HelloWorld] " + args[i];
+        }
+        return ret;
+    }
+}
+
+This file is compiled to HelloWorld.class
+
+cd examples
+javac HelloWorld.java 
+cd ..
+
+- Because the required HelloWorld.class is located in examples directory, 
+  Singkong should be run using the following command: 
+  java -cp Singkong.jar:examples com.noprianto.singkong.Singkong
+  or (depending on the operating system)
+  java -cp Singkong.jar;examples com.noprianto.singkong.Singkong
+- Singkong program can call the method:
+>  call("HelloWorld", [1, 2, 3, null, [], {}, fn(){}]);
+["[HelloWorld] 1", "[HelloWorld] 2", "[HelloWorld] 3", "[HelloWorld] null", 
+"[HelloWorld] []", "[HelloWorld] {}", "[HelloWorld] fn()
+{
+}
+"]
+
+
+-----------------------------------------------------------------------------
+
+11. Embedding Singkong into another applications
 Java applications:
 - Class: com.noprianto.singkong.Singkong
 - Methods: 
@@ -645,7 +717,7 @@ ERROR: builtin function "info" is disabled
 
 -----------------------------------------------------------------------------
 
-11. Differences with Monkey Programming Language
+12. Differences with Monkey Programming Language
 - Singkong is case-insensitive
 - Identifier starts with a letter or underscore and optionally followed by 
   letters, numbers, or underscores
@@ -667,7 +739,7 @@ ERROR: builtin function "info" is disabled
 
 -----------------------------------------------------------------------------
 
-12. Development and compatibility
+13. Development and compatibility
 - Singkong is developed on Java 8 with -source 1.5 -target 1.5
   (using Java 5.0-compatible application programming interface)
 - Run tests: Java 5.0, Java 8 (main testing), and latest Java version 
@@ -676,7 +748,7 @@ ERROR: builtin function "info" is disabled
 
 -----------------------------------------------------------------------------
 
-13. Example: GUI: all supported components
+14. Example: GUI: all supported components
 reset();
 let b = component("button", "Hello");
 let c = component("checkbox", "Singkong?");
@@ -697,7 +769,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-14. Example: GUI: layout
+15. Example: GUI: layout
 reset();
 let c = component("button", "C");
 let e = component("button", "E");
@@ -720,7 +792,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-15. Example: GUI: display Singkong information in table
+16. Example: GUI: display Singkong information in table
 reset();
 let t = component("table","KEY,VALUE,TYPE", true);
 let l = component("label", "Singkong Programming Language information");
@@ -742,7 +814,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-16. Example: GUI: event handlers
+17. Example: GUI: event handlers
 reset();
 let b = component("button", "Hello, World");
 let c = component("checkbox", "Singkong?");
@@ -802,7 +874,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-17. Example: GUI: printing
+18. Example: GUI: printing
 reset();
 let t = ["Singkong", "Programming", "Language"];
 let size = 12;
@@ -814,7 +886,7 @@ printer(t, size, x, y, font);
 
 -----------------------------------------------------------------------------
 
-18. Example: GUI: simple text file editor
+19. Example: GUI: simple text file editor
 reset();
 let e = component("edit", "");
 let o = component("button", "open");
@@ -848,7 +920,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-19. Example: GUI: timer
+20. Example: GUI: timer
 reset();
 let l = component("label", string(@));
 let b1 = component("button", "start");
@@ -877,7 +949,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-20. Example: Database: create table
+21. Example: Database: create table
 let d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin");
 if (database_connected(d)) {
     let q = [ ["create table test(a integer, b varchar(64))", []] ]
@@ -888,7 +960,7 @@ if (database_connected(d)) {
 
 -----------------------------------------------------------------------------
 
-21. Example: Database: insert, update, select
+22. Example: Database: insert, update, select
 let d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin");
 if (database_connected(d)) {
     let q = [
@@ -906,7 +978,7 @@ if (database_connected(d)) {
 
 -----------------------------------------------------------------------------
 
-22. Example: GUI/Database: select
+23. Example: GUI/Database: select
 reset();
 let t = component("table", "A,B", true);
 add(t);
