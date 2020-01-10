@@ -1,3 +1,4 @@
+reset();
 let e = component("edit", "");
 let o = component("button", "open");
 let s = component("button", "save");

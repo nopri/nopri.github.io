@@ -1,3 +1,4 @@
+reset();
 let l = component("label", string(@));
 let b1 = component("button", "start");
 let b2 = component("button", "stop");

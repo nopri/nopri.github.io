@@ -1,4 +1,4 @@
-
+reset();
 let c = component("button", "C");
 let e = component("button", "E");
 let n = component("button", "N");

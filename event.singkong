@@ -1,3 +1,4 @@
+reset();
 let b = component("button", "Hello, World");
 let c = component("checkbox", "Singkong?");
 let r = component("radio", "Radio Button");

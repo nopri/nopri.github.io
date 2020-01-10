@@ -1,3 +1,4 @@
+reset();
 let t = ["Singkong", "Programming", "Language"];
 let size = 12;
 let x = 100;

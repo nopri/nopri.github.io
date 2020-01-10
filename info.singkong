@@ -1,3 +1,4 @@
+reset();
 let t = component("table","KEY,VALUE,TYPE", true);
 let l = component("label", "Singkong Programming Language information");
 

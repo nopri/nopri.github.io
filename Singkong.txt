@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 0.8 (2020-Jan-09 +07:00)
+Version: 0.9 (2020-Jan-10 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -87,7 +87,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 0.8
+        Singkong 0.9
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -131,6 +131,9 @@ comma-separated list of functions.
 
 - Library
   Please read: Embedding Singkong into another applications 
+
+Note: please use builtin function: interactive, to get information whether 
+Singkong program is run in Singkong interactive evaluator/editor. 
 
 
 -----------------------------------------------------------------------------
@@ -215,8 +218,9 @@ types
   - related functions: builtins, disabled, help, param
 - COMPONENT
   - Please read: GUI application development
-  - related functions: add, add_e, add_n, add_s, add_w, closing, component, 
-    component_type, components, config, event, get, gui, hide, printer, screen,
+  - related functions: add, add_e, add_n, add_s, add_w, clear, closing, 
+    component, component_type, components, config, event, frame, get, gui, hide, 
+    printer, remove, remove_e, remove_n, remove_s, remove_w, reset, screen,
     show, size, radio_group, table_add, table_remove, timer, title, stop 
   - GUI input/output functions: confirm, directory, input, open, message, 
     password, save
@@ -231,22 +235,26 @@ types
 5. Builtin functions
 To get a list of builtin functions, please call builtins()
 ["ABS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", "APPEND", "ARGUMENTS", 
-"ARRAY", "AVERAGE", "BUILTINS", "CENTER", "CLOSING", "COMPONENT", 
+"ARRAY", "AVERAGE", "BUILTINS", "CENTER", "CLEAR", "CLOSING", "COMPONENT", 
 "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COUNT", "CR", "CRLF", 
 "CWD", "DATABASE", "DATABASE_CONNECTED", "DATE", "DATETIME", "DAY", "DELAY", 
 "DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "EQUALS", 
 "EVAL", "EVENT", "EXIT", "FIRST", "FORMAT_DATE", "FORMAT_DATETIME", 
-"FORMAT_DIFF", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "IN", "INDEX", 
-"INFO", "INPUT", "INTEGER", "IS", "JOIN", "KEYS", "LAST", "LEFT", "LEN", "LF", 
-"LOAD", "LOWER", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", "MONTH", "NEWLINE", 
-"NUMBER", "OPEN", "PARAM", "PART", "PASSWORD", "POP", "PRINT", "PRINTER", 
-"PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", 
-"QUOTE", "RADIO_GROUP", "RANDOM", "RANGE", "READ", "REPLACE", "REST", "RIGHT", 
-"ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", 
-"SHA384", "SHA512", "SHOW", "SINGKONG", "SIZE", "SLICE", "SPLIT", "STAT", 
-"STOP", "STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", "TABLE_REMOVE", "TIMER",
-"TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "USER", "VALUES", "WORDS_EN", 
-"WORDS_ID", "WRITE", "YEAR"]
+"FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "IN", 
+"INDEX", "INFO", "INPUT", "INTEGER", "INTERACTIVE", "IS", "JOIN", "KEYS", 
+"LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", "MAX", "MD5", "MESSAGE", "MIN", 
+"MINUTE", "MONTH", "NEWLINE", "NUMBER", "OPEN", "PARAM", "PART", "PASSWORD", 
+"POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", 
+"PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANGE", "READ", 
+"REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "REPLACE", "RESET", 
+"REST", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", 
+"SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SINGKONG", "SIZE", "SLICE", 
+"SPLIT", "STAT", "STOP", "STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", 
+"TABLE_REMOVE", "TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "USER", 
+"VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+
+>  len(builtins())
+136
 
 Note: a builtin function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -311,6 +319,10 @@ To keep it as simple as possible:
   To set frame title, please use builtin function title.
   To set frame size, please use builtin function size (this might not work on 
   some system configuration and will be ignored).
+  To get frame properties (width, height, title), please use builtin function
+  frame.
+  To reset frame (remove all COMPONENTs, reset frame title and size to default
+  values, stop all timers), please use builtin function reset. 
 - Every user interface component is a COMPONENT in Singkong.
 - To create a user interface component, builtin function component must be used.
   This function accepts two arguments: component type and name, both as string.
@@ -334,6 +346,10 @@ To keep it as simple as possible:
   COMPONENT or an ARRAY of COMPONENT to specific region 
   (center, east, north, south, west) of frame. Existing components in that 
   region will be removed, prior to addition).
+- To remove COMPONENTs from specific region (center, east, north, south, west) 
+  of frame, please use one of the following builtin functions: remove, remove_e,
+  remove_n, remove_s, remove_w. To remove all COMPONENTs from frame, please use
+  builtin function clear. 
 - To enable or disable frame closing confirmation, please use closing builtin
   function.
 - To configure a COMPONENT, please use config builtin function. This function
@@ -412,7 +428,7 @@ database management system).
     DATABASE (URL=jdbc:h2:/tmp/test, user=admin, driver=org.h2.Driver)     
 - To test whether a database connection is valid, please use builtin function
   database_connected.
-- Supported Singkong and Java/SQL type mapping:
+- Supported Singkong and Java type mapping:
   - BOOLEAN -> Java: boolean
   - DATE -> Java: java.sql.Date
   - NUMBER -> Java: int (if a NUMBER looks like an integer) or 
@@ -639,7 +655,7 @@ ERROR: builtin function "info" is disabled
 - Additional operators for NUMBER: % ^ <= >=
 - Additional operators for BOOLEAN: & |
 - HASH: any data type can be used as key, maintains insertion-order
-- Additional builtin functions
+- More builtin functions
 - Additional data types: DATE, COMPONENT (GUI application development), and
   DATABASE (database connection, database application development)
 - Singkong uses overloaded operators for data types, as much as possible
@@ -661,6 +677,7 @@ ERROR: builtin function "info" is disabled
 -----------------------------------------------------------------------------
 
 13. Example: GUI: all supported components
+reset();
 let b = component("button", "Hello");
 let c = component("checkbox", "Singkong?");
 let m = component("combobox", "Singkong,Programming,Language");
@@ -681,6 +698,7 @@ show();
 -----------------------------------------------------------------------------
 
 14. Example: GUI: layout
+reset();
 let c = component("button", "C");
 let e = component("button", "E");
 let n = component("button", "N");
@@ -703,6 +721,7 @@ show();
 -----------------------------------------------------------------------------
 
 15. Example: GUI: display Singkong information in table
+reset();
 let t = component("table","KEY,VALUE,TYPE", true);
 let l = component("label", "Singkong Programming Language information");
 
@@ -724,6 +743,7 @@ show();
 -----------------------------------------------------------------------------
 
 16. Example: GUI: event handlers
+reset();
 let b = component("button", "Hello, World");
 let c = component("checkbox", "Singkong?");
 let r = component("radio", "Radio Button");
@@ -783,6 +803,7 @@ show();
 -----------------------------------------------------------------------------
 
 17. Example: GUI: printing
+reset();
 let t = ["Singkong", "Programming", "Language"];
 let size = 12;
 let x = 100;
@@ -794,6 +815,7 @@ printer(t, size, x, y, font);
 -----------------------------------------------------------------------------
 
 18. Example: GUI: simple text file editor
+reset();
 let e = component("edit", "");
 let o = component("button", "open");
 let s = component("button", "save");
@@ -827,6 +849,7 @@ show();
 -----------------------------------------------------------------------------
 
 19. Example: GUI: timer
+reset();
 let l = component("label", string(@));
 let b1 = component("button", "start");
 let b2 = component("button", "stop");
@@ -884,6 +907,7 @@ if (database_connected(d)) {
 -----------------------------------------------------------------------------
 
 22. Example: GUI/Database: select
+reset();
 let t = component("table", "A,B", true);
 add(t);
 

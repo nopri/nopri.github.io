@@ -1,3 +1,4 @@
+reset();
 let t = component("table", "A,B", true);
 add(t);
 
