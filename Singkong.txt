@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 1.0 (2020-Jan-11 +07:00)
+Version: 1.1 (2020-Jan-11 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -88,7 +88,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 1.0
+        Singkong 1.1
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -174,8 +174,9 @@ types
   - operators: +(concatenation) -(remove) ==(equals,case-sensitive) != *(repeat)
   - equals (case-insensitive): please use builtin function equals
   - related functions: call, center, count, cr, crlf, dir, empty, equals, eval, 
-    in, index, join, left, len, lf, lower, md5, newline, quote, replace, right, 
-    set, sha1, sha256, sha384, sha512, slice, split, stat, tab, trim, upper
+    in, index, join, left, len, lf, lower, md5, newline, quote, random_string, 
+    replace, right, set, sha1, sha256, sha384, sha512, slice, split, stat, tab, 
+    trim, upper
   - special characters: cr, crlf, lf, newline, quote, tab
   - file related functions: abs, append, read, write
   - system related functions: cwd, separator, user
@@ -246,16 +247,16 @@ To get a list of builtin functions, please call builtins()
 "LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", "MAX", "MD5", "MESSAGE", "MIN", 
 "MINUTE", "MONTH", "NEWLINE", "NUMBER", "OPEN", "PARAM", "PART", "PASSWORD", 
 "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", 
-"PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANGE", "READ", 
-"REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "REPLACE", "RESET", 
-"REST", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", 
-"SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SINGKONG", "SIZE", "SLICE", 
-"SPLIT", "STAT", "STOP", "STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", 
-"TABLE_REMOVE", "TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "USER", 
-"VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+"PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", 
+"RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", 
+"REPLACE", "RESET", "REST", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", 
+"SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SINGKONG", 
+"SIZE", "SLICE", "SPLIT", "STAT", "STOP", "STRING", "SUM", "SYSTEM", "TAB", 
+"TABLE_ADD", "TABLE_REMOVE", "TIMER", "TITLE", "TRIM", "TYPE", "TYPES", 
+"UPPER", "USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-137
+138
 
 Note: a builtin function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -458,7 +459,8 @@ It is possible to call static Java method and use the returned value, to
 provide functionalities in Java Programming Language. 
 - To call static Java method, please use builtin function call. This function
   accepts two-arguments: STRING (Java class name found in class path) and
-  ARRAY. This function returns an ARRAY (of STRING) or NULL (error). 
+  ARRAY. This function returns ARRAY (of STRING), ARRAY (of ARRAY (of STRING)), 
+  or NULL (error). 
 - Please note that Java class name must be found in class path. In order to use
   class from another jar file/directory, please run Singkong using the 
   following command:
@@ -474,13 +476,13 @@ provide functionalities in Java Programming Language.
   dependent (: or ;). If the class file is located in current working directory,
   <dir> might be replaced with a ., for example:
   java -cp Singkong.jar:. com.noprianto.singkong.Singkong
-- Called method must be static method named: singkong. It must require/return
-  a java.lang.String[]. 
+- Called method must be static method named: singkong. It must require a 
+  String[] and return a String[] or a String[][]. 
 - When the method is called, Singkong interpreter will use STRING representation
   of each element in ARRAY. Singkong will never pass a Java null to this method.
 - If there is any error when calling this method, NULL will be returned. If 
-  the method returns something other than String[], NULL will be returned. If
-  an exception occurred, NULL will be returned.
+  the method returns something other than String[] or String[][], NULL will be 
+  returned. If an exception occurred, NULL will be returned.
 - For example: HelloWorld.java in examples directory. Please make sure there is
   a static method: public static String[] singkong(String[] args)
 
@@ -512,6 +514,50 @@ cd ..
 {
 }
 "]
+
+- Another example: HelloWorldArray.java in examples directory. Please make sure 
+  there is a static method: public static String[][] singkong(String[] args). 
+  Please note that this method returns String[][], not String[]. 
+
+public class HelloWorldArray {
+    public static String[][] singkong(String[] args) {
+        String[][] ret = new String[args.length][];
+        for (int i=0; i<ret.length; i++) {
+            String[] r = new String[i];
+            for (int j=0; j<i; j++) {
+                r[j] = "" + j;
+            }
+            ret[i] = r;
+        }
+        return ret;
+    }
+}
+
+
+This file is compiled to HelloWorldArray.class
+
+cd examples
+javac HelloWorldArray.java
+cd ..
+
+- Run Singkong:
+  java -cp Singkong.jar:examples com.noprianto.singkong.Singkong
+  or (depending on the operating system)
+  java -cp Singkong.jar;examples com.noprianto.singkong.Singkong
+
+- Singkong program can call the method:
+>  let r = call("HelloWorldArray",range(1,10))
+>  each(r, fn(x,y){println(x)})
+[]
+["0"]
+["0", "1"]
+["0", "1", "2"]
+["0", "1", "2", "3"]
+["0", "1", "2", "3", "4"]
+["0", "1", "2", "3", "4", "5"]
+["0", "1", "2", "3", "4", "5", "6"]
+["0", "1", "2", "3", "4", "5", "6", "7"]
+null
 
 
 -----------------------------------------------------------------------------
