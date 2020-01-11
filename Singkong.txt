@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 1.1 (2020-Jan-11 +07:00)
+Version: 1.2 (2020-Jan-12 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -88,7 +88,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 1.1
+        Singkong 1.2
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -237,26 +237,27 @@ types
 5. Builtin functions
 To get a list of builtin functions, please call builtins()
 ["ABS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", "APPEND", "ARGUMENTS", 
-"ARRAY", "AVERAGE", "BUILTINS", "CALL", "CENTER", "CLEAR", "CLOSING", 
-"COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COUNT", 
-"CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", "DATE", "DATETIME", 
-"DAY", "DELAY", "DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", 
-"EQUALS", "EVAL", "EVENT", "EXIT", "FIRST", "FORMAT_DATE", "FORMAT_DATETIME", 
-"FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "IN", 
-"INDEX", "INFO", "INPUT", "INTEGER", "INTERACTIVE", "IS", "JOIN", "KEYS", 
-"LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", "MAX", "MD5", "MESSAGE", "MIN", 
-"MINUTE", "MONTH", "NEWLINE", "NUMBER", "OPEN", "PARAM", "PART", "PASSWORD", 
-"POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", 
-"PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", 
-"RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", 
-"REPLACE", "RESET", "REST", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", 
-"SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SINGKONG", 
-"SIZE", "SLICE", "SPLIT", "STAT", "STOP", "STRING", "SUM", "SYSTEM", "TAB", 
-"TABLE_ADD", "TABLE_REMOVE", "TIMER", "TITLE", "TRIM", "TYPE", "TYPES", 
-"UPPER", "USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+"ARRAY", "AVERAGE", "BUILTINS", "CALL", "CALL_INFO", "CENTER", "CLEAR", 
+"CLOSING", "COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", 
+"COUNT", "CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", "DATE", 
+"DATETIME", "DAY", "DELAY", "DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", 
+"EACH", "EMPTY", "EQUALS", "EVAL", "EVENT", "EXIT", "FIRST", "FORMAT_DATE", 
+"FORMAT_DATETIME", "FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", 
+"HIDE", "HOUR", "IN", "INDEX", "INFO", "INPUT", "INTEGER", "INTERACTIVE", 
+"IS", "JOIN", "KEYS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", "MAX", 
+"MD5", "MESSAGE", "MIN", "MINUTE", "MONTH", "NEWLINE", "NUMBER", "OPEN", 
+"PARAM", "PART", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", 
+"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
+"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "REMOVE", 
+"REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "REPLACE", "RESET", "REST", 
+"RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
+"SHA256", "SHA384", "SHA512", "SHOW", "SINGKONG", "SIZE", "SLICE", "SPLIT", 
+"STAT", "STOP", "STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", "TABLE_REMOVE", 
+"TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "USER", "VALUES", 
+"WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-138
+139
 
 Note: a builtin function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -338,8 +339,8 @@ To keep it as simple as possible:
   when creating edit, password, table, or text. 
 - To get a list of supported component types, builtin function components can be
   used. Currently, this function returns:
-  ["button", "checkbox", "combobox", "edit", "label", "password", "radio", 
-  "table", "text"]
+  ["button", "checkbox", "combobox", "edit", "image", "label", "password", 
+  "radio", "table", "text"]
 - To get type of a COMPONENT, please use component_type builtin function. This
   function returns component type as STRING (one of values returned by 
   components function, as above). 
@@ -362,8 +363,8 @@ To keep it as simple as possible:
     expects value as STRING)
   - active (checkbox/radio expects value as BOOLEAN, combobox/table expects
     value as NUMBER (selected index))
-  - contents (contents of combobox/edit/password/table/text, expects value as 
-    STRING, ARRAY of ARRAY (table), or ARRAY (combobox))
+  - contents (contents of combobox/edit/password/table/text, image file of
+    image, expects value as STRING, ARRAY of ARRAY (table), or ARRAY (combobox))
   (configuration may be ignored if it is not applicable -- no errors will be
    returned).
 - To get a configuration of a COMPONENT configured using config, please use
@@ -373,8 +374,9 @@ To keep it as simple as possible:
   - text (label of button/checkbox/label/radio, selected item of combobox, 
     returns a STRING)
   - active (checkbox/radio returns a BOOLEAN, combobox/table returns a NUMBER)
-  - contents (contents of combobox/edit/password/table/text, returns a STRING, 
-    an ARRAY of ARRAY (of STRING, table), or ARRAY (of STRING, combobox))
+  - contents (contents of combobox/edit/password/table/text, image file of 
+    image, returns a STRING, an ARRAY of ARRAY (of STRING, table), 
+    or ARRAY (of STRING, combobox))
   (configuration may be ignored if it is not applicable and NULL will be
    returned).
 - table: to add rows or remove a row, please use builtin function table_add or
@@ -459,8 +461,8 @@ It is possible to call static Java method and use the returned value, to
 provide functionalities in Java Programming Language. 
 - To call static Java method, please use builtin function call. This function
   accepts two-arguments: STRING (Java class name found in class path) and
-  ARRAY. This function returns ARRAY (of STRING), ARRAY (of ARRAY (of STRING)), 
-  or NULL (error). 
+  any type. This function returns STRING, ARRAY (of STRING), 
+  ARRAY (of ARRAY (of STRING)), or NULL (error). 
 - Please note that Java class name must be found in class path. In order to use
   class from another jar file/directory, please run Singkong using the 
   following command:
@@ -477,87 +479,252 @@ provide functionalities in Java Programming Language.
   <dir> might be replaced with a ., for example:
   java -cp Singkong.jar:. com.noprianto.singkong.Singkong
 - Called method must be static method named: singkong. It must require a 
-  String[] and return a String[] or a String[][]. 
+  String[][] and return a String, a String[], or a String[][]. 
 - When the method is called, Singkong interpreter will use STRING representation
-  of each element in ARRAY. Singkong will never pass a Java null to this method.
+  of Singkong type passed to Java method, if necessary. Singkong will never 
+  pass a Java null to the method.
+  - If it is not an ARRAY:
+    - Return value of String[1][] will be created
+    - Its first element will be a String[1], containing a single 
+      element of STRING representation of Singkong value passed to this method
+  - If it is an ARRAY:
+    - Return value of String[][] will be created, whose length is the length
+      of passed ARRAY
+    - For each element in this ARRAY:
+      - If it is not an ARRAY:
+        - String[1] will be created, containing STRING representation of the
+          element
+      - If it is an ARRAY:
+        - String[] will be created, whose length is the length of this ARRAY
+        - This newly created String[] will be populated with STRING 
+          representation of each element in this ARRAY
 - If there is any error when calling this method, NULL will be returned. If 
-  the method returns something other than String[] or String[][], NULL will be 
-  returned. If an exception occurred, NULL will be returned.
-- For example: HelloWorld.java in examples directory. Please make sure there is
-  a static method: public static String[] singkong(String[] args)
+  the method returns something other than String, String[], or String[][], 
+  NULL will be returned. If an exception occurred, NULL will be returned.
+- Example 1: 
+  - HelloWorld.java in examples directory. Please make sure there is
+    a static method: public static String singkong(String[][] args) {
 
-public class HelloWorld {
-    public static String[] singkong(String[] args) {
-        String[] ret = new String[args.length];
-        for (int i=0; i<args.length; i++) {
-            ret[i] = "[HelloWorld] " + args[i];
+    public class HelloWorld {
+        public static String singkong_info() {
+            return "HelloWorld: Description, license, ...";
         }
-        return ret;
-    }
-}
 
-This file is compiled to HelloWorld.class
-
-cd examples
-javac HelloWorld.java 
-cd ..
-
-- Because the required HelloWorld.class is located in examples directory, 
-  Singkong should be run using the following command: 
-  java -cp Singkong.jar:examples com.noprianto.singkong.Singkong
-  or (depending on the operating system)
-  java -cp Singkong.jar;examples com.noprianto.singkong.Singkong
-- Singkong program can call the method:
->  call("HelloWorld", [1, 2, 3, null, [], {}, fn(){}]);
-["[HelloWorld] 1", "[HelloWorld] 2", "[HelloWorld] 3", "[HelloWorld] null", 
-"[HelloWorld] []", "[HelloWorld] {}", "[HelloWorld] fn()
-{
-}
-"]
-
-- Another example: HelloWorldArray.java in examples directory. Please make sure 
-  there is a static method: public static String[][] singkong(String[] args). 
-  Please note that this method returns String[][], not String[]. 
-
-public class HelloWorldArray {
-    public static String[][] singkong(String[] args) {
-        String[][] ret = new String[args.length][];
-        for (int i=0; i<ret.length; i++) {
-            String[] r = new String[i];
-            for (int j=0; j<i; j++) {
-                r[j] = "" + j;
+        public static String singkong(String[][] args) {
+            StringBuilder builder = new StringBuilder();
+            for (int i=0; i<args.length; i++) {
+                String[] r = args[i];
+                for (int j=0; j<r.length; j++) {
+                    String s = r[j];
+                    builder.append(s);
+                    builder.append(", ");
+                }
+                builder.append("; ");
             }
-            ret[i] = r;
+            return builder.toString();
         }
-        return ret;
+
+        public static void main(String[] args) {
+            System.out.println("HelloWorld: Singkong Programming Language module");
+        }
     }
-}
 
+  - This file is compiled to HelloWorld.class
 
-This file is compiled to HelloWorldArray.class
+    cd examples
+    javac HelloWorld.java 
+    cd ..
 
-cd examples
-javac HelloWorldArray.java
-cd ..
+  - Because the required HelloWorld.class is located in examples directory, 
+    Singkong should be run using the following command: 
+    java -cp Singkong.jar:examples com.noprianto.singkong.Singkong
+    or (depending on the operating system)
+    java -cp Singkong.jar;examples com.noprianto.singkong.Singkong
 
-- Run Singkong:
-  java -cp Singkong.jar:examples com.noprianto.singkong.Singkong
-  or (depending on the operating system)
-  java -cp Singkong.jar;examples com.noprianto.singkong.Singkong
+  - Singkong program can call the method (a STRING is returned):
 
-- Singkong program can call the method:
->  let r = call("HelloWorldArray",range(1,10))
->  each(r, fn(x,y){println(x)})
-[]
-["0"]
-["0", "1"]
-["0", "1", "2"]
-["0", "1", "2", "3"]
-["0", "1", "2", "3", "4"]
-["0", "1", "2", "3", "4", "5"]
-["0", "1", "2", "3", "4", "5", "6"]
-["0", "1", "2", "3", "4", "5", "6", "7"]
-null
+    >  let x = call("HelloWorld", [[], [1], [2,3], [4,5,6]])
+    >  x
+    "; 1, ; 2, 3, ; 4, 5, 6, ; "
+
+    >  type(x)
+    "STRING"
+
+- Example 2: 
+  - HelloWorldArray.java in examples directory. Please make sure 
+    there is a static method: public static String[] singkong(String[][] args). 
+    Please note that this method returns String[], not String. 
+
+    public class HelloWorldArray {
+        public static String singkong_info() {
+            return "HelloWorldArray: Description, license, ...";
+        }
+
+        public static String[] singkong(String[][] args) {
+            String[] ret = new String[args.length];
+            for (int i=0; i<args.length; i++) {
+                StringBuilder builder = new StringBuilder();
+                String[] r = args[i];
+                for (int j=0; j<r.length; j++) {
+                    String s = r[j];
+                    builder.append(s);
+                    builder.append(", ");
+                }
+                ret[i] = builder.toString();
+            }
+            return ret;
+        }
+
+        public static void main(String[] args) {
+            System.out.println("HelloWorldArray: Singkong Programming Language module");
+        }
+    }
+
+  - This file is compiled to HelloWorldArray.class
+
+    cd examples
+    javac HelloWorldArray.java
+    cd ..
+
+  - Run Singkong:
+    java -cp Singkong.jar:examples com.noprianto.singkong.Singkong
+    or (depending on the operating system)
+    java -cp Singkong.jar;examples com.noprianto.singkong.Singkong
+
+  - Singkong program can call the method (an ARRAY (of STRING) is returned):
+
+    >  let x = call("HelloWorldArray", [[], [1], [2,3], [4,5,6]])
+    >  x
+    ["", "1, ", "2, 3, ", "4, 5, 6, "]
+
+    >  type(x)
+    "ARRAY"
+
+    >  each(x, fn(x, y){ println(y + ": " + type(x) + ": " + x)})
+    0: STRING: 
+    1: STRING: 1, 
+    2: STRING: 2, 3, 
+    3: STRING: 4, 5, 6, 
+    null
+
+- Example 3: 
+  - HelloWorldArrayArray.java in examples directory. Please make sure 
+    there is a static method: public static String[][] singkong(String[][] args). 
+    Please note that this method returns String[][], not String[]. 
+
+    public class HelloWorldArrayArray {
+        public static String singkong_info() {
+            return "HelloWorldArrayArray: Description, license, ...";
+        }
+
+        public static String[][] singkong(String[][] args) {
+            String[][] ret = new String[args.length][];
+            for (int i=0; i<args.length; i++) {
+                String[] r = args[i];
+                String[] x = new String[r.length];
+                for (int j=0; j<r.length; j++) {
+                    String s = r[j];
+                    x[j] = s;
+                }
+                ret[i] = x;
+            }
+            return ret;
+        }
+
+        public static void main(String[] args) {
+            System.out.println("HelloWorldArrayArray: Singkong Programming Language module");
+        }
+    }
+
+  - This file is compiled to HelloWorldArrayArray.class
+
+    cd examples
+    javac HelloWorldArrayArray.java
+    cd ..
+
+  - Run Singkong:
+    java -cp Singkong.jar:examples com.noprianto.singkong.Singkong
+    or (depending on the operating system)
+    java -cp Singkong.jar;examples com.noprianto.singkong.Singkong
+
+  - Singkong program can call the method (an ARRAY (of ARRAY (of STRING)) is 
+    returned):
+
+    >  let x = call("HelloWorldArrayArray", [[], [1], [2,3], [4,5,6]])
+    >  x
+    [[], ["1"], ["2", "3"], ["4", "5", "6"]]
+
+    >  each(x, fn(x, y){ println(y + ": " + type(x) + ": " + x)})
+    0: ARRAY: []
+    1: ARRAY: ["1"]
+    2: ARRAY: ["2", "3"]
+    3: ARRAY: ["4", "5", "6"]
+    null
+
+- Returned String from Java method can be a valid Singkong program, that can
+  be evaluated using builtin function eval (if this function is not disabled):
+
+  - HelloWorldEval.java:
+
+    public class HelloWorldEval {
+        public static String singkong_info() {
+            return "HelloWorldEval: Description, license, ...";
+        }
+
+        public static String singkong(String[][] args) {
+            StringBuilder builder = new StringBuilder();
+            for (int i=0; i<args.length; i++) {
+                String[] r = args[i];
+                for (int j=0; j<r.length; j++) {
+                    String s = r[j];
+                    builder.append(s);
+                    builder.append(", ");
+                }
+                builder.append("; ");
+            }
+
+            return String.format("component(\"button\", \"%s\")", 
+                builder.toString());
+        }   
+
+        public static void main(String[] args) {
+            System.out.println("HelloWorldEval: Singkong Programming Language module");
+        }
+    }
+
+  - Singkong program can call the method and use the returned value as Singkong
+    code:
+
+    >  let code = call("HelloWorldEval", [[], [1], [2,3], [4,5,6]])
+    >  code
+    "component("button", "; 1, ; 2, 3, ; 4, 5, 6, ; ")"
+
+    >  let b = eval(code)
+    >  b
+    COMPONENT: button (; 1, ; 2, 3, ; 4, 5, 6, ; )
+
+    >  add(b)
+    null
+
+    >  show()
+    null
+
+- To get information about the class (if provided), please use builtin function
+  call_info. This function accepts one argument: STRING (Java class name found 
+  in class path). The class must have a static method named: singkong_info, 
+  without parameter, and return a String.
+
+    >  call_info("HelloWorld")
+    "HelloWorld: Description, license, ..."
+
+    >  call_info("HelloWorldArray")
+    "HelloWorldArray: Description, license, ..."
+
+    >  call_info("HelloWorldArrayArray")
+    "HelloWorldArrayArray: Description, license, ..."
+
+    >  call_info("HelloWorldEval")
+    "HelloWorldEval: Description, license, ..."
 
 
 -----------------------------------------------------------------------------
@@ -779,7 +946,7 @@ ERROR: builtin function "info" is disabled
 - Singkong uses overloaded operators for data types, as much as possible
   (for example, * for string repetition, - for string remove, - for array 
   remove, and many more).
-- Repeat loop
+- Repeat loop (and builtin functions: do, each for simple looping)
 - Some builtin functions may be disabled when the interpreter in run 
 
 
