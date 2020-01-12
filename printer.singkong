@@ -1,8 +1,8 @@
 reset();
 let t = ["Singkong", "Programming", "Language"];
-let size = 12;
-let x = 100;
-let y = 50;
+let s = 16;
+let x = 150;
+let y = 150;
 let font = "monospaced";
-printer(t, size, x, y, font);
+printer(t, s, x, y, font);
 

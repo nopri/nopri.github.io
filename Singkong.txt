@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 1.2 (2020-Jan-12 +07:00)
+Version: 1.3 (2020-Jan-12 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -27,10 +27,10 @@ WRITING AN INTERPRETER IN GO
 10. Calling Java method
 11. Embedding Singkong into another applications
 12. Differences with Monkey Programming Language
-13. Development and compatibility
-14. Example: GUI: all supported components
+13. Development, compatibility, and modules
+14. Example: GUI: components
 15. Example: GUI: layout
-16. Example: GUI: display Singkong information in table
+16. Example: GUI: Singkong information
 17. Example: GUI: event handlers
 18. Example: GUI: printing
 19. Example: GUI: simple text file editor
@@ -38,6 +38,7 @@ WRITING AN INTERPRETER IN GO
 21. Example: Database: create table
 22. Example: Database: insert, update, select
 23. Example: GUI/Database: select
+24. Example: Java: Base64 encode/decode
 
 -----------------------------------------------------------------------------
 
@@ -88,7 +89,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 1.2
+        Singkong 1.3
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -163,33 +164,41 @@ types
   - any integer and decimal
   - precision: 10240, scale: 4
   - operators: + - * / == != %(remainder) ^(power) < <= > >=
-  - related functions: abs, integer, number, random, round, words_en, words_id
+  - related functions: abs, array_number, integer, number, random, round, 
+    sort_number, words_en, words_id
   - system related functions: delay
+  - sorting: by value
 - BOOLEAN
   - true or false
   - operators: == != & |
+  - related functions: sort_boolean
+  - sorting: by value
 - STRING
   - double-quoted
   - arbitrary length string
   - operators: +(concatenation) -(remove) ==(equals,case-sensitive) != *(repeat)
   - equals (case-insensitive): please use builtin function equals
-  - related functions: call, center, count, cr, crlf, dir, empty, equals, eval, 
-    in, index, join, left, len, lf, lower, md5, newline, quote, random_string, 
-    replace, right, set, sha1, sha256, sha384, sha512, slice, split, stat, tab, 
-    trim, upper
+  - related functions: array_string, call, center, count, cr, crlf, dir, empty, 
+    endswith, equals, eval, in, index, join, left, len, lf, lower, matches, md5, 
+    newline, quote, random_string, replace, right, set, sha1, sha256, sha384, 
+    sha512, slice, sort_string, split, startswith, stat, tab, trim, upper
   - special characters: cr, crlf, lf, newline, quote, tab
   - file related functions: abs, append, read, write
   - system related functions: cwd, separator, user
   - Singkong related functions: load
+  - sorting: lexicographically
 - ARRAY
   - []
   - array of mixed data types
   - operators: +(add), -(remove) == !=
   - modify ARRAY: please use builtin function set()
-  - related functions: array, average, call, count, each, empty, first, in, 
-    index, join, last, len, max, min, pop, push, random, range, rest, slice, sum
+  - related functions: array, array_number, array_string, average, call, count, 
+    each, empty, first, in, index, join, last, len, max, min, pop, push, 
+    random, range, rest, reverse, shuffle, slice, sort_array, sort_boolean, 
+    sort_date, sort_hash, sort_number, sort_string, sum
   - file related functions: dir
   - system related functions: arguments, system
+  - sorting: by length
 - HASH
   - {}
   - hash table/dictionary
@@ -197,16 +206,18 @@ types
   - hash maintains insertion-order
   - operators: +(add dictionary), -(remove) == !=
   - modify HASH: please use builtin function set()
-  - related functions: empty, keys, len, random, values
+  - related functions: empty, keys, len, random, sort_hash, values
   - file related functions: properties_read, properties_write, stat
   - system related functions: info
   - Singkong related functions: singkong
+  - sorting: by length
 - DATE
   - @ @Y @YY @YYY @YYYY @YYYYM @YYYYMM @YYYYMMD @YYYYMMDD @YYYYMMDDh 
     @YYYYMMDDhh @YYYYMMDDhhm @YYYYMMDDhhmm @YYYYMMDDhhmms @YYYYMMDDhhmmss
   - related functions: date, datetime, day, diff, format_date, format_datetime,
-    format_diff, hour, minute, month, part, second, year
+    format_diff, hour, minute, month, part, second, sort_date, year
   - file related functions: stat
+  - sorting: before/after
 - FUNCTION
   - fn()
   - fn(arg)
@@ -237,27 +248,29 @@ types
 5. Builtin functions
 To get a list of builtin functions, please call builtins()
 ["ABS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", "APPEND", "ARGUMENTS", 
-"ARRAY", "AVERAGE", "BUILTINS", "CALL", "CALL_INFO", "CENTER", "CLEAR", 
-"CLOSING", "COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", 
-"COUNT", "CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", "DATE", 
-"DATETIME", "DAY", "DELAY", "DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", 
-"EACH", "EMPTY", "EQUALS", "EVAL", "EVENT", "EXIT", "FIRST", "FORMAT_DATE", 
-"FORMAT_DATETIME", "FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", 
-"HIDE", "HOUR", "IN", "INDEX", "INFO", "INPUT", "INTEGER", "INTERACTIVE", 
-"IS", "JOIN", "KEYS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", "MAX", 
-"MD5", "MESSAGE", "MIN", "MINUTE", "MONTH", "NEWLINE", "NUMBER", "OPEN", 
-"PARAM", "PART", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", 
-"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
-"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "REMOVE", 
-"REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "REPLACE", "RESET", "REST", 
-"RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
-"SHA256", "SHA384", "SHA512", "SHOW", "SINGKONG", "SIZE", "SLICE", "SPLIT", 
-"STAT", "STOP", "STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", "TABLE_REMOVE", 
-"TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "USER", "VALUES", 
-"WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+"ARRAY", "ARRAY_NUMBER", "ARRAY_STRING", "AVERAGE", "BUILTINS", "CALL", 
+"CALL_INFO", "CENTER", "CLEAR", "CLOSING", "COMPONENT", "COMPONENT_TYPE", 
+"COMPONENTS", "CONFIG", "CONFIRM", "COUNT", "CR", "CRLF", "CWD", "DATABASE", 
+"DATABASE_CONNECTED", "DATE", "DATETIME", "DAY", "DELAY", "DIFF", "DIR", 
+"DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", "EQUALS", "EVAL", 
+"EVENT", "EXIT", "FIRST", "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", 
+"FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "IN", "INDEX", "INFO", 
+"INPUT", "INTEGER", "INTERACTIVE", "IS", "JOIN", "KEYS", "LAST", "LEFT", "LEN", 
+"LF", "LOAD", "LOWER", "MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", 
+"MONTH", "NEWLINE", "NUMBER", "OPEN", "PARAM", "PART", "PASSWORD", "POP", 
+"PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", 
+"PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", 
+"READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "REPLACE", 
+"RESET", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", 
+"SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SHUFFLE", 
+"SINGKONG", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", 
+"SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "STARTSWITH", "STAT", 
+"STOP", "STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", "TABLE_REMOVE", "TIMER", 
+"TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "USER", "VALUES", "WORDS_EN", 
+"WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-139
+152
 
 Note: a builtin function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -481,7 +494,7 @@ provide functionalities in Java Programming Language.
 - Called method must be static method named: singkong. It must require a 
   String[][] and return a String, a String[], or a String[][]. 
 - When the method is called, Singkong interpreter will use STRING representation
-  of Singkong type passed to Java method, if necessary. Singkong will never 
+  of Singkong value passed to Java method, if necessary. Singkong will never 
   pass a Java null to the method.
   - If it is not an ARRAY:
     - Return value of String[1][] will be created
@@ -536,6 +549,7 @@ provide functionalities in Java Programming Language.
     cd ..
 
   - Because the required HelloWorld.class is located in examples directory, 
+    relative to current working directory,
     Singkong should be run using the following command: 
     java -cp Singkong.jar:examples com.noprianto.singkong.Singkong
     or (depending on the operating system)
@@ -952,21 +966,23 @@ ERROR: builtin function "info" is disabled
 
 -----------------------------------------------------------------------------
 
-13. Development and compatibility
+13. Development, compatibility, and modules
 - Singkong is developed on Java 8 with -source 1.5 -target 1.5
   (using Java 5.0-compatible application programming interface)
 - Run tests: Java 5.0, Java 8 (main testing), and latest Java version 
 - Singkong maintains backward compatibility
+- List of external Singkong modules is available from Singkong website
 
 
 -----------------------------------------------------------------------------
 
-14. Example: GUI: all supported components
+14. Example: GUI: components
 reset();
 let b = component("button", "Hello");
 let c = component("checkbox", "Singkong?");
 let m = component("combobox", "Singkong,Programming,Language");
 let e = component("edit", "Hello, World");
+let i = component("image", "image.jpg");
 let l = component("label", "Singkong Programming Language");
 let p = component("password", "test");
 let r = component("radio", "Radio Button");
@@ -974,7 +990,7 @@ let t = component("table", "A,B,C,D,E");
 let x = component("text", "Singkong");
 
 add([e, t]);
-add_n([l, x, p, c, r, m, b]);
+add_n([i, l, x, p, c, r, m, b]);
 
 closing("Are you sure you want to quit this application?", "Please confirm");
 show();
@@ -1005,7 +1021,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-16. Example: GUI: display Singkong information in table
+16. Example: GUI: Singkong information
 reset();
 let t = component("table","KEY,VALUE,TYPE", true);
 let l = component("label", "Singkong Programming Language information");
@@ -1090,11 +1106,11 @@ show();
 18. Example: GUI: printing
 reset();
 let t = ["Singkong", "Programming", "Language"];
-let size = 12;
-let x = 100;
-let y = 50;
+let s = 16;
+let x = 150;
+let y = 150;
 let font = "monospaced";
-printer(t, size, x, y, font);
+printer(t, s, x, y, font);
 
 
 -----------------------------------------------------------------------------
@@ -1206,6 +1222,81 @@ if (database_connected(d)) {
 }
 
 show();
+
+
+24. Example: Java: Base64 encode/decode
+Note: the following modules require Java 8 or later. Please read: 
+Calling Java method. The following files are saved in examples directory, 
+relative to current working directory.
+
+- Base64Encode.java (compiled to Base64Encode.class: javac Base64Encode.java)
+
+    public class Base64Encode {
+        public static String singkong_info() {
+            return "Base64Encode: Base64 encode String (using Java 8 or later)";
+        }
+
+        public static String singkong(String[][] args) {
+            String ret = "";
+            if (args.length > 0) {
+                String[] r = args[0];
+                if (r.length > 0) {
+                    String s = r[0];
+                    ret = java.util.Base64.getEncoder().encodeToString(s.getBytes());
+                }
+            }
+            return ret;
+        }
+
+        public static void main(String[] args) {
+            System.out.println("Base64Encode: Singkong Programming Language module (using Java 8 or later)");
+        }
+    }
+
+- Base64Decode.java (compiled to Base64Decode.class: javac Base64Decode.java)
+
+    public class Base64Decode {
+        public static String singkong_info() {
+            return "Base64Decode: Base64 decode String (using Java 8 or later)";
+        }
+
+        public static String singkong(String[][] args) {
+            String ret = "";
+            if (args.length > 0) {
+                String[] r = args[0];
+                if (r.length > 0) {
+                    String s = r[0];
+                    byte[] b = java.util.Base64.getDecoder().decode(s);
+                    ret = new String(b);
+                }
+            }
+            return ret;
+        }
+
+        public static void main(String[] args) {
+            System.out.println("Base64Decode: Singkong Programming Language module (using Java 8 or later)");
+        }
+    }
+
+- Run Singkong:
+
+    java -cp Singkong.jar:examples com.noprianto.singkong.Singkong
+    or (depending on the operating system)
+    java -cp Singkong.jar;examples com.noprianto.singkong.Singkong
+
+- Singkong program can call these methods:
+
+    >  let s = "Singkong Programming Language"
+    >  let e = call("Base64Encode", s)
+    >  e
+    "U2luZ2tvbmcgUHJvZ3JhbW1pbmcgTGFuZ3VhZ2U="
+
+    >  let d = call("Base64Decode", e)
+    >  d
+    "Singkong Programming Language"
+
+    >  s == d
+    true
 
 
 =============================================================================
