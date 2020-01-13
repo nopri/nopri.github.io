@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 1.3 (2020-Jan-12 +07:00)
+Version: 1.4 (2020-Jan-14 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -89,7 +89,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 1.3
+        Singkong 1.4
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -232,9 +232,9 @@ types
 - COMPONENT
   - Please read: GUI application development
   - related functions: add, add_e, add_n, add_s, add_w, clear, closing, 
-    component, component_type, components, config, event, frame, get, gui, hide, 
-    printer, remove, remove_e, remove_n, remove_s, remove_w, reset, screen,
-    show, size, radio_group, table_add, table_remove, timer, title, stop 
+    component, component_type, components, config, event, frame, fonts, get, 
+    gui, hide, printer, remove, remove_e, remove_n, remove_s, remove_w, reset, 
+    screen, show, size, radio_group, table_add, table_remove, timer, title, stop 
   - GUI input/output functions: confirm, directory, input, open, message, 
     password, save
     (if GUI is not available: simpler text-based version)
@@ -253,24 +253,24 @@ To get a list of builtin functions, please call builtins()
 "COMPONENTS", "CONFIG", "CONFIRM", "COUNT", "CR", "CRLF", "CWD", "DATABASE", 
 "DATABASE_CONNECTED", "DATE", "DATETIME", "DAY", "DELAY", "DIFF", "DIR", 
 "DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", "EQUALS", "EVAL", 
-"EVENT", "EXIT", "FIRST", "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", 
-"FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "IN", "INDEX", "INFO", 
-"INPUT", "INTEGER", "INTERACTIVE", "IS", "JOIN", "KEYS", "LAST", "LEFT", "LEN", 
-"LF", "LOAD", "LOWER", "MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", 
-"MONTH", "NEWLINE", "NUMBER", "OPEN", "PARAM", "PART", "PASSWORD", "POP", 
-"PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", 
-"PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", 
-"READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "REPLACE", 
-"RESET", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", 
-"SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SHUFFLE", 
-"SINGKONG", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", 
-"SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "STARTSWITH", "STAT", 
-"STOP", "STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", "TABLE_REMOVE", "TIMER", 
-"TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "USER", "VALUES", "WORDS_EN", 
-"WORDS_ID", "WRITE", "YEAR"]
+"EVENT", "EXIT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
+"FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "IN", 
+"INDEX", "INFO", "INPUT", "INTEGER", "INTERACTIVE", "IS", "JOIN", "KEYS", 
+"LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", "MATCHES", "MAX", "MD5", 
+"MESSAGE", "MIN", "MINUTE", "MONTH", "NEWLINE", "NUMBER", "OPEN", "PARAM", 
+"PART", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
+"PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
+"RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", 
+"REMOVE_W", "REPLACE", "RESET", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", 
+"SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", 
+"SHOW", "SHUFFLE", "SINGKONG", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
+"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "STARTSWITH", 
+"STAT", "STOP", "STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", "TABLE_REMOVE", 
+"TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "USER", "VALUES", 
+"WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-152
+153
 
 Note: a builtin function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -372,6 +372,10 @@ To keep it as simple as possible:
   accepts three arguments: COMPONENT, STRING (key), and <any type> (value). 
   Different component may have different keys, but common keys are: 
   - enabled (for all components, expects value as BOOLEAN)
+  - visible (for all components, expects value as BOOLEAN)
+  - focus (for all components, expects value as BOOLEAN)
+  - foreground/background (for all components, expects value as STRING (color name or RGB value))
+  - font (for all components, expects value as ARRAY [STRING (font name), NUMBER (0=plain, 1=bold, 2=italic, 3=bold and italic), NUMBER (size)])
   - text (label of button/checkbox/label/radio, selected item of combobox, 
     expects value as STRING)
   - active (checkbox/radio expects value as BOOLEAN, combobox/table expects
@@ -384,12 +388,16 @@ To keep it as simple as possible:
   builtin function get. This function accepts two arguments: COMPONENT and 
   STRING (key). 
   - enabled (for all components, returns a BOOLEAN)
+  - visible (for all components, returns a BOOLEAN)
+  - focus (for all components, returns a BOOLEAN)
+  - foreground/background (for all components, returns a STRING (color name or RGB value))
+  - font (for all components, returns an ARRAY [STRING (font name), NUMBER (0=plain, 1=bold, 2=italic, 3=bold and italic), NUMBER (size)])
   - text (label of button/checkbox/label/radio, selected item of combobox, 
     returns a STRING)
   - active (checkbox/radio returns a BOOLEAN, combobox/table returns a NUMBER)
   - contents (contents of combobox/edit/password/table/text, image file of 
     image, returns a STRING, an ARRAY of ARRAY (of STRING, table), 
-    or ARRAY (of STRING, combobox))
+    or an ARRAY (of STRING, combobox))
   (configuration may be ignored if it is not applicable and NULL will be
    returned).
 - table: to add rows or remove a row, please use builtin function table_add or
@@ -415,6 +423,7 @@ To keep it as simple as possible:
 - To calls a FUNCTION every specified delay, please use builtin function timer.
   This function accepts two arguments: NUMBER (delay in milliseconds) and
   FUNCTION. To stop all timers, please use builtin function stop. 
+- To get list of available fonts, please use builtin function fonts.
 
 
 -----------------------------------------------------------------------------
@@ -1223,6 +1232,8 @@ if (database_connected(d)) {
 
 show();
 
+
+-----------------------------------------------------------------------------
 
 24. Example: Java: Base64 encode/decode
 Note: the following modules require Java 8 or later. Please read: 
