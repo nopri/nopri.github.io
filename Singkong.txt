@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 1.4 (2020-Jan-14 +07:00)
+Version: 1.5 (2020-Jan-16 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -89,7 +89,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 1.4
+        Singkong 1.5
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -506,11 +506,11 @@ provide functionalities in Java Programming Language.
   of Singkong value passed to Java method, if necessary. Singkong will never 
   pass a Java null to the method.
   - If it is not an ARRAY:
-    - Return value of String[1][] will be created
+    - String[1][] will be created
     - Its first element will be a String[1], containing a single 
       element of STRING representation of Singkong value passed to this method
   - If it is an ARRAY:
-    - Return value of String[][] will be created, whose length is the length
+    - String[][] will be created, whose length is the length
       of passed ARRAY
     - For each element in this ARRAY:
       - If it is not an ARRAY:
@@ -962,7 +962,7 @@ ERROR: builtin function "info" is disabled
   compatible with INTEGER in Monkey, with support for decimal numbers.
 - Additional operators for NUMBER: % ^ <= >=
 - Additional operators for BOOLEAN: & |
-- HASH: any data type can be used as key, maintains insertion-order
+- HASH: any data type can be used as key/value, maintains insertion-order
 - More builtin functions
 - Additional data types: DATE, COMPONENT (GUI application development), and
   DATABASE (database connection, database application development)
