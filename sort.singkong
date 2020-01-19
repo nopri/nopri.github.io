@@ -1,4 +1,4 @@
-
+#ARRAY;
 let a = [[1,2,3], [], [1,2]]
 let b = [false, true, false, true]
 let d = [@2020, @2019, @2021]
@@ -6,6 +6,7 @@ let h = [{1:2,3:4}, {}, {1:2}]
 let n = [3, 1, 2]
 let s = ["Singkong", "Programming", "Language"]
 
+#sort;
 let sa = sort_array(a)
 let sb = sort_boolean(b)
 let sd = sort_date(d)
@@ -13,5 +14,6 @@ let sh = sort_hash(h)
 let sn = sort_number(n)
 let ss = sort_string(s)
 
+#print;
 println(a, sa, b, sb, d, sd, h, sh, n, sn, s, ss)
 

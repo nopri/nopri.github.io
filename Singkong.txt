@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 1.5 (2020-Jan-16 +07:00)
+Version: 1.6 (2020-Jan-19 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -89,7 +89,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 1.5
+        Singkong 1.6
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -115,11 +115,9 @@ comma-separated list of functions.
 
     If exception occurred: interpret the argument as Singkong code
         java -jar Singkong.jar "puts(1,2,3)"
-
         1
         2
         3
-        null
 
   - Run directly the main class (please also read: Database application 
     development and Calling Java method):
@@ -151,6 +149,8 @@ let f = fn(name) { puts(name) }
 Note:
 - Statement ends with ; 
 - Block statement starts with { and ends with }
+- Comment starts with # and ends with ;
+- Multi-line comment is supported
 
 Data types:
 Related functions: builtins, eval, is, hash, print, println, puts, string, type, 
@@ -160,6 +160,8 @@ types
   - null
   - null literal
   - null may also returned from builtin functions
+  - null is not printed. To print null, please use 
+    print, println, puts, or message. 
 - NUMBER
   - any integer and decimal
   - precision: 10240, scale: 4
@@ -628,7 +630,6 @@ provide functionalities in Java Programming Language.
     1: STRING: 1, 
     2: STRING: 2, 3, 
     3: STRING: 4, 5, 6, 
-    null
 
 - Example 3: 
   - HelloWorldArrayArray.java in examples directory. Please make sure 
@@ -682,7 +683,6 @@ provide functionalities in Java Programming Language.
     1: ARRAY: ["1"]
     2: ARRAY: ["2", "3"]
     3: ARRAY: ["4", "5", "6"]
-    null
 
 - Returned String from Java method can be a valid Singkong program, that can
   be evaluated using builtin function eval (if this function is not disabled):
@@ -727,10 +727,7 @@ provide functionalities in Java Programming Language.
     COMPONENT: button (; 1, ; 2, 3, ; 4, 5, 6, ; )
 
     >  add(b)
-    null
-
     >  show()
-    null
 
 - To get information about the class (if provided), please use builtin function
   call_info. This function accepts one argument: STRING (Java class name found 
@@ -793,7 +790,6 @@ public class Test {
 javac -cp Singkong.jar Test.java 
 java -cp Singkong.jar:. Test
 [1, 2, 3]
-null
 
 
 Example 2: Test.java
@@ -836,7 +832,6 @@ javac -cp Singkong.jar Test.java
 java -cp Singkong.jar:. Test
 Hello, World
 true
-null
 
 
 Example 4: Test.java
@@ -896,7 +891,6 @@ javac -cp Singkong.jar Test.java
 java -cp Singkong.jar:. Test
 Hello, World
 true
-null
 
 
 Example 6: Test.java
@@ -940,7 +934,6 @@ Example 7: Python
 >>> o = subprocess.check_output(c)
 >>> print(o)
 singkong
-null
 
 
 Example 8: Python
@@ -958,6 +951,7 @@ ERROR: builtin function "info" is disabled
 - Identifier starts with a letter or underscore and optionally followed by 
   letters, numbers, or underscores
 - null literal
+- null is not printed
 - Singkong has no INTEGER data type. Singkong has NUMBER data type that is
   compatible with INTEGER in Monkey, with support for decimal numbers.
 - Additional operators for NUMBER: % ^ <= >=
