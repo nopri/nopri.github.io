@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 1.6 (2020-Jan-19 +07:00)
+Version: 1.7 (2020-Jan-20 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -259,20 +259,20 @@ To get a list of builtin functions, please call builtins()
 "FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "IN", 
 "INDEX", "INFO", "INPUT", "INTEGER", "INTERACTIVE", "IS", "JOIN", "KEYS", 
 "LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", "MATCHES", "MAX", "MD5", 
-"MESSAGE", "MIN", "MINUTE", "MONTH", "NEWLINE", "NUMBER", "OPEN", "PARAM", 
-"PART", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
-"PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
-"RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", 
-"REMOVE_W", "REPLACE", "RESET", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", 
-"SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", 
-"SHOW", "SHUFFLE", "SINGKONG", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
-"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "STARTSWITH", 
-"STAT", "STOP", "STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", "TABLE_REMOVE", 
-"TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "USER", "VALUES", 
-"WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+"MESSAGE", "MIN", "MINUTE", "MONTH", "NEWLINE", "NUMBER", "NUMBER_GROUP", 
+"OPEN", "PARAM", "PART", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", 
+"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
+"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", 
+"REMOVE_N", "REMOVE_S", "REMOVE_W", "REPLACE", "RESET", "REST", "REVERSE", 
+"RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
+"SHA256", "SHA384", "SHA512", "SHOW", "SHUFFLE", "SINGKONG", "SIZE", "SLICE", 
+"SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
+"SORT_STRING", "SPLIT", "STARTSWITH", "STAT", "STOP", "STRING", "SUM", "SYSTEM", 
+"TAB", "TABLE_ADD", "TABLE_REMOVE", "TIMER", "TITLE", "TRIM", "TYPE", "TYPES", 
+"UPPER", "USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-153
+154
 
 Note: a builtin function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -302,6 +302,7 @@ if (name == "singkong") {
   print(name);
 }
 
+Note: HASH (key: condition, value: FUNCTION) may also be used 
 
 -----------------------------------------------------------------------------
 
@@ -965,6 +966,7 @@ ERROR: builtin function "info" is disabled
   remove, and many more).
 - Repeat loop (and builtin functions: do, each for simple looping)
 - Some builtin functions may be disabled when the interpreter in run 
+- Singkong supports multi-line comment (between # and ;)
 
 
 -----------------------------------------------------------------------------
