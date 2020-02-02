@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 1.9 (2020-Feb-02 +07:00)
+Version: 2.0 (2020-Feb-03 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -90,7 +90,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 1.9
+        Singkong 2.0
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -290,24 +290,24 @@ To get a list of built-in functions, please call builtins()
 "DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", "EQUALS", "EVAL", 
 "EVENT", "EXIT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
 "FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", 
-"HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_POST", "HTTP_POST_OVERRIDE", 
-"HTTP_PUT", "IN", "INDEX", "INFO", "INPUT", "INTEGER", "INTERACTIVE", "IS", 
-"JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", 
-"MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", "MONTH", "NEWLINE", 
-"NUMBER", "NUMBER_GROUP", "OPEN", "PARAM", "PARSE_HASH", "PART", "PASSWORD", 
-"POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", 
-"PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", 
-"RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", 
-"REPLACE", "RESET", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", 
-"SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SHOW", 
-"SHUFFLE", "SINGKONG", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
+"HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
+"HTTP_POST_OVERRIDE", "HTTP_PUT", "IN", "INDEX", "INFO", "INPUT", "INTEGER", 
+"INTERACTIVE", "IS", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", 
+"LOAD", "LOWER", "MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", "MONTH", 
+"NEWLINE", "NUMBER", "NUMBER_GROUP", "OPEN", "PARAM", "PARSE_HASH", "PART", 
+"PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
+"PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
+"RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", 
+"REMOVE_W", "REPLACE", "RESET", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", 
+"SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", 
+"SHOW", "SHUFFLE", "SINGKONG", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
 "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "STARTSWITH", 
 "STAT", "STOP", "STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", "TABLE_REMOVE", 
 "TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", 
 "USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-164
+165
 
 Note: a built-in function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -791,6 +791,13 @@ Singkong comes with simple HTTP client.
 - Encode or decode: please use built-in function url_encode or url_decode 
 - Read timeout can be set for each request (default: 10 seconds)
 - Headers may be set for each request
+- HEAD
+  - built-in function: http_head
+  - Accept-Charset: UTF-8
+  - Redirection from HTTP to HTTPS is supported
+  - Only one redirect is followed (Location header)
+  - Supported redirects: 301, 302, 303
+  - Built-in function returns ARRAY (headers, response code, data) or NULL
 - GET
   - built-in functions: http_get, http_get_file
   - Accept-Charset: UTF-8
@@ -798,6 +805,7 @@ Singkong comes with simple HTTP client.
   - Only one redirect is followed (Location header)
   - Supported redirects: 301, 302, 303
   - To download a file, please use built-in function: http_get_file
+  - Built-in functions return ARRAY (headers, response code, data) or NULL
 - POST 
   - built-in functions: http_post, http_post_override
   - Accept-Charset: UTF-8
@@ -805,16 +813,19 @@ Singkong comes with simple HTTP client.
   - Body may be empty
   - To do a HTTP POST with X-HTTP-Method-Override, please use built-in function
     http_post_override
+  - Built-in functions return ARRAY (headers, response code, data) or NULL
 - PUT
   - built-in function: http_put
   - Accept-Charset: UTF-8
   - Content-Type: application/x-www-form-urlencoded;charset=UTF-8
   - Body may be empty
+  - Built-in function returns ARRAY (headers, response code, data) or NULL
 - DELETE
   - built-in function: http_delete
   - Accept-Charset: UTF-8
   - Content-Type: application/x-www-form-urlencoded;charset=UTF-8
   - Body is not supported
+  - Built-in function returns ARRAY (headers, response code, data) or NULL
 - Unsupported method
   - If the server supports X-HTTP-Method-Override, http_post_override probably
     can be used (for example, with PATCH request method)
