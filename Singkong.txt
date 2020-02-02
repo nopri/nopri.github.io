@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 1.8 (2020-Jan-20 +07:00)
+Version: 1.9 (2020-Feb-02 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -18,27 +18,28 @@ WRITING AN INTERPRETER IN GO
  1. What is Singkong Programming Language
  2. System requirements
  3. Getting started
- 4. Identifier, data types, and operators
+ 4. Identifier, keywords, data types, and operators
  5. Builtin functions
  6. If condition
  7. Repeat loop
  8. GUI application development
  9. Database application development
 10. Calling Java method
-11. Embedding Singkong into another applications
-12. Differences with Monkey Programming Language
-13. Development, compatibility, and modules
-14. Example: GUI: components
-15. Example: GUI: layout
-16. Example: GUI: Singkong information
-17. Example: GUI: event handlers
-18. Example: GUI: printing
-19. Example: GUI: simple text file editor
-20. Example: GUI: timer
-21. Example: Database: create table
-22. Example: Database: insert, update, select
-23. Example: GUI/Database: select
-24. Example: Java: Base64 encode/decode
+11. Simple HTTP client
+12. Embedding Singkong into another applications
+13. Differences with Monkey Programming Language
+14. Development, compatibility, and modules
+15. Example: GUI: components
+16. Example: GUI: layout
+17. Example: GUI: Singkong information
+18. Example: GUI: event handlers
+19. Example: GUI: printing
+20. Example: GUI: simple text file editor
+21. Example: GUI: timer
+22. Example: Database: create table
+23. Example: Database: insert, update, select
+24. Example: GUI/Database: select
+25. Example: Java: Base64 encode/decode
 
 -----------------------------------------------------------------------------
 
@@ -46,7 +47,7 @@ WRITING AN INTERPRETER IN GO
 Singkong is case-insensitive, dynamically typed, procedural, and interpreted 
 programming language that runs on Java Virtual Machine (Java 5.0 or later). 
 It has numbers, booleans, strings, arrays, hash maps, dates, first-class 
-functions, builtin functions, GUI components, database connections, and 
+functions, built-in functions, GUI components, database connections, and 
 other features. Singkong program can also call Java method. 
 
 Singkong interpreter comes with simple GUI editor/interactive evaluator. 
@@ -64,7 +65,7 @@ Singkong is based on Monkey.java and inspired by Monkey Programming Language.
 Java Runtime Environment version 5.0 or later.  
 
 If only text-based environment is available, Singkong interactive evaluator 
-will fallback to text only version and builtin functions will adapt 
+will fallback to text only version and built-in functions will adapt 
 appropriately.
 
 
@@ -82,14 +83,14 @@ To run Singkong in text mode when GUI is available, please set property
 SINGKONG=0 (-DSINGKONG=0). This setting has no effect when GUI is not 
 available.
 
-To disable some builtin functions, please set property DISABLE (-DDISABLE) to 
+To disable some built-in functions, please set property DISABLE (-DDISABLE) to 
 comma-separated list of functions. 
 
 - Standalone
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 1.8
+        Singkong 1.9
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -104,10 +105,10 @@ comma-separated list of functions.
   - No command line argument: interactive (run in text mode, GUI available)
         java -DSINGKONG=0 -jar Singkong.jar
 
-  - No command line argument: interactive (disable builtin: system)
+  - No command line argument: interactive (disable built-in: system)
         java -DDISABLE=system -jar Singkong.jar
 
-  - No command line argument: interactive (disable builtins: system and info)
+  - No command line argument: interactive (disable built-in: system and info)
         java -DDISABLE=system,info -jar Singkong.jar
 
   - Command line argument: try to interpret as file
@@ -132,15 +133,16 @@ comma-separated list of functions.
 - Library
   Please read: Embedding Singkong into another applications 
 
-Note: please use builtin function: interactive, to get information whether 
+Note: please use built-in function: interactive, to get information whether 
 Singkong program is run in Singkong interactive evaluator/editor. 
 
 
 -----------------------------------------------------------------------------
 
-4. Identifier, data types, and operators
+4. Identifier, keywords, data types, and operators
 Identifier starts with letter or underscore and optionally followed by letters,
-numbers, or underscores. 
+numbers, or underscores. Built-in function names and keywords cannot be used as 
+identifier.
 
 Assignment is done using let statements:
 let name = "singkong";
@@ -169,6 +171,20 @@ println("Programming")
 ;
 println("Language")
 
+Keywords:
+#
+ELSE
+FALSE
+FN
+IF
+LET
+NULL
+REPEAT
+RETURN
+TRUE
+
+Note: to get list of keywords, please use built-in function keywords.
+
 Data types:
 Related functions: builtins, eval, is, hash, print, println, puts, string, type, 
 types
@@ -176,7 +192,7 @@ types
 - NULL
   - null
   - null literal
-  - null may also returned from builtin functions
+  - null may also returned from built-in functions
   - null is not printed. To print null, please use 
     print, println, puts, or message. 
 - NUMBER
@@ -196,7 +212,7 @@ types
   - double-quoted
   - arbitrary length string
   - operators: +(concatenation) -(remove) ==(equals,case-sensitive) != *(repeat)
-  - equals (case-insensitive): please use builtin function equals
+  - equals (case-insensitive): please use built-in function equals
   - related functions: array_string, call, center, count, cr, crlf, dir, empty, 
     endswith, equals, eval, in, index, join, left, len, lf, lower, matches, md5, 
     newline, quote, random_string, replace, right, set, sha1, sha256, sha384, 
@@ -210,7 +226,7 @@ types
   - []
   - array of mixed data types
   - operators: +(add), -(remove) == !=
-  - modify ARRAY: please use builtin function set()
+  - modify ARRAY: please use built-in function set
   - related functions: array, array_number, array_string, average, call, count, 
     each, empty, first, in, index, join, last, len, max, min, pop, push, 
     random, range, rest, reverse, shuffle, slice, sort_array, sort_boolean, 
@@ -224,8 +240,8 @@ types
   - any data type can be used as key
   - hash maintains insertion-order
   - operators: +(add dictionary), -(remove) == !=
-  - modify HASH: please use builtin function set()
-  - related functions: empty, keys, len, random, sort_hash, values
+  - modify HASH: please use built-in function set
+  - related functions: empty, keys, len, parse_hash, random, sort_hash, values
   - file related functions: properties_read, properties_write, stat
   - system related functions: info
   - Singkong related functions: singkong
@@ -246,7 +262,7 @@ types
     arguments, and )
   - related functions: do, each, param
 - BUILTIN
-  - builtin functions
+  - built-in function
   - related functions: builtins, disabled, help, param
 - COMPONENT
   - Please read: GUI application development
@@ -265,7 +281,7 @@ types
 -----------------------------------------------------------------------------
 
 5. Builtin functions
-To get a list of builtin functions, please call builtins()
+To get a list of built-in functions, please call builtins()
 ["ABS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", "APPEND", "ARGUMENTS", 
 "ARRAY", "ARRAY_NUMBER", "ARRAY_STRING", "AVERAGE", "BUILTINS", "CALL", 
 "CALL_INFO", "CENTER", "CLEAR", "CLOSING", "COMPONENT", "COMPONENT_TYPE", 
@@ -273,32 +289,34 @@ To get a list of builtin functions, please call builtins()
 "DATABASE_CONNECTED", "DATE", "DATETIME", "DAY", "DELAY", "DIFF", "DIR", 
 "DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", "EQUALS", "EVAL", 
 "EVENT", "EXIT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
-"FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "IN", 
-"INDEX", "INFO", "INPUT", "INTEGER", "INTERACTIVE", "IS", "JOIN", "KEYS", 
-"LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", "MATCHES", "MAX", "MD5", 
-"MESSAGE", "MIN", "MINUTE", "MONTH", "NEWLINE", "NUMBER", "NUMBER_GROUP", 
-"OPEN", "PARAM", "PART", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", 
-"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
-"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", 
-"REMOVE_N", "REMOVE_S", "REMOVE_W", "REPLACE", "RESET", "REST", "REVERSE", 
-"RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
-"SHA256", "SHA384", "SHA512", "SHOW", "SHUFFLE", "SINGKONG", "SIZE", "SLICE", 
-"SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
-"SORT_STRING", "SPLIT", "STARTSWITH", "STAT", "STOP", "STRING", "SUM", "SYSTEM", 
-"TAB", "TABLE_ADD", "TABLE_REMOVE", "TIMER", "TITLE", "TRIM", "TYPE", "TYPES", 
-"UPPER", "USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+"FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", 
+"HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_POST", "HTTP_POST_OVERRIDE", 
+"HTTP_PUT", "IN", "INDEX", "INFO", "INPUT", "INTEGER", "INTERACTIVE", "IS", 
+"JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOWER", 
+"MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", "MONTH", "NEWLINE", 
+"NUMBER", "NUMBER_GROUP", "OPEN", "PARAM", "PARSE_HASH", "PART", "PASSWORD", 
+"POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", 
+"PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", 
+"RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", 
+"REPLACE", "RESET", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", 
+"SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SHOW", 
+"SHUFFLE", "SINGKONG", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
+"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "STARTSWITH", 
+"STAT", "STOP", "STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", "TABLE_REMOVE", 
+"TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", 
+"USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-154
+164
 
-Note: a builtin function may be disabled when the interpreter in run. In such
+Note: a built-in function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
 
-To get basic information of a builtin function, please enter its name in
+To get basic information of a built-in function, please enter its name in
 interactive evaluator, without ( and ). For example:
 
 >  random
-builtin function: random: returns random number (between 0 inclusive and 1 
+built-in function: random: returns random number (between 0 inclusive and 1 
 exclusive), random number between min and max (both inclusive), random element 
 in ARRAY, random key in HASH
 arguments: 0, 1 (ARRAY or HASH), 2: (NUMBER and NUMBER)
@@ -351,16 +369,16 @@ To keep it as simple as possible:
 - There is only one frame for each Singkong program. No other frames
   or dialogs can be created. An application can only have at most one top-level
   frame and no other dialogs. To show common dialogs, please use related
-  builtin functions (confirm, directory, input, open, message, password, save).
-  To set frame title, please use builtin function title.
-  To set frame size, please use builtin function size (this might not work on 
+  built-in functions (confirm, directory, input, open, message, password, save).
+  To set frame title, please use built-in function title.
+  To set frame size, please use built-in function size (this might not work on 
   some system configuration and will be ignored).
-  To get frame properties (width, height, title), please use builtin function
+  To get frame properties (width, height, title), please use built-in function
   frame.
   To reset frame (remove all COMPONENTs, reset frame title and size to default
-  values, stop all timers), please use builtin function reset. 
+  values, stop all timers), please use built-in function reset. 
 - Every user interface component is a COMPONENT in Singkong.
-- To create a user interface component, builtin function component must be used.
+- To create a user interface component, please use built-in function component.
   This function accepts two arguments: component type and name, both as string.
   Component type must be a valid component type, and name will be used both as
   name and important properties. For example, to create a button, "button" must
@@ -370,25 +388,25 @@ To keep it as simple as possible:
   This function also accepts optional argument BOOLEAN: if true, created 
   component will be read-only (default: false). However, this only applicable 
   when creating edit, password, table, or text. 
-- To get a list of supported component types, builtin function components can be
-  used. Currently, this function returns:
+- To get a list of supported component types, built-in function components can 
+  be used. Currently, this function returns:
   ["button", "checkbox", "combobox", "edit", "image", "label", "password", 
   "radio", "table", "text"]
-- To get type of a COMPONENT, please use component_type builtin function. This
+- To get type of a COMPONENT, please use built-in function component_type. This
   function returns component type as STRING (one of values returned by 
   components function, as above). 
 - To add a COMPONENT or an ARRAY of COMPONENT to frame, please use one of the
-  following builtin functions: add, add_e, add_n, add_s, add_w (which adds a 
+  following built-in functions: add, add_e, add_n, add_s, add_w (which adds a 
   COMPONENT or an ARRAY of COMPONENT to specific region 
   (center, east, north, south, west) of frame. Existing components in that 
   region will be removed, prior to addition).
 - To remove COMPONENTs from specific region (center, east, north, south, west) 
-  of frame, please use one of the following builtin functions: remove, remove_e,
-  remove_n, remove_s, remove_w. To remove all COMPONENTs from frame, please use
-  builtin function clear. 
-- To enable or disable frame closing confirmation, please use closing builtin
-  function.
-- To configure a COMPONENT, please use config builtin function. This function
+  of frame, please use one of the following built-in functions: remove, 
+  remove_e, remove_n, remove_s, remove_w. To remove all COMPONENTs from frame, 
+  please use built-in function clear. 
+- To enable or disable frame closing confirmation, please use built-in function
+  closing.
+- To configure a COMPONENT, please use built-in function config. This function
   accepts three arguments: COMPONENT, STRING (key), and <any type> (value). 
   Different component may have different keys, but common keys are: 
   - enabled (for all components, expects value as BOOLEAN)
@@ -405,7 +423,7 @@ To keep it as simple as possible:
   (configuration may be ignored if it is not applicable -- no errors will be
    returned).
 - To get a configuration of a COMPONENT configured using config, please use
-  builtin function get. This function accepts two arguments: COMPONENT and 
+  built-in function get. This function accepts two arguments: COMPONENT and 
   STRING (key). 
   - enabled (for all components, returns a BOOLEAN)
   - visible (for all components, returns a BOOLEAN)
@@ -420,10 +438,10 @@ To keep it as simple as possible:
     or an ARRAY (of STRING, combobox))
   (configuration may be ignored if it is not applicable and NULL will be
    returned).
-- table: to add rows or remove a row, please use builtin function table_add or
+- table: to add rows or remove a row, please use built-in function table_add or
   table_remove. 
 - radio: to group an ARRAY of COMPONENT radio buttons (mutual-exclusion set), 
-  please use builtin function radio_group.
+  please use built-in function radio_group.
 - The following COMPONENTs have default event:
   - button: pressed
   - combobox: selected item changed
@@ -431,19 +449,19 @@ To keep it as simple as possible:
   - radio: selected/deselected
   - table: selected item changed
   - edit/password/text: contents changed
-  Event handlers for these events can be registered using builtin function
+  Event handlers for these events can be registered using built-in function
   event. This function accepts two arguments: COMPONENT and FUNCTION.
   Registered FUNCTION will be called whenever the default event for specified
   COMPONENT should be handled. 
   Please note that specified FUNCTION must not require any arguments.
 - Printing: simple printing can be done using print dialog. To show a print
-  dialog, please use builtin function printer. Basic settings such as font name,
-  font size, left/top margin are supported. 
-- To get the size of the screen, please use builtin function screen.
-- To calls a FUNCTION every specified delay, please use builtin function timer.
+  dialog, please use built-in function printer. Basic settings such as 
+  font name, font size, left/top margin are supported. 
+- To get the size of the screen, please use built-in function screen.
+- To calls a FUNCTION every specified delay, please use built-in function timer.
   This function accepts two arguments: NUMBER (delay in milliseconds) and
-  FUNCTION. To stop all timers, please use builtin function stop. 
-- To get list of available fonts, please use builtin function fonts.
+  FUNCTION. To stop all timers, please use built-in function stop. 
+- To get list of available fonts, please use built-in function fonts.
 
 
 -----------------------------------------------------------------------------
@@ -452,7 +470,7 @@ To keep it as simple as possible:
 Singkong supports simple database application development (SQL relational 
 database management system). 
 - Every connection to a database system is a DATABASE in Singkong.
-- To connect to a database system, please use builtin function database. This
+- To connect to a database system, please use built-in function database. This
   function accepts four arguments:
   - STRING: database driver, Java class found in class path
   - STRING: database URL
@@ -480,7 +498,7 @@ database management system).
     >  let db = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin")
     >  db
     DATABASE (URL=jdbc:h2:/tmp/test, user=admin, driver=org.h2.Driver)     
-- To test whether a database connection is valid, please use builtin function
+- To test whether a database connection is valid, please use built-in function
   database_connected.
 - Supported Singkong and Java type mapping:
   - BOOLEAN -> Java: boolean
@@ -489,7 +507,7 @@ database management system).
               Java: java.math.BigDecimal
   - STRING -> Java: String
   Unsupported Singkong data type in query: returns error
-- To run an ARRAY of SQL queries, please use builtin function query. This
+- To run an ARRAY of SQL queries, please use built-in function query. This
   function accepts two arguments: DATABASE and ARRAY of ARRAY. Each element 
   in the specified ARRAY must be an ARRAY of two elements: STRING (SQL command
   and ARRAY of arguments). SQL queries are run in transaction, which will
@@ -501,7 +519,7 @@ database management system).
 10. Calling Java method
 It is possible to call static Java method and use the returned value, to 
 provide functionalities in Java Programming Language. 
-- To call static Java method, please use builtin function call. This function
+- To call static Java method, please use built-in function call. This function
   accepts two-arguments: STRING (Java class name found in class path) and
   any type. This function returns STRING, ARRAY (of STRING), 
   ARRAY (of ARRAY (of STRING)), or NULL (error). 
@@ -703,7 +721,7 @@ provide functionalities in Java Programming Language.
     3: ARRAY: ["4", "5", "6"]
 
 - Returned String from Java method can be a valid Singkong program, that can
-  be evaluated using builtin function eval (if this function is not disabled):
+  be evaluated using built-in function eval (if this function is not disabled):
 
   - HelloWorldEval.java:
 
@@ -747,7 +765,7 @@ provide functionalities in Java Programming Language.
     >  add(b)
     >  show()
 
-- To get information about the class (if provided), please use builtin function
+- To get information about the class (if provided), please use built-in function
   call_info. This function accepts one argument: STRING (Java class name found 
   in class path). The class must have a static method named: singkong_info, 
   without parameter, and return a String.
@@ -767,7 +785,49 @@ provide functionalities in Java Programming Language.
 
 -----------------------------------------------------------------------------
 
-11. Embedding Singkong into another applications
+11. Simple HTTP client
+Singkong comes with simple HTTP client. 
+- Default user agent: Singkong <version>
+- Encode or decode: please use built-in function url_encode or url_decode 
+- Read timeout can be set for each request (default: 10 seconds)
+- Headers may be set for each request
+- GET
+  - built-in functions: http_get, http_get_file
+  - Accept-Charset: UTF-8
+  - Redirection from HTTP to HTTPS is supported
+  - Only one redirect is followed (Location header)
+  - Supported redirects: 301, 302, 303
+  - To download a file, please use built-in function: http_get_file
+- POST 
+  - built-in functions: http_post, http_post_override
+  - Accept-Charset: UTF-8
+  - Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+  - Body may be empty
+  - To do a HTTP POST with X-HTTP-Method-Override, please use built-in function
+    http_post_override
+- PUT
+  - built-in function: http_put
+  - Accept-Charset: UTF-8
+  - Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+  - Body may be empty
+- DELETE
+  - built-in function: http_delete
+  - Accept-Charset: UTF-8
+  - Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+  - Body is not supported
+- Unsupported method
+  - If the server supports X-HTTP-Method-Override, http_post_override probably
+    can be used (for example, with PATCH request method)
+- Working with JSON
+  - JSON is not explicitly supported in Singkong. However, HASH probably can be 
+    used.
+  - To convert from HASH to STRING, please use built-in function string.
+  - To convert from STRING to HASH, please use built-in function parse_hash.  
+
+
+-----------------------------------------------------------------------------
+
+12. Embedding Singkong into another applications
 Java applications:
 - Class: com.noprianto.singkong.Singkong
 - Methods: 
@@ -824,7 +884,7 @@ public class Test {
 javac -cp Singkong.jar Test.java 
 java -cp Singkong.jar:. Test
 [1, 2, 3]
-ERROR: builtin function "system" is disabled
+ERROR: built-in function "system" is disabled
 
 
 Example 3: Test.java
@@ -874,7 +934,7 @@ public class Test {
 javac -cp Singkong.jar Test.java
 java -cp Singkong.jar:. Test
 Hello, World
-ERROR: builtin function "info" is disabled
+ERROR: built-in function "info" is disabled
 
 
 Example 5: Test.java
@@ -942,7 +1002,7 @@ public class Test {
 javac -cp Singkong.jar Test.java
 java -cp Singkong.jar:. Test
 Hello, World
-ERROR: builtin function "info" is disabled
+ERROR: built-in function "info" is disabled
 
 
 Another applications:
@@ -959,12 +1019,12 @@ Example 8: Python
 >>> c = ['java', '-DDISABLE=info', '-jar', 'Singkong.jar', 'info()']
 >>> o = subprocess.check_output(c)
 >>> print(o)
-ERROR: builtin function "info" is disabled
+ERROR: built-in function "info" is disabled
 
 
 -----------------------------------------------------------------------------
 
-12. Differences with Monkey Programming Language
+13. Differences with Monkey Programming Language
 - Singkong is case-insensitive
 - Identifier starts with a letter or underscore and optionally followed by 
   letters, numbers, or underscores
@@ -975,20 +1035,20 @@ ERROR: builtin function "info" is disabled
 - Additional operators for NUMBER: % ^ <= >=
 - Additional operators for BOOLEAN: & |
 - HASH: any data type can be used as key/value, maintains insertion-order
-- More builtin functions
+- More built-in functions
 - Additional data types: DATE, COMPONENT (GUI application development), and
   DATABASE (database connection, database application development)
 - Singkong uses overloaded operators for data types, as much as possible
   (for example, * for string repetition, - for string remove, - for array 
   remove, and many more).
-- Repeat loop (and builtin functions: do, each for simple looping)
-- Some builtin functions may be disabled when the interpreter in run 
+- Repeat loop (and built-in functions: do, each for simple looping)
+- Some built-in functions may be disabled when the interpreter in run 
 - Singkong supports multi-line comment (between # and ;)
 
 
 -----------------------------------------------------------------------------
 
-13. Development, compatibility, and modules
+14. Development, compatibility, and modules
 - Singkong is developed on Java 8 with -source 1.5 -target 1.5
   (using Java 5.0-compatible application programming interface)
 - Run tests: Java 5.0, Java 8 (main testing), and latest Java version 
@@ -998,7 +1058,7 @@ ERROR: builtin function "info" is disabled
 
 -----------------------------------------------------------------------------
 
-14. Example: GUI: components
+15. Example: GUI: components
 reset();
 let b = component("button", "Hello");
 let c = component("checkbox", "Singkong?");
@@ -1020,7 +1080,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-15. Example: GUI: layout
+16. Example: GUI: layout
 reset();
 let c = component("button", "C");
 let e = component("button", "E");
@@ -1043,7 +1103,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-16. Example: GUI: Singkong information
+17. Example: GUI: Singkong information
 reset();
 let t = component("table","KEY,VALUE,TYPE", true);
 let l = component("label", "Singkong Programming Language information");
@@ -1065,7 +1125,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-17. Example: GUI: event handlers
+18. Example: GUI: event handlers
 reset();
 let b = component("button", "Hello, World");
 let c = component("checkbox", "Singkong?");
@@ -1125,7 +1185,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-18. Example: GUI: printing
+19. Example: GUI: printing
 reset();
 let t = ["Singkong", "Programming", "Language"];
 let s = 16;
@@ -1137,7 +1197,7 @@ printer(t, s, x, y, font);
 
 -----------------------------------------------------------------------------
 
-19. Example: GUI: simple text file editor
+20. Example: GUI: simple text file editor
 reset();
 let e = component("edit", "");
 let o = component("button", "open");
@@ -1171,7 +1231,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-20. Example: GUI: timer
+21. Example: GUI: timer
 reset();
 let l = component("label", string(@));
 let b1 = component("button", "start");
@@ -1200,7 +1260,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-21. Example: Database: create table
+22. Example: Database: create table
 let d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin");
 if (database_connected(d)) {
     let q = [ ["create table test(a integer, b varchar(64))", []] ]
@@ -1211,7 +1271,7 @@ if (database_connected(d)) {
 
 -----------------------------------------------------------------------------
 
-22. Example: Database: insert, update, select
+23. Example: Database: insert, update, select
 let d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin");
 if (database_connected(d)) {
     let q = [
@@ -1229,7 +1289,7 @@ if (database_connected(d)) {
 
 -----------------------------------------------------------------------------
 
-23. Example: GUI/Database: select
+24. Example: GUI/Database: select
 reset();
 let t = component("table", "A,B", true);
 add(t);
@@ -1248,7 +1308,7 @@ show();
 
 -----------------------------------------------------------------------------
 
-24. Example: Java: Base64 encode/decode
+25. Example: Java: Base64 encode/decode
 Note: the following modules require Java 8 or later. Please read: 
 Calling Java method. The following files are saved in examples directory, 
 relative to current working directory.
