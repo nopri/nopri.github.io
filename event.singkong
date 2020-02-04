@@ -7,6 +7,7 @@ let t = component("table", "A,B", true);
 let e = component("edit", "");
 let p = component("password", "");
 let x = component("text", "");
+let v = component("view", "");
 
 let bb = fn() {
     message(get(b,"text"));
@@ -35,7 +36,8 @@ let tt = fn() {
 event(t, tt);
 
 let ee = fn() {
-    message(get(e, "contents"));
+    let content = get(e, "contents");
+    config(v, "contents", content); 
 };
 event(e, ee);
 
@@ -51,6 +53,6 @@ event(x, xx);
 
 add_n([p, x]);
 add_s([b, c, r, m]);
-add([t, e]);
+add([t, e, v]);
 show();
 

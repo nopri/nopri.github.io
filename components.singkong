@@ -9,9 +9,11 @@ let p = component("password", "test");
 let r = component("radio", "Radio Button");
 let t = component("table", "A,B,C,D,E");
 let x = component("text", "Singkong");
+let v = component("view", "<html><body><b>Singkong</b></body></html>");
 
 add([e, t]);
 add_n([i, l, x, p, c, r, m, b]);
+add_s(v);
 
 closing("Are you sure you want to quit this application?", "Please confirm");
 show();

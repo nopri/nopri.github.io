@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 2.0 (2020-Feb-03 +07:00)
+Version: 2.1 (2020-Feb-05 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -48,13 +48,11 @@ Singkong is case-insensitive, dynamically typed, procedural, and interpreted
 programming language that runs on Java Virtual Machine (Java 5.0 or later). 
 It has numbers, booleans, strings, arrays, hash maps, dates, first-class 
 functions, built-in functions, GUI components, database connections, and 
-other features. Singkong program can also call Java method. 
+other features. Singkong program can call Java methods and Singkong interpreter 
+can be embedded and integrated into another applications. 
 
-Singkong interpreter comes with simple GUI editor/interactive evaluator. 
-
-Singkong can be run on graphical or text user interfaces. It can also be 
-embedded and integrated into another applications. Singkong is distributed as 
-single jar file. 
+Singkong interpreter is distributed as single jar file. It comes with simple GUI 
+editor/interactive evaluator and can be run on graphical or text user interfaces.  
 
 Singkong is based on Monkey.java and inspired by Monkey Programming Language.
 
@@ -90,7 +88,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 2.0
+        Singkong 2.1
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -243,7 +241,7 @@ types
   - modify HASH: please use built-in function set
   - related functions: empty, keys, len, parse_hash, random, sort_hash, values
   - file related functions: properties_read, properties_write, stat
-  - system related functions: info
+  - system related functions: env, info
   - Singkong related functions: singkong
   - sorting: by length
 - DATE
@@ -287,8 +285,8 @@ To get a list of built-in functions, please call builtins()
 "CALL_INFO", "CENTER", "CLEAR", "CLOSING", "COMPONENT", "COMPONENT_TYPE", 
 "COMPONENTS", "CONFIG", "CONFIRM", "COUNT", "CR", "CRLF", "CWD", "DATABASE", 
 "DATABASE_CONNECTED", "DATE", "DATETIME", "DAY", "DELAY", "DIFF", "DIR", 
-"DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", "EQUALS", "EVAL", 
-"EVENT", "EXIT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
+"DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", "ENV", "EQUALS", 
+"EVAL", "EVENT", "EXIT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
 "FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", 
 "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
 "HTTP_POST_OVERRIDE", "HTTP_PUT", "IN", "INDEX", "INFO", "INPUT", "INTEGER", 
@@ -307,7 +305,7 @@ To get a list of built-in functions, please call builtins()
 "USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-165
+166
 
 Note: a built-in function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -391,7 +389,7 @@ To keep it as simple as possible:
 - To get a list of supported component types, built-in function components can 
   be used. Currently, this function returns:
   ["button", "checkbox", "combobox", "edit", "image", "label", "password", 
-  "radio", "table", "text"]
+  "radio", "table", "text", "view"]
 - To get type of a COMPONENT, please use built-in function component_type. This
   function returns component type as STRING (one of values returned by 
   components function, as above). 
@@ -418,7 +416,7 @@ To keep it as simple as possible:
     expects value as STRING)
   - active (checkbox/radio expects value as BOOLEAN, combobox/table expects
     value as NUMBER (selected index))
-  - contents (contents of combobox/edit/password/table/text, image file of
+  - contents (contents of combobox/edit/password/table/text/view, image file of
     image, expects value as STRING, ARRAY of ARRAY (table), or ARRAY (combobox))
   (configuration may be ignored if it is not applicable -- no errors will be
    returned).
@@ -433,7 +431,7 @@ To keep it as simple as possible:
   - text (label of button/checkbox/label/radio, selected item of combobox, 
     returns a STRING)
   - active (checkbox/radio returns a BOOLEAN, combobox/table returns a NUMBER)
-  - contents (contents of combobox/edit/password/table/text, image file of 
+  - contents (contents of combobox/edit/password/table/text/view, image file of 
     image, returns a STRING, an ARRAY of ARRAY (of STRING, table), 
     or an ARRAY (of STRING, combobox))
   (configuration may be ignored if it is not applicable and NULL will be
@@ -1037,7 +1035,7 @@ ERROR: built-in function "info" is disabled
 
 13. Differences with Monkey Programming Language
 - Singkong is case-insensitive
-- Identifier starts with a letter or underscore and optionally followed by 
+- Identifier starts with a letter or an underscore and optionally followed by 
   letters, numbers, or underscores
 - null literal
 - null is not printed
@@ -1050,7 +1048,7 @@ ERROR: built-in function "info" is disabled
 - Additional data types: DATE, COMPONENT (GUI application development), and
   DATABASE (database connection, database application development)
 - Singkong uses overloaded operators for data types, as much as possible
-  (for example, * for string repetition, - for string remove, - for array 
+  (for example: * for string repetition, - for string remove, - for array 
   remove, and many more).
 - Repeat loop (and built-in functions: do, each for simple looping)
 - Some built-in functions may be disabled when the interpreter in run 
@@ -1081,9 +1079,11 @@ let p = component("password", "test");
 let r = component("radio", "Radio Button");
 let t = component("table", "A,B,C,D,E");
 let x = component("text", "Singkong");
+let v = component("view", "<html><body><b>Singkong</b></body></html>");
 
 add([e, t]);
 add_n([i, l, x, p, c, r, m, b]);
+add_s(v);
 
 closing("Are you sure you want to quit this application?", "Please confirm");
 show();
@@ -1146,6 +1146,7 @@ let t = component("table", "A,B", true);
 let e = component("edit", "");
 let p = component("password", "");
 let x = component("text", "");
+let v = component("view", "");
 
 let bb = fn() {
     message(get(b,"text"));
@@ -1174,7 +1175,8 @@ let tt = fn() {
 event(t, tt);
 
 let ee = fn() {
-    message(get(e, "contents"));
+    let content = get(e, "contents");
+    config(v, "contents", content); 
 };
 event(e, ee);
 
@@ -1190,7 +1192,7 @@ event(x, xx);
 
 add_n([p, x]);
 add_s([b, c, r, m]);
-add([t, e]);
+add([t, e, v]);
 show();
 
 
