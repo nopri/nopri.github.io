@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 2.1 (2020-Feb-05 +07:00)
+Version: 2.2 (2020-Feb-06 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -88,7 +88,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 2.1
+        Singkong 2.2
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -293,7 +293,7 @@ To get a list of built-in functions, please call builtins()
 "INTERACTIVE", "IS", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", 
 "LOAD", "LOWER", "MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", "MONTH", 
 "NEWLINE", "NUMBER", "NUMBER_GROUP", "OPEN", "PARAM", "PARSE_HASH", "PART", 
-"PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
+"PARTS", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
 "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
 "RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", 
 "REMOVE_W", "REPLACE", "RESET", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", 
@@ -305,7 +305,7 @@ To get a list of built-in functions, please call builtins()
 "USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-166
+167
 
 Note: a built-in function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -388,8 +388,8 @@ To keep it as simple as possible:
   when creating edit, password, table, or text. 
 - To get a list of supported component types, built-in function components can 
   be used. Currently, this function returns:
-  ["button", "checkbox", "combobox", "edit", "image", "label", "password", 
-  "radio", "table", "text", "view"]
+  ["button", "checkbox", "combobox", "date", "edit", "image", "label", 
+  "password", "radio", "table", "text", "view"]
 - To get type of a COMPONENT, please use built-in function component_type. This
   function returns component type as STRING (one of values returned by 
   components function, as above). 
@@ -416,8 +416,9 @@ To keep it as simple as possible:
     expects value as STRING)
   - active (checkbox/radio expects value as BOOLEAN, combobox/table expects
     value as NUMBER (selected index))
-  - contents (contents of combobox/edit/password/table/text/view, image file of
-    image, expects value as STRING, ARRAY of ARRAY (table), or ARRAY (combobox))
+  - contents (contents of combobox/date/edit/password/table/text/view, image 
+    file of image, expects value as STRING, ARRAY of ARRAY (table), 
+    ARRAY (combobox), or DATE/STRING (date))
   (configuration may be ignored if it is not applicable -- no errors will be
    returned).
 - To get a configuration of a COMPONENT configured using config, please use
@@ -431,9 +432,9 @@ To keep it as simple as possible:
   - text (label of button/checkbox/label/radio, selected item of combobox, 
     returns a STRING)
   - active (checkbox/radio returns a BOOLEAN, combobox/table returns a NUMBER)
-  - contents (contents of combobox/edit/password/table/text/view, image file of 
-    image, returns a STRING, an ARRAY of ARRAY (of STRING, table), 
-    or an ARRAY (of STRING, combobox))
+  - contents (contents of combobox/date/edit/password/table/text/view, image 
+    file of image, returns a STRING, an ARRAY of ARRAY (of STRING, table), 
+    an ARRAY (of STRING, combobox), or a DATE (date))
   (configuration may be ignored if it is not applicable and NULL will be
    returned).
 - table: to add rows or remove a row, please use built-in function table_add or
@@ -460,6 +461,23 @@ To keep it as simple as possible:
   This function accepts two arguments: NUMBER (delay in milliseconds) and
   FUNCTION. To stop all timers, please use built-in function stop. 
 - To get list of available fonts, please use built-in function fonts.
+- Date: 
+  - When creating a date COMPONENT, name is used as format pattern. If it is
+    not set, default value of "yyyy-MM-dd" is used. If time is needed, in 
+    addition to default format, "yyyy-MM-dd HH:mm:ss" may be used. If day and 
+    month names are preferred, "EEE, yyyy-MMM-dd" or "EEEE, yyyy-MMMM-dd" 
+    may be used. Please refer to Java SimpleDateFormat documentation for 
+    supported format patterns.
+  - To configure a date COMPONENT, a DATE or a STRING representation of a DATE 
+    can be used:
+    - If STRING representation is used: please use built-in function parts 
+      to convert parts of a DATE as STRING. For example: 
+        let d = component("date","")
+        config(d, "contents", parts(@))
+    - If DATE is used: no conversion is needed. For example:
+        let d = component("date","")
+        config(d, "contents", @)
+  - Get a configuration of a date COMPONENT: a DATE is returned 
 
 
 -----------------------------------------------------------------------------
@@ -1072,6 +1090,7 @@ reset();
 let b = component("button", "Hello");
 let c = component("checkbox", "Singkong?");
 let m = component("combobox", "Singkong,Programming,Language");
+let d = component("date", "EEEE, yyyy-MMMM-dd");
 let e = component("edit", "Hello, World");
 let i = component("image", "image.jpg");
 let l = component("label", "Singkong Programming Language");
@@ -1083,7 +1102,7 @@ let v = component("view", "<html><body><b>Singkong</b></body></html>");
 
 add([e, t]);
 add_n([i, l, x, p, c, r, m, b]);
-add_s(v);
+add_s([v, d]);
 
 closing("Are you sure you want to quit this application?", "Please confirm");
 show();

@@ -2,6 +2,7 @@ reset();
 let b = component("button", "Hello");
 let c = component("checkbox", "Singkong?");
 let m = component("combobox", "Singkong,Programming,Language");
+let d = component("date", "EEEE, yyyy-MMMM-dd");
 let e = component("edit", "Hello, World");
 let i = component("image", "image.jpg");
 let l = component("label", "Singkong Programming Language");
@@ -13,7 +14,7 @@ let v = component("view", "<html><body><b>Singkong</b></body></html>");
 
 add([e, t]);
 add_n([i, l, x, p, c, r, m, b]);
-add_s(v);
+add_s([v, d]);
 
 closing("Are you sure you want to quit this application?", "Please confirm");
 show();
