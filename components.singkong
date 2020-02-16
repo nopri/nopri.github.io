@@ -7,6 +7,7 @@ let e = component("edit", "Hello, World");
 let i = component("image", "image.jpg");
 let l = component("label", "Singkong Programming Language");
 let p = component("password", "test");
+let g = component("progress", "");
 let r = component("radio", "Radio Button");
 let t = component("table", "A,B,C,D,E");
 let x = component("text", "Singkong");
@@ -14,7 +15,7 @@ let v = component("view", "<html><body><b>Singkong</b></body></html>");
 
 add([e, t]);
 add_n([i, l, x, p, c, r, m, b]);
-add_s([v, d]);
+add_s([v, d, g]);
 
 closing("Are you sure you want to quit this application?", "Please confirm");
 show();
