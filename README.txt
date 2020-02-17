@@ -30,6 +30,9 @@ Mengenal dan Menggunakan Bahasa Pemrograman Java
 ISBN: 978-602-52770-0-9
 noprianto-mengenal_dan_menggunakan_java.pdf
 
+Mengenal dan Menggunakan Bahasa Pemrograman Singkong
+ISBN: 978-602-52770-1-6
+
 
 2. Paper Presentation in English
 ===================================
@@ -136,6 +139,12 @@ Multithreading dan contoh pemrograman yang tidak thread-safe
 (Bina Nusantara University, 2019-Jun-28)
 noprianto-intro-not_thread_safe_code.pdf
 noprianto-intro-not_thread_safe_code.odp
+
+Tantangan pengembangan dan pengelolaan software
+(Bina Nusantara University, 2020-Feb-18)
+(Bina Nusantara University, 2020-Feb-19)
+(Universitas Multimedia Nusantara, 2020-Feb-25)
+noprianto-tantangan_pengembangan_dan_pengelolaan_software.pdf
 
 
 5. Unmaintained code
