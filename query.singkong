@@ -1,13 +1,13 @@
-let d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin");
+let d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin")
 if (database_connected(d)) {
     let q = [ 
         ["insert into test(a,b) values(?, ?)", [random(1,10), "hello"]], 
         ["update test set b=? where b=?", ["Hello World", "hello"]] 
     ]
-    let r = query(d, q);
-    println(r);
+    let r = query(d, q)
+    println(r)
 
     let q = [ ["select * from test", []] ]
-    let r = query(d, q);
-    println(r);
+    let r = query(d, q)
+    println(r)
 }

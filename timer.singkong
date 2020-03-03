@@ -1,24 +1,24 @@
-reset();
-let l = component("label", string(@));
-let b1 = component("button", "start");
-let b2 = component("button", "stop");
+reset()
+let l = component("label", string(@))
+let b1 = component("button", "start")
+let b2 = component("button", "stop")
 
-add(l);
-add_s([b1, b2]);
+add(l)
+add_s([b1, b2])
 
 let f = fn() {
-    config(l, "text", string(@));
+    config(l, "text", string(@))
 }
 
 let timer_start = fn() {
-    timer(1000, f);
+    timer(1000, f)
 }
 
 let timer_stop = fn() {
-    stop();
+    stop()
 }
 
-event(b1, timer_start);
-event(b2, timer_stop);
+event(b1, timer_start)
+event(b2, timer_stop)
 
-show();
+show()

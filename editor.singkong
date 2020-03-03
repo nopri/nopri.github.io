@@ -1,29 +1,29 @@
-reset();
-let e = component("edit", "");
-let o = component("button", "open");
-let s = component("button", "save");
-let l = component("label", "");
+reset()
+let e = component("edit", "")
+let o = component("button", "open")
+let s = component("button", "save")
+let l = component("label", "")
 
 let oo = fn() {
-    let f = open();
+    let f = open()
     if (!empty(f)) {
-        config(e, "contents", read(f));
-        config(l, "text", f);
+        config(e, "contents", read(f))
+        config(l, "text", f)
     }
 }
-event(o, oo);
+event(o, oo)
 
 let ss = fn() {
-    let f = save();
+    let f = save()
     if (!empty(f)) {
-        let t = get(e, "contents");
-        write(f, t);
-        config(l, "text", f);
+        let t = get(e, "contents")
+        write(f, t)
+        config(l, "text", f)
     }
 }
-event(s, ss);
+event(s, ss)
 
-add_n(l);
-add(e);
-add_s([o, s]);
-show();
+add_n(l)
+add(e)
+add_s([o, s])
+show()
