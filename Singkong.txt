@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 2.4 (2020-Mar-03 +07:00)
+Version: 2.5 (2020-Mar-07 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -88,7 +88,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 2.4
+        Singkong 2.5
         Press ENTER to quit
         > let hello = "Hello World"
         > hello
@@ -370,9 +370,10 @@ Please also use do and each functions for simple repetitions:
 Singkong supports simple graphical user interface application development. 
 To keep it as simple as possible:
 - There is only one frame for each Singkong program. No other frames
-  or dialogs can be created. An application can only have at most one top-level
-  frame and no other dialogs. To show common dialogs, please use related
-  built-in functions (confirm, directory, input, open, message, password, save).
+  or custom dialogs can be created. An application can only have at most one 
+  top-level frame and no other custom dialogs. To show common dialogs, please 
+  use related built-in functions (confirm, directory, input, open, message, 
+  password, save, login_dialog).
   To set frame title, please use built-in function title.
   To set frame size, please use built-in function size (this might not work on 
   some system configuration and will be ignored).
@@ -394,8 +395,8 @@ To keep it as simple as possible:
   when creating edit, password, table, or text. 
 - To get a list of supported component types, built-in function components can 
   be used. Currently, this function returns:
-  ["button", "checkbox", "combobox", "date", "edit", "image", "label", 
-  "password", "progress", "radio", "table", "text", "view"]
+  ["barchart", "button", "checkbox", "combobox", "date", "edit", "image", 
+  "label", "password", "progress", "radio", "table", "text", "view"]
 - To get type of a COMPONENT, please use built-in function component_type. This
   function returns component type as STRING (one of values returned by 
   components function, as above). 
@@ -410,8 +411,6 @@ To keep it as simple as possible:
   please use built-in function clear. 
 - To enable or disable frame closing confirmation, please use built-in function
   closing.
-- GUI dialogs (built-in functions): confirm, directory, input, open, message, 
-  password, save, login_dialog.
 - To configure a COMPONENT, please use built-in function config. This function
   accepts three arguments: COMPONENT, STRING (key), and <any type> (value). 
   Different component may have different keys, but common keys are: 
@@ -421,12 +420,13 @@ To keep it as simple as possible:
   - foreground/background (for all components, expects value as STRING (color name or RGB value))
   - font (for all components, expects value as ARRAY [STRING (font name), NUMBER (0=plain, 1=bold, 2=italic, 3=bold and italic), NUMBER (size)])
   - text (label of button/checkbox/label/radio, selected item of combobox, 
-    expects value as STRING)
+    title of barchart, expects value as STRING)
   - active (checkbox/radio expects value as BOOLEAN, combobox/table expects
     value as NUMBER (selected index))
-  - contents (contents of combobox/date/edit/password/progress/table/text/view, 
+  - contents (contents of barchart/combobox/date/edit/password/progress/table/text/view, 
     image file of image, expects value as STRING, ARRAY of ARRAY (table), 
-    ARRAY (combobox), DATE/STRING (date), or NUMBER (progress))
+    ARRAY (combobox), DATE/STRING (date), NUMBER (progress), or ARRAY of ARRAY 
+    (of [NUMBER (value), STRING (label), STRING (color name or RGB value)], barchart))
   (configuration may be ignored if it is not applicable -- no errors will be
    returned).
 - To get a configuration of a COMPONENT configured using config, please use
@@ -1107,13 +1107,21 @@ let g = component("progress", "")
 let r = component("radio", "Radio Button")
 let t = component("table", "A,B,C,D,E")
 let x = component("text", "Singkong")
-let v = component("view", "<html><body><b>Singkong</b></body></html>")
+let v = component("view", "<b>Singkong</b><br>Programming")
 
-add([e, t])
+let z = component("barchart", "")
+config(z, "foreground", "red")
+config(z, "background", "white")
+config(z, "font", ["monospaced", 1, 20])
+config(z, "text", "Singkong")
+config(z, "contents", [[10, "A", "green"], [20, "B", "blue"]]) 
+
+add([e, t, z])
 add_n([i, l, x, p, c, r, m, b])
 add_s([v, d, g])
 
-closing("Are you sure you want to quit this application?", "Please confirm")
+closing("Are you sure you want to quit this application?", 
+  "Please confirm")
 show()
 
 

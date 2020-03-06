@@ -11,11 +11,19 @@ let g = component("progress", "")
 let r = component("radio", "Radio Button")
 let t = component("table", "A,B,C,D,E")
 let x = component("text", "Singkong")
-let v = component("view", "<html><body><b>Singkong</b></body></html>")
+let v = component("view", "<b>Singkong</b><br>Programming")
 
-add([e, t])
+let z = component("barchart", "")
+config(z, "foreground", "red")
+config(z, "background", "white")
+config(z, "font", ["monospaced", 1, 20])
+config(z, "text", "Singkong")
+config(z, "contents", [[10, "A", "green"], [20, "B", "blue"]]) 
+
+add([e, t, z])
 add_n([i, l, x, p, c, r, m, b])
 add_s([v, d, g])
 
-closing("Are you sure you want to quit this application?", "Please confirm")
+closing("Are you sure you want to quit this application?", 
+  "Please confirm")
 show()
