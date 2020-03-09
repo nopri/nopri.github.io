@@ -1,15 +1,15 @@
 reset()
-let t = component("table","KEY,VALUE,TYPE", true)
-let l = component("label", "Singkong Programming Language information")
+var t = component("table","KEY,VALUE,TYPE", true)
+var l = component("label", "Singkong Programming Language information")
 
 add_n(l)
 add(t)
 
-let s = singkong()
-let a = []
-let f = fn(x,i) {
-    let v = s[x]
-    let a = a + [x, v, type(v)]
+var s = singkong()
+var a = []
+var f = fn(x,i) {
+    var v = s[x]
+    var a = a + [x, v, type(v)]
 }
 each(keys(s), f)
 

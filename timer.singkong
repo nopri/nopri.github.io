@@ -1,20 +1,20 @@
 reset()
-let l = component("label", string(@))
-let b1 = component("button", "start")
-let b2 = component("button", "stop")
+var l = component("label", string(@))
+var b1 = component("button", "start")
+var b2 = component("button", "stop")
 
 add(l)
 add_s([b1, b2])
 
-let f = fn() {
+var f = fn() {
     config(l, "text", string(@))
 }
 
-let timer_start = fn() {
+var timer_start = fn() {
     timer(1000, f)
 }
 
-let timer_stop = fn() {
+var timer_stop = fn() {
     stop()
 }
 

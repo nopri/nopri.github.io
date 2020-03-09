@@ -1,18 +1,18 @@
 #ARRAY;
-let a = [[1,2,3], [], [1,2]]
-let b = [false, true, false, true]
-let d = [@2020, @2019, @2021]
-let h = [{1:2,3:4}, {}, {1:2}]
-let n = [3, 1, 2]
-let s = ["Singkong", "Programming", "Language"]
+var a = [[1,2,3], [], [1,2]]
+var b = [false, true, false, true]
+var d = [@2020, @2019, @2021]
+var h = [{1:2,3:4}, {}, {1:2}]
+var n = [3, 1, 2]
+var s = ["Singkong", "Programming", "Language"]
 
 #sort;
-let sa = sort_array(a)
-let sb = sort_boolean(b)
-let sd = sort_date(d)
-let sh = sort_hash(h)
-let sn = sort_number(n)
-let ss = sort_string(s)
+var sa = sort_array(a)
+var sb = sort_boolean(b)
+var sd = sort_date(d)
+var sh = sort_hash(h)
+var sn = sort_number(n)
+var ss = sort_string(s)
 
 #print;
 println(a, sa, b, sb, d, sd, h, sh, n, sn, s, ss)

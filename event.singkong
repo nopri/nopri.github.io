@@ -1,52 +1,52 @@
 reset()
-let b = component("button", "Hello, World")
-let c = component("checkbox", "Singkong?")
-let r = component("radio", "Radio Button")
-let m = component("combobox", "Singkong,Programming,Language")
-let t = component("table", "A,B", true)
-let e = component("edit", "")
-let p = component("password", "")
-let x = component("text", "")
-let v = component("view", "")
+var b = component("button", "Hello, World")
+var c = component("checkbox", "Singkong?")
+var r = component("radio", "Radio Button")
+var m = component("combobox", "Singkong,Programming,Language")
+var t = component("table", "A,B", true)
+var e = component("edit", "")
+var p = component("password", "")
+var x = component("text", "")
+var v = component("view", "")
 
-let bb = fn() {
+var bb = fn() {
     message(get(b,"text"))
 }
 event(b, bb)
 
-let cc = fn() {
+var cc = fn() {
     message(get(c,"active"))
 }
 event(c, cc)
 
-let rr = fn() {
+var rr = fn() {
     message(get(r,"active"))
 }
 event(r, rr)
 
-let mm = fn() {
+var mm = fn() {
     message(get(m, "text"))
 }
 event(m, mm)
 
 config(t, "contents", [[1,2],[3,4],[5,6]])
-let tt = fn() {
+var tt = fn() {
     message(get(t, "contents")[get(t, "active")])
 }
 event(t, tt)
 
-let ee = fn() {
-    let content = get(e, "contents")
+var ee = fn() {
+    var content = get(e, "contents")
     config(v, "contents", content)
 }
 event(e, ee)
 
-let pp = fn() {
+var pp = fn() {
     message(get(p, "contents"))
 }
 event(p, pp)
 
-let xx = fn() {
+var xx = fn() {
     message(get(x, "contents"))
 }
 event(x, xx)

@@ -1,13 +1,13 @@
 reset()
-let c = component("button", "C")
-let e = component("button", "E")
-let n = component("button", "N")
-let w = component("button", "W")
+var c = component("button", "C")
+var e = component("button", "E")
+var n = component("button", "N")
+var w = component("button", "W")
 
-let s1 = component("button", "S 1")
-let s2 = component("button", "S 2")
-let s3 = component("button", "S 3")
-let s = [s1, s2, s3]
+var s1 = component("button", "S 1")
+var s2 = component("button", "S 2")
+var s3 = component("button", "S 3")
+var s = [s1, s2, s3]
 
 add(c)
 add_e(e)

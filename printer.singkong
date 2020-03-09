@@ -1,8 +1,8 @@
 reset()
-let t = ["Singkong", "Programming", "Language"]
-let s = 16
-let x = 150
-let y = 150
-let font = "monospaced"
+var t = ["Singkong", "Programming", "Language"]
+var s = 16
+var x = 150
+var y = 150
+var font = "monospaced"
 printer(t, s, x, y, font)
 

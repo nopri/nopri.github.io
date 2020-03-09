@@ -1,11 +1,11 @@
 reset()
-let e = component("edit", "")
-let o = component("button", "open")
-let s = component("button", "save")
-let l = component("label", "")
+var e = component("edit", "")
+var o = component("button", "open")
+var s = component("button", "save")
+var l = component("label", "")
 
-let oo = fn() {
-    let f = open()
+var oo = fn() {
+    var f = open()
     if (!empty(f)) {
         config(e, "contents", read(f))
         config(l, "text", f)
@@ -13,10 +13,10 @@ let oo = fn() {
 }
 event(o, oo)
 
-let ss = fn() {
-    let f = save()
+var ss = fn() {
+    var f = save()
     if (!empty(f)) {
-        let t = get(e, "contents")
+        var t = get(e, "contents")
         write(f, t)
         config(l, "text", f)
     }
