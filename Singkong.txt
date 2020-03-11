@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 2.6 (2020-Mar-10 +07:00)
+Version: 2.7 (2020-Mar-12 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -24,22 +24,23 @@ WRITING AN INTERPRETER IN GO
  7. Repeat loop
  8. GUI application development
  9. Database application development
-10. Calling Java method
-11. Simple HTTP client
-12. Embedding Singkong into another applications
-13. Differences with Monkey Programming Language
-14. Development, compatibility, and modules
-15. Example: GUI: components
-16. Example: GUI: layout
-17. Example: GUI: Singkong information
-18. Example: GUI: event handlers
-19. Example: GUI: printing
-20. Example: GUI: simple text file editor
-21. Example: GUI: timer
-22. Example: Database: create table
-23. Example: Database: insert, update, select
-24. Example: GUI/Database: select
-25. Example: Java: Base64 encode/decode
+10. Web application development
+11. Calling Java method
+12. Simple HTTP client
+13. Embedding Singkong into another applications
+14. Differences with Monkey Programming Language
+15. Development, compatibility, and modules
+16. Example: GUI: components
+17. Example: GUI: layout
+18. Example: GUI: Singkong information
+19. Example: GUI: event handlers
+20. Example: GUI: printing
+21. Example: GUI: simple text file editor
+22. Example: GUI: timer
+23. Example: Database: create table
+24. Example: Database: insert, update, select
+25. Example: GUI/Database: select
+26. Example: Java: Base64 encode/decode
 
 -----------------------------------------------------------------------------
 
@@ -88,7 +89,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 2.6
+        Singkong 2.7
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -286,32 +287,33 @@ types
 To get a list of built-in functions, please call builtins()
 ["ABS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", "APPEND", "ARGUMENTS", 
 "ARRAY", "ARRAY_NUMBER", "ARRAY_STRING", "AVERAGE", "BUILTINS", "CALL", 
-"CALL_INFO", "CENTER", "CLEAR", "CLOSING", "COMPONENT", "COMPONENT_TYPE", 
-"COMPONENTS", "CONFIG", "CONFIRM", "COUNT", "CR", "CRLF", "CWD", "DATABASE", 
-"DATABASE_CONNECTED", "DATE", "DATETIME", "DAY", "DELAY", "DIFF", "DIR", 
-"DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", "ENV", "EQUALS", 
-"EVAL", "EVENT", "EXIT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
-"FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", 
-"HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
-"HTTP_POST_OVERRIDE", "HTTP_PUT", "IN", "INDEX", "INFO", "INPUT", "INTEGER", 
-"INTERACTIVE", "IS", "IS_UPDATE_AVAILABLE", "JOIN", "KEYS", "KEYWORDS", "LAST", 
-"LEFT", "LEN", "LF", "LOAD", "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", 
-"MESSAGE", "MIN", "MINUTE", "MONTH", "NEWLINE", "NUMBER", "NUMBER_GROUP", 
-"OPEN", "PARAM", "PARSE_HASH", "PART", "PARTS", "PASSWORD", "POP", "PRINT", 
-"PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", 
-"QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", 
-"REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "REPLACE", "RESET", 
-"REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", 
-"SET", "SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SHUFFLE", "SINGKONG", 
-"SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", 
-"SORT_NUMBER", "SORT_STRING", "SPLIT", "STARTSWITH", "STAT", "STDIN", "STOP", 
-"STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", 
-"TABLE_LEFT", "TABLE_MIDDLE", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_TOP", 
-"TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", 
-"USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+"CALL_INFO", "CENTER", "CGI_CONTENTS", "CGI_GET", "CGI_HEADER", "CGI_POST", 
+"CLEAR", "CLOSING", "COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", 
+"CONFIRM", "COUNT", "CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", 
+"DATE", "DATETIME", "DAY", "DELAY", "DIFF", "DIR", "DIRECTORY", "DISABLED", 
+"DO", "EACH", "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EXIT", 
+"FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "FRAME", 
+"GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", 
+"HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", 
+"IN", "INDEX", "INFO", "INPUT", "INTEGER", "INTERACTIVE", "IS", 
+"IS_UPDATE_AVAILABLE", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", 
+"LOAD", "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MESSAGE", "MIN", 
+"MINUTE", "MONTH", "NEWLINE", "NUMBER", "NUMBER_GROUP", "OPEN", "PARAM", 
+"PARSE_HASH", "PART", "PARTS", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", 
+"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
+"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", 
+"REMOVE_N", "REMOVE_S", "REMOVE_W", "REPLACE", "RESET", "REST", "REVERSE", 
+"RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
+"SHA256", "SHA384", "SHA512", "SHOW", "SHUFFLE", "SINGKONG", "SIZE", "SLICE", 
+"SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
+"SORT_STRING", "SPLIT", "STARTSWITH", "STAT", "STDIN", "STOP", "STRING", "SUM", 
+"SYSTEM", "TAB", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_LEFT", 
+"TABLE_MIDDLE", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_TOP", "TIMER", "TITLE", 
+"TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", 
+"WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-176
+180
 
 Note: a built-in function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -541,7 +543,30 @@ database management system).
 
 -----------------------------------------------------------------------------
 
-10. Calling Java method
+10. Web application development
+Singkong supports simple web application development in form of Common Gateway
+Interface (CGI).
+- To output CGI headers, please use built-in function cgi_header.
+- To output text contents (for example, HTML), helper function cgi_contents 
+  may be used. Manually printing to standard output using built-in function
+  println (or print) is also supported.
+- To get QUERY_STRING (x-www-form-urlencoded) from HTTP GET request as HASH 
+  (decoded keys/values), please use built-in function cgi_get.
+- To get body (x-www-form-urlencoded) of HTTP POST request as HASH 
+  (decoded keys/values), please use built-in function cgi_post.
+- Using HTTP server with CGI support:
+  - Contents of CGI script (Singkong program) may be saved as separate file
+    (for example: index.singkong). This file may be placed outside the CGI
+    enabled directories. 
+  - To handle HTTP request, shell script or batch file (depending on the 
+    operating system) may be used (which in turn, runs Singkong interpreter 
+    and Singkong program, for example "java -jar Singkong.jar index.singkong").
+    - Command echoing feature, if any, should be turned off.
+
+
+-----------------------------------------------------------------------------
+
+11. Calling Java method
 It is possible to call static Java method and use the returned value, to 
 provide functionalities in Java Programming Language. 
 - To call static Java method, please use built-in function call. This function
@@ -810,7 +835,7 @@ provide functionalities in Java Programming Language.
 
 -----------------------------------------------------------------------------
 
-11. Simple HTTP client
+12. Simple HTTP client
 Singkong comes with simple HTTP client. 
 - Default user agent: Singkong <version>
 - Encode or decode: please use built-in function url_encode or url_decode 
@@ -863,7 +888,7 @@ Singkong comes with simple HTTP client.
 
 -----------------------------------------------------------------------------
 
-12. Embedding Singkong into another applications
+13. Embedding Singkong into another applications
 Java applications:
 - Class: com.noprianto.singkong.Singkong
 - Methods: 
@@ -1060,7 +1085,7 @@ ERROR: built-in function "info" is disabled
 
 -----------------------------------------------------------------------------
 
-13. Differences with Monkey Programming Language
+14. Differences with Monkey Programming Language
 - Singkong is case-insensitive
 - Assignment is done using var statement (let is supported, for compatibility)
 - Identifier starts with a letter or an underscore and optionally followed by 
@@ -1085,7 +1110,7 @@ ERROR: built-in function "info" is disabled
 
 -----------------------------------------------------------------------------
 
-14. Development, compatibility, and modules
+15. Development, compatibility, and modules
 - Singkong is developed on Java 8 with -source 1.5 -target 1.5
   (using Java 5.0-compatible application programming interface)
 - Run tests: Java 5.0, Java 8 (main testing), and latest Java version 
@@ -1095,7 +1120,7 @@ ERROR: built-in function "info" is disabled
 
 -----------------------------------------------------------------------------
 
-15. Example: GUI: components
+16. Example: GUI: components
 reset()
 var b = component("button", "Hello")
 var c = component("checkbox", "Singkong?")
@@ -1129,7 +1154,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-16. Example: GUI: layout
+17. Example: GUI: layout
 reset()
 var c = component("button", "C")
 var e = component("button", "E")
@@ -1152,7 +1177,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-17. Example: GUI: Singkong information
+18. Example: GUI: Singkong information
 reset()
 var t = component("table","KEY,VALUE,TYPE", true)
 var l = component("label", "Singkong Programming Language information")
@@ -1174,7 +1199,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-18. Example: GUI: event handlers
+19. Example: GUI: event handlers
 reset()
 var b = component("button", "Hello, World")
 var c = component("checkbox", "Singkong?")
@@ -1236,7 +1261,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-19. Example: GUI: printing
+20. Example: GUI: printing
 reset()
 var t = ["Singkong", "Programming", "Language"]
 var s = 16
@@ -1248,7 +1273,7 @@ printer(t, s, x, y, font)
 
 -----------------------------------------------------------------------------
 
-20. Example: GUI: simple text file editor
+21. Example: GUI: simple text file editor
 reset()
 var e = component("edit", "")
 var o = component("button", "open")
@@ -1282,7 +1307,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-21. Example: GUI: timer
+22. Example: GUI: timer
 reset()
 var l = component("label", string(@))
 var b1 = component("button", "start")
@@ -1311,7 +1336,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-22. Example: Database: create table
+23. Example: Database: create table
 var d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin")
 if (database_connected(d)) {
     var q = [ ["create table test(a integer, b varchar(64))", []] ]
@@ -1322,7 +1347,7 @@ if (database_connected(d)) {
 
 -----------------------------------------------------------------------------
 
-23. Example: Database: insert, update, select
+24. Example: Database: insert, update, select
 var d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin")
 if (database_connected(d)) {
     var q = [ 
@@ -1340,7 +1365,7 @@ if (database_connected(d)) {
 
 -----------------------------------------------------------------------------
 
-24. Example: GUI/Database: select
+25. Example: GUI/Database: select
 reset()
 var t = component("table", "A,B", true)
 add(t)
@@ -1359,7 +1384,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-25. Example: Java: Base64 encode/decode
+26. Example: Java: Base64 encode/decode
 Note: the following modules require Java 8 or later. Please read: 
 Calling Java method. The following files are saved in examples directory, 
 relative to current working directory.
