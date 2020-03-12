@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 2.7 (2020-Mar-12 +07:00)
+Version: 2.8 (2020-Mar-13 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -89,7 +89,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 2.7
+        Singkong 2.8
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -261,6 +261,59 @@ types
   - function call: function name followed by (, optional comma-separated 
     arguments, and )
   - related functions: do, each, param
+  - nested function is supported:
+    code:
+        var a = fn() {
+                println("a")
+                var b = fn() {
+                        println("b")
+                        var c = fn() {
+                                println("c")
+                                var d = fn() {
+                                        println("d")
+                                }
+                                d()
+                        }
+                        c()
+                }
+                b()
+        }
+        a()
+    output:
+        a
+        b
+        c
+        d
+  - variable scope in nested function:
+    code:
+        var a = "A"
+        var b = fn() {
+                # a is available here;
+                println(a)
+                var c = fn() {
+                        # a is no longer available here;
+                        println(a)
+                }
+                c()
+        }
+        b()
+    output:
+        A
+        ERROR: identifier not found: a
+    fix:
+        var a = "A"
+        var b = fn() {
+                # a is available here;
+                println(a)
+                var a = a
+                var c = fn() {
+                        # original a is no longer available here;
+                        # but a from b is available here;
+                        println(a)
+                }
+                c()
+        }
+        b()
 - BUILTIN
   - built-in function
   - related functions: builtins, disabled, help, param
@@ -464,6 +517,65 @@ To keep it as simple as possible:
   Registered FUNCTION will be called whenever the default event for specified
   COMPONENT should be handled. 
   Please note that specified FUNCTION must not require any arguments.
+  Known limitations in event handler:
+  - To output text in event handler, please use GUI related built-in functions 
+    (for example, please use message instead of println).
+        reset()
+        var hello = "Hello World"
+        var b = component("button", "Button")
+        add(b)
+        event(b, fn() {
+                # println has no effect here;
+                println(hello)
+                message(hello)
+        })
+        show()
+  - If there is any error in event handler, no error messages will be printed.
+        reset()
+        var hello = "Hello World"
+        var b = component("button", "Button")
+        add(b)
+        event(b, fn() {
+                message(hello)
+                # error;
+                error
+                # stop here;
+                message(hello)
+        })
+        show()
+  - Please also read about nested function in Singkong documentation (FUNCTION).
+    code:
+        var hello = "Hello World"
+        var a = fn() {
+                reset()
+                var b = component("button", "Button")
+                add(b)
+                event(b, fn() {
+                        # hello is not available here;
+                        # please also read about nested function;
+                        # in Singkong documentation;
+                        message(hello)
+                })
+                show()
+        }
+        a()
+    fix:
+        var hello = "Hello World"
+        var a = fn() {
+                reset()
+                var b = component("button", "Button")
+                add(b)
+                var hello = hello
+                event(b, fn() {
+                        # original hello is not available here;
+                        # hello from a is available here;
+                        # please also read about nested function;
+                        # in Singkong documentation;
+                        message(hello)
+                })
+                show()
+        }
+        a()
 - Printing: simple printing can be done using print dialog. To show a print
   dialog, please use built-in function printer. Basic settings such as 
   font name, font size, left/top margin are supported. 
