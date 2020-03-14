@@ -1,0 +1,257 @@
+#
+    medical.singkong
+    System.jar client application
+    Medical Record
+    (c) Noprianto <nopri.anto@icloud.com>, 2020
+    Written in Singkong Programming Language: https://nopri.github.io
+    License: public domain
+    
+    System.jar
+        Download: https://nopri.github.io/System.jar
+        License: Free for personal use only, unsupported software, no warranty
+        Registration key: https://nopri.github.io/System.registration.txt
+        Requires: Java Runtime Environment 8 or later
+        Help: 
+            java -jar System.jar 
+            (click Help button)
+        Help:
+            java -jar System.jar info
+    
+    Singkong.jar
+        Download: https://nopri.github.io/Singkong.jar
+        License: Free to use or redistribute
+        Requires: Java Runtime Environment 5.0 or later
+        Help:
+            java -jar Singkong.jar
+            (Help tab)
+    
+    How to run System.jar API:
+        java -jar System.jar api <database>
+        example:
+        java -jar System.jar api ./test
+    How to run medical.singkong:
+        java -jar Singkong.jar medical.singkong
+
+    Please change the url variable accordingly
+;
+
+# configuration;
+var url = "http://localhost:8080"
+var title_app = "System (Medical Record)"
+var label_username = "Username"
+var label_passwd = "Password"
+var privilege = "medical/all"
+var fields = "ID,Patient ID,Patient,Time,Type,Note,State,Reference"
+var confirm_quit = "Are you sure you want to quit this application?"
+var confirm_cancel = "Are you sure you want to close without saving?"
+var title_confirm = "Please confirm"
+var label_reload = "Reload"
+var label_open = "Open"
+var label_save = "Save"
+var label_cancel = "Cancel"
+var label_appointment = "Appointment"
+var message_save_ok = "Medical record saved"
+var message_save_error = "Error saving medical record"
+var error_singkong_version = "This application requires Singkong version 2.8 or later"
+var error_server = "Cannot connect to " + url
+
+# username, password, template;
+var u = {"u": "", "p": "", "t": ""}
+
+# reset GUI, set title, add closing confirmation dialog;
+reset()
+title(title_app)
+closing(confirm_quit, title_confirm)
+
+# functions;
+var check_response_ok = fn(res, key) {
+    if (res[1] == 200) {
+        var res = parse_hash(res[2])
+        var test = res[key]
+        return test
+    }
+    return null
+}
+
+var check_response_null = fn(res) {
+    if (res == null) {
+        message(error_server, title_app)
+        exit()
+    }
+}
+
+var do_login = fn() {
+    repeat {
+        var login = login_dialog(title_app, label_username, label_passwd)
+
+        if (len(login) == 2) {
+            var input_user = login[0]
+            var input_passwd = login[1]
+            var data = "username=" + input_user + "&password=" + input_passwd + "&privilege=" + privilege
+            var res = http_post(url + "/login", data)
+            check_response_null(res)
+            var test = check_response_ok(res, "login")
+            if (is(test, "STRING")) {
+                if (test != "") {
+                    return [test, input_passwd]
+                }
+            }
+        } else {
+            return null
+        }
+    }
+}
+
+var get_template = fn() {
+    var data = "username=" + u["u"] + "&password=" + u["p"] + "&privilege=" + privilege
+    var res = http_post(url + "/appointment/template", data)
+    check_response_null(res)    
+    var test = check_response_ok(res, "template")
+    if (is(test, "STRING")) {
+        return replace(test, "\r\n", cr() + lf())
+    }
+    return ""
+}
+
+var do_reload = fn(date_appointment, table) {
+    var input_date = get(date_appointment, "contents")
+    var data = "username=" + u["u"] + "&password=" + u["p"] + "&privilege=" + privilege + "&date=" + format_date(input_date)
+    var res = http_post(url + "/appointment/list", data)
+    check_response_null(res)    
+    var test = check_response_ok(res, "list")
+    if (is(test, "ARRAY")) {
+        var appointments = []
+        each(test, fn(i, counter) {
+            set(i, 2, replace(i[2], "\",""))
+            var appointments = appointments + i
+        })
+        config(table, "contents", appointments)
+    }
+}
+
+var open_medical_record = fn(table) {
+    var contact = get(table, "contents")[get(table, "active")]
+    if (contact == null) {
+        return contact
+    }
+
+    var edit_record = component("edit", "")
+    config(edit_record, "contents", u["t"])
+    var view_record = component("view", "")
+    var view_check_up = component("view", "")
+    var button_add = component("button", label_save)
+    var button_cancel = component("button", label_cancel)
+    
+    var data = "username=" + u["u"] + "&password=" + u["p"] + "&privilege=" + privilege + "&contact_id=" + contact[1]
+    var res = http_post(url + "/medical/record/get", data)
+    check_response_null(res)
+    var test = check_response_ok(res, "record")
+    if (is(test, "STRING")) {
+        var test = replace(test, "\r", cr())
+        var test = replace(test, "\n", lf())
+        var test = replace(test, "\", "")
+        config(view_record, "contents", test)
+    }
+
+    var data = "username=" + u["u"] + "&password=" + u["p"] + "&privilege=" + privilege + "&contact_id=" + contact[1]
+    var res = http_post(url + "/medical/checkup/get", data)
+    check_response_null(res)
+    var test = check_response_ok(res, "record")
+    if (is(test, "STRING")) {
+        var test = replace(test, "\r", cr())
+        var test = replace(test, "\n", lf())
+        var test = replace(test, "\", "")
+        config(view_check_up, "contents", test)
+    }
+
+    var check_next = component("checkbox", label_appointment)
+    var date_next = component("date", "EEEE, yyyy-MMMM-dd")
+
+    clear()
+    add([edit_record, view_record, view_check_up])
+    add_s([check_next, date_next, button_add, button_cancel])
+    
+    var u = u
+    var privilege = privilege
+    var url = url
+    var message_save_ok = message_save_ok
+    var message_save_error = message_save_error
+    var title_app = title_app
+    var check_response_ok = check_response_ok
+    var check_response_null = check_response_null
+    var show_appointments = show_appointments
+    event(button_add, fn() {
+        var input_appointment = get(check_next, "active")    
+        var input_date = get(date_next, "contents")
+        var input_record = get(edit_record, "contents")
+        if (input_appointment == true) {
+            var data = "username=" + u["u"] + "&password=" + u["p"] + "&privilege=" + privilege + "&contact_id=" + contact[1] + "&appointment_id=" + contact[0] + "&date=" + format_date(input_date) + "&record=" + url_encode(input_record)
+        } else {
+            var data = "username=" + u["u"] + "&password=" + u["p"] + "&privilege=" + privilege + "&contact_id=" + contact[1] + "&appointment_id=" + contact[0] + "&record=" + url_encode(input_record)
+        }
+        var res = http_post(url + "/medical/record/add", data)
+        check_response_null(res)
+        var test = check_response_ok(res, "add")
+        if (is(test, "NUMBER")) {
+            message(message_save_ok, title_app)
+            show_appointments()
+        } else {
+            message(message_save_error, title_app)
+        }
+    })
+
+    var title_confirm = title_confirm
+    var confirm_cancel = confirm_cancel
+    var show_appointments = show_appointments
+    event(button_cancel, fn() {
+        if (confirm(confirm_cancel, title_confirm) == "OK") {
+            show_appointments()
+        }
+    })
+    
+    show()
+}
+
+var show_appointments = fn() {
+    clear()
+    
+    var label_user = component("label", u["u"])
+    var date_appointment = component("date", "EEEE, yyyy-MMMM-dd")
+    var button_reload = component("button", label_reload)
+    var table = component("table", fields, true)
+    var button_open = component("button", label_open)
+    add_n([label_user, date_appointment, button_reload])
+    add(table)
+    add_s(button_open)
+
+    var f_reload = do_reload
+    event(button_reload, fn() {
+        f_reload(date_appointment, table)
+    })
+
+    var f_open = open_medical_record
+    event(button_open, fn() {
+        f_open(table)
+    })
+
+    do_reload(date_appointment, table)
+    show()
+}
+
+# main program;
+var main = fn() {
+    if (singkong()["version"] < 2.8) {
+        message(error_singkong_version, title_app)
+        exit()
+    }
+    var res = do_login()
+    if (res != null) {
+        set(u, "u", res[0])
+        set(u, "p", res[1])
+        set(u, "t", get_template())
+        show_appointments()
+    }
+}
+
+main()
+
