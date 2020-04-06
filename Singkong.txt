@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 2.8 (2020-Mar-13 +07:00)
+Version: 2.9 (2020-April-07 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -13,6 +13,10 @@ Monkey.java and monkey.py, (c) Noprianto <nopri.anto@icloud.com>, 2019.
 monkey.py is based on code (in Go programming language) in book: 
 WRITING AN INTERPRETER IN GO
 
+-----------------------------------------------------------------------------
+Bundled JDBC Drivers (compatible with Java 5.0 or later): 
+    Apache Derby (Apache License, version 2.0)
+    PostgreSQL (BSD-2-Clause License)
 =============================================================================
 
  1. What is Singkong Programming Language
@@ -37,10 +41,9 @@ WRITING AN INTERPRETER IN GO
 20. Example: GUI: printing
 21. Example: GUI: simple text file editor
 22. Example: GUI: timer
-23. Example: Database: create table
-24. Example: Database: insert, update, select
-25. Example: GUI/Database: select
-26. Example: Java: Base64 encode/decode
+23. Example: Database: create table, insert, update, select, GUI
+24. Example: Web: variables, GET, POST, JSON
+25. Example: Java: custom dialog
 
 -----------------------------------------------------------------------------
 
@@ -89,7 +92,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 2.8
+        Singkong 2.9
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -119,8 +122,7 @@ comma-separated list of functions.
         2
         3
 
-  - Run directly the main class (please also read: Database application 
-    development and Calling Java method):
+  - Run directly the main class (and setting the class path):
         java -cp Singkong.jar com.noprianto.singkong.Singkong
 
         java -cp Singkong.jar com.noprianto.singkong.Singkong test.singkong
@@ -213,12 +215,15 @@ types
   - arbitrary length string
   - operators: +(concatenation) -(remove) ==(equals,case-sensitive) != *(repeat)
   - equals (case-insensitive): please use built-in function equals
-  - related functions: array_string, call, center, count, cr, crlf, dir, empty, 
-    endswith, equals, eval, in, index, join, left, len, lf, lower, matches, md5, 
-    newline, quote, random_string, replace, right, set, sha1, sha256, sha384, 
-    sha512, slice, sort_string, split, startswith, stat, tab, trim, upper
+  - related functions: array_string, base64_decode, base64_encode, call, center, 
+    count, cr, crlf, dir, empty, endswith, equals, eval, in, index, join, left, 
+    len, lf, lower, matches, md5, newline, quote, random_string, replace, right, 
+    set, sha1, sha256, sha384, sha512, slice, sort_string, split, startswith, 
+    stat, tab, trim, upper
   - special characters: cr, crlf, lf, newline, quote, tab
-  - file related functions: abs, append, read, write
+  - file related functions: abs, append, read, write, rename, delete, mkdir
+  - HTTP client related functions: http_delete, http_get, http_get_file, 
+    http_head, http_post, http_post_override, http_put, url_decode, url_encode 
   - system related functions: cwd, separator, user
   - Singkong related functions: load
   - sorting: lexicographically
@@ -232,6 +237,7 @@ types
     random, range, rest, reverse, shuffle, slice, sort_array, sort_boolean, 
     sort_date, sort_hash, sort_number, sort_string, sum
   - file related functions: dir
+  - CGI related functions: cgi_contents
   - system related functions: arguments, system
   - sorting: by length
 - HASH
@@ -243,6 +249,7 @@ types
   - modify HASH: please use built-in function set
   - related functions: empty, keys, len, parse_hash, random, sort_hash, values
   - file related functions: properties_read, properties_write, stat
+  - CGI related functions: cgi_header, cgi_get, cgi_post, cgi_post_hash
   - system related functions: env, info
   - Singkong related functions: singkong
   - sorting: by length
@@ -339,34 +346,35 @@ types
 5. Builtin functions
 To get a list of built-in functions, please call builtins()
 ["ABS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", "APPEND", "ARGUMENTS", 
-"ARRAY", "ARRAY_NUMBER", "ARRAY_STRING", "AVERAGE", "BUILTINS", "CALL", 
-"CALL_INFO", "CENTER", "CGI_CONTENTS", "CGI_GET", "CGI_HEADER", "CGI_POST", 
-"CLEAR", "CLOSING", "COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", 
-"CONFIRM", "COUNT", "CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", 
-"DATE", "DATETIME", "DAY", "DELAY", "DIFF", "DIR", "DIRECTORY", "DISABLED", 
-"DO", "EACH", "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EXIT", 
-"FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "FRAME", 
-"GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", 
-"HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", 
-"IN", "INDEX", "INFO", "INPUT", "INTEGER", "INTERACTIVE", "IS", 
-"IS_UPDATE_AVAILABLE", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", 
-"LOAD", "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MESSAGE", "MIN", 
-"MINUTE", "MONTH", "NEWLINE", "NUMBER", "NUMBER_GROUP", "OPEN", "PARAM", 
-"PARSE_HASH", "PART", "PARTS", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", 
-"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
-"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", 
-"REMOVE_N", "REMOVE_S", "REMOVE_W", "REPLACE", "RESET", "REST", "REVERSE", 
-"RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
-"SHA256", "SHA384", "SHA512", "SHOW", "SHUFFLE", "SINGKONG", "SIZE", "SLICE", 
-"SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
-"SORT_STRING", "SPLIT", "STARTSWITH", "STAT", "STDIN", "STOP", "STRING", "SUM", 
-"SYSTEM", "TAB", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_LEFT", 
-"TABLE_MIDDLE", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_TOP", "TIMER", "TITLE", 
-"TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", 
-"WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+"ARRAY", "ARRAY_NUMBER", "ARRAY_STRING", "AVERAGE", "BASE64_DECODE", 
+"BASE64_ENCODE", "BUILTINS", "CALL", "CALL_INFO", "CENTER", "CGI_CONTENTS", 
+"CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", "CLEAR", "CLOSING", 
+"COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COUNT", 
+"CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", "DATE", "DATETIME", 
+"DAY", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "EACH", 
+"EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EXIT", "FIRST", "FONTS", 
+"FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", 
+"HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", 
+"HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", "IN", "INDEX", "INFO", "INPUT", 
+"INTEGER", "INTERACTIVE", "IS", "IS_UPDATE_AVAILABLE", "JOIN", "KEYS", 
+"KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOGIN_DIALOG", "LOWER", 
+"MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MONTH", 
+"NEWLINE", "NUMBER", "NUMBER_GROUP", "OPEN", "PARAM", "PARSE_HASH", "PART", 
+"PARTS", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
+"PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
+"RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", 
+"REMOVE_W", "RENAME", "REPLACE", "RESET", "REST", "REVERSE", "RIGHT", "ROUND", 
+"SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", 
+"SHA512", "SHOW", "SHUFFLE", "SINGKONG", "SIZE", "SLICE", "SORT_ARRAY", 
+"SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", 
+"STARTSWITH", "STAT", "STDIN", "STOP", "STRING", "SUM", "SYSTEM", "TAB", 
+"TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_LEFT", "TABLE_MIDDLE", 
+"TABLE_REMOVE", "TABLE_RIGHT", "TABLE_TOP", "TIMER", "TITLE", "TRIM", "TYPE", 
+"TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", "WORDS_EN", 
+"WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-180
+186
 
 Note: a built-in function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -615,9 +623,16 @@ database management system).
   - STRING: database URL
   - STRING: user
   - STRING: password
-- Singkong.jar does not contain any database driver. In order to use database
-  driver from another jar file/directory, please run Singkong using the 
-  following command:
+- Singkong.jar contains the following database drivers 
+  (compatible with Java 5.0 or later):
+  - Apache Derby
+    - org.apache.derby.jdbc.EmbeddedDriver
+  - PostgreSQL
+    - org.postgresql.Driver
+  for complete database URLs and their options, please refer to Apache Derby or
+  PostgreSQL JDBC documentation
+- In order to use external database drivers from another jar file/directory, 
+  please run Singkong using the following command:
   java -cp Singkong.jar:<jar> com.noprianto.singkong.Singkong
   or
   java -cp Singkong.jar:<dir> com.noprianto.singkong.Singkong
@@ -631,12 +646,9 @@ database management system).
   directory, <dir> might be replaced with a ., for example:
   java -cp Singkong.jar:. com.noprianto.singkong.Singkong
 - Database connection example:
-  - Singkong.jar and h2.jar are located in current directory, on a system which
-    : character is used as class path separator
-  - java -cp Singkong.jar:h2.jar com.noprianto.singkong.Singkong
-    >  var db = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin")
+    >  var db = database("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:test;create=true", "", "")
     >  db
-    DATABASE (URL=jdbc:h2:/tmp/test, user=admin, driver=org.h2.Driver)     
+    DATABASE (URL=jdbc:derby:test;create=true, user=, driver=org.apache.derby.jdbc.EmbeddedDriver)
 - To test whether a database connection is valid, please use built-in function
   database_connected.
 - Supported Singkong and Java type mapping:
@@ -666,10 +678,12 @@ Interface (CGI).
   (decoded keys/values), please use built-in function cgi_get.
 - To get body (x-www-form-urlencoded) of HTTP POST request as HASH 
   (decoded keys/values), please use built-in function cgi_post.
+- To get body (x-www-form-urlencoded) of HTTP POST (STRING of HASH) request as 
+  HASH (decoded keys/values), please use built-in function cgi_post_hash.
 - Using HTTP server with CGI support:
   - Contents of CGI script (Singkong program) may be saved as separate file
-    (for example: index.singkong). This file may be placed outside the CGI
-    enabled directories. 
+    (for example: index.singkong). This file should be placed outside of the 
+    CGI-enabled directories. 
   - To handle HTTP request, shell script or batch file (depending on the 
     operating system) may be used (which in turn, runs Singkong interpreter 
     and Singkong program, for example "java -jar Singkong.jar index.singkong").
@@ -1448,42 +1462,22 @@ show()
 
 -----------------------------------------------------------------------------
 
-23. Example: Database: create table
-var d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin")
-if (database_connected(d)) {
-    var q = [ ["create table test(a integer, b varchar(64))", []] ]
-    var r = query(d, q)
-    println(r)
-}
-
-
------------------------------------------------------------------------------
-
-24. Example: Database: insert, update, select
-var d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin")
-if (database_connected(d)) {
-    var q = [ 
-        ["insert into test(a,b) values(?, ?)", [random(1,10), "hello"]], 
-        ["update test set b=? where b=?", ["Hello World", "hello"]] 
-    ]
-    var r = query(d, q)
-    println(r)
-
-    var q = [ ["select * from test", []] ]
-    var r = query(d, q)
-    println(r)
-}
-
-
------------------------------------------------------------------------------
-
-25. Example: GUI/Database: select
+23. Example: Database: create table, insert, update, select, GUI
 reset()
 var t = component("table", "A,B", true)
 add(t)
 
-var d = database("org.h2.Driver", "jdbc:h2:/tmp/test", "admin", "admin")
+var d = database("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:test;create=true", "", "")
 if (database_connected(d)) {
+    var q = [ ["create table test(a integer, b varchar(64))", []] ]
+    var r = query(d, q)
+    
+    var q = [ 
+        ["insert into test(a,b) values(?, ?)", [random(0,100), "hello"]], 
+        ["update test set b=? where b=?", ["Hello World", "hello"]] 
+    ]
+    var r = query(d, q)
+
     var q = [ ["select a,b from test", []] ]
     var r = query(d, q)
     if (!empty(r)) {
@@ -1496,57 +1490,239 @@ show()
 
 -----------------------------------------------------------------------------
 
-26. Example: Java: Base64 encode/decode
-Note: the following modules require Java 8 or later. Please read: 
-Calling Java method. The following files are saved in examples directory, 
-relative to current working directory.
+24. Example: Web: variables, GET, POST, JSON
+Note: the following examples require a HTTP server with CGI support. Please
+make sure that the CGI support has been enabled and configured. All of the 
+following CGI scripts are saved in a CGI-enabled directory and accessed from
+/cgi-bin/<SCRIPT> URL (for example: http://localhost/cgi-bin/index.sh or 
+http://localhost/cgi-bin/index.bat). All required file system permissions 
+should be set (for example, make the CGI scripts executable on supported 
+systems). Singkong programs called by those CGI scripts may be saved in any 
+directory accessible by user running the HTTP server.  
 
-- Base64Encode.java (compiled to Base64Encode.class: javac Base64Encode.java)
+Example 1: environment variables
+CGI script: index.sh (if you are using Bash) or index.bat (if you using batch
+file)
+- index.sh
+    #!/bin/bash
 
-    public class Base64Encode {
-        public static String singkong_info() {
-            return "Base64Encode: Base64 encode String (using Java 8 or later)";
-        }
+    # Please put this file in CGI-enabled directory of the web server
 
-        public static String singkong(String[][] args) {
-            String ret = "";
-            if (args.length > 0) {
-                String[] r = args[0];
-                if (r.length > 0) {
-                    String s = r[0];
-                    ret = java.util.Base64.getEncoder().encodeToString(s.getBytes());
-                }
-            }
-            return ret;
-        }
+    # Please adjust the variables appropriately   
+    JAVA=java
+    SINGKONG=/home/user/singkong/Singkong.jar
+    PROGRAM=/home/user/singkong/index.singkong
 
-        public static void main(String[] args) {
-            System.out.println("Base64Encode: Singkong Programming Language module (using Java 8 or later)");
+    $JAVA -jar $SINGKONG $PROGRAM
+
+- index.bat
+    @echo off
+
+    REM Please put this file in CGI-enabled directory of the web server
+
+    REM Please adjust the variables appropriately   
+    set JAVA=java
+    set SINGKONG=c:\singkong\Singkong.jar
+    set PROGRAM=c:\singkong\index.singkong
+
+    %JAVA% -jar %SINGKONG% %PROGRAM%
+
+Singkong program: index.singkong
+    var e = env()
+    var c = [
+        "<!DOCTYPE html>
+        <html lang='en'>
+            <head>
+                <meta charset='UTF-8'>
+                <title>Singkong</title>
+            </head>
+            <body>
+                Remote address: " + e["REMOTE_ADDR"] + "<br>
+                HTTP user agent: " + e["HTTP_USER_AGENT"] + "
+            </body>
+        </html>"
+    ]
+
+    cgi_header()
+    cgi_contents(c)
+
+
+Example 2: GET request (query string: min=<number>&max=<number>; response: JSON)
+CGI script: random.sh (if you are using Bash) or random.bat (if you using batch
+file)
+- random.sh
+    #!/bin/bash
+
+    # Please put this file in CGI-enabled directory of the web server
+
+    # Please adjust the variables appropriately   
+    JAVA=java
+    SINGKONG=/home/user/singkong/Singkong.jar
+    PROGRAM=/home/user/singkong/random.singkong
+
+    $JAVA -jar $SINGKONG $PROGRAM
+
+- random.bat
+    @echo off
+
+    REM Please put this file in CGI-enabled directory of the web server
+
+    REM Please adjust the variables appropriately   
+    set JAVA=java
+    set SINGKONG=c:\singkong\Singkong.jar
+    set PROGRAM=c:\singkong\random.singkong
+
+    %JAVA% -jar %SINGKONG% %PROGRAM%
+
+Singkong program: random.singkong
+    var h = {"Content-Type": "application/json"}
+    var r = {"random": ""}
+    var p = cgi_get()
+    var x = p["min"]
+    var y = p["max"] 
+
+    if (is(x, "STRING") & is(y, "STRING")) {
+        var z = random(number(x), number(y))
+        if (z != null) {
+            set(r, "random", string(z))
         }
     }
 
-- Base64Decode.java (compiled to Base64Decode.class: javac Base64Decode.java)
+    cgi_header(h)
+    println(r)
 
-    public class Base64Decode {
+
+Example 3: POST request (body: username=<string>&password=<string>; 
+response: JSON)
+CGI script: auth.sh (if you are using Bash) or auth.bat (if you using batch
+file)
+- auth.sh
+    #!/bin/bash
+
+    # Please put this file in CGI-enabled directory of the web server
+
+    # Please adjust the variables appropriately   
+    JAVA=java
+    SINGKONG=/home/user/singkong/Singkong.jar
+    PROGRAM=/home/user/singkong/auth.singkong
+
+    $JAVA -jar $SINGKONG $PROGRAM
+
+- auth.bat
+    @echo off
+
+    REM Please put this file in CGI-enabled directory of the web server
+
+    REM Please adjust the variables appropriately   
+    set JAVA=java
+    set SINGKONG=c:\singkong\Singkong.jar
+    set PROGRAM=c:\singkong\auth.singkong
+
+    %JAVA% -jar %SINGKONG% %PROGRAM%
+
+Singkong program: auth.singkong
+    var h = {"Content-Type": "application/json"}
+    var r = {"result": false}
+    var p = cgi_post()
+    var x = p["username"]
+    var y = p["password"] 
+
+    if (is(x, "STRING") & is(y, "STRING")) {
+        set(r, "result", x == "admin" & y == "admin")
+    }
+
+    cgi_header(h)
+    println(r)
+
+Singkong program (HTTP client): login.singkong 
+    var url = trim(input("URL", "Login"))
+    if (!startswith(url, "http")) {
+        exit()
+    }
+
+    var login = login_dialog("Login")
+    if (len(login) == 2) {
+        var u = login[0]
+        var p = login[1]
+        var data = "username=" + u + "&password=" + p
+        var res = http_post(url, data)
+        if (res != null) {
+            if (is(res, "ARRAY")) {
+                if (len(res) == 3) {
+                    var r = parse_hash(res[2])
+                    message(r["result"])
+                }
+            }
+        }
+    }
+
+
+-----------------------------------------------------------------------------
+
+25. Example: Java: custom dialog
+Please read: Calling Java method. 
+The following file is saved in examples directory, 
+relative to current working directory.
+
+- Dialog.java (compiled to Dialog.class: javac Dialog.java)
+
+    import java.awt.BorderLayout;
+    import java.awt.event.ActionEvent;
+    import java.awt.event.ActionListener;
+    import javax.swing.JButton;
+    import javax.swing.JDialog;
+    import javax.swing.JTextField;
+
+    public class Dialog extends JDialog implements ActionListener{
+        private String value;
+        private String param;
+        private JTextField text;
+        private JButton button;
+
+        public Dialog(String param) {
+            setModal(true);
+
+            value = "";
+            this.param = param;
+
+            text = new JTextField();
+            button = new JButton(param);
+            button.addActionListener(this);
+
+            add(text);
+            add(button, BorderLayout.SOUTH);
+            pack();
+        }
+
+        public String getValue() {
+            setVisible(true);
+            return value;
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            value = text.getText();
+            setVisible(false);
+            dispose();
+        }
+
         public static String singkong_info() {
-            return "Base64Decode: Base64 decode String (using Java 8 or later)";
+            return "Dialog: Custom dialog in Java";
         }
 
         public static String singkong(String[][] args) {
-            String ret = "";
+            String param = "";
             if (args.length > 0) {
                 String[] r = args[0];
                 if (r.length > 0) {
-                    String s = r[0];
-                    byte[] b = java.util.Base64.getDecoder().decode(s);
-                    ret = new String(b);
+                    param = r[0];
                 }
             }
-            return ret;
+            Dialog dialog = new Dialog(param);
+            return dialog.getValue();
         }
 
         public static void main(String[] args) {
-            System.out.println("Base64Decode: Singkong Programming Language module (using Java 8 or later)");
+            System.out.println("Dialog: Singkong Programming Language module");
         }
     }
 
@@ -1556,19 +1732,15 @@ relative to current working directory.
     or (depending on the operating system)
     java -cp Singkong.jar;examples com.noprianto.singkong.Singkong
 
-- Singkong program can call these methods:
+- Singkong program can call the method:
 
-    >  var s = "Singkong Programming Language"
-    >  var e = call("Base64Encode", s)
-    >  e
-    "U2luZ2tvbmcgUHJvZ3JhbW1pbmcgTGFuZ3VhZ2U="
+    >  var value = call("Dialog", "Singkong")
 
-    >  var d = call("Base64Decode", e)
-    >  d
-    "Singkong Programming Language"
+    (enter Hello World in the text field of dialog)
+    (click the Singkong button)
 
-    >  s == d
-    true
+    >  value
+    "Hello World"
 
 
 =============================================================================

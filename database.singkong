@@ -1,0 +1,24 @@
+reset()
+var t = component("table", "A,B", true)
+add(t)
+
+var d = database("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:test;create=true", "", "")
+if (database_connected(d)) {
+    var q = [ ["create table test(a integer, b varchar(64))", []] ]
+    var r = query(d, q)
+    
+    var q = [ 
+        ["insert into test(a,b) values(?, ?)", [random(0,100), "hello"]], 
+        ["update test set b=? where b=?", ["Hello World", "hello"]] 
+    ]
+    var r = query(d, q)
+
+    var q = [ ["select a,b from test", []] ]
+    var r = query(d, q)
+    if (!empty(r)) {
+        config(t, "contents", r[0])
+    }
+}
+
+show()
+
