@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 2.9 (2020-April-07 +07:00)
+Version: 3.0 (2020-April-08 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -16,6 +16,7 @@ WRITING AN INTERPRETER IN GO
 -----------------------------------------------------------------------------
 Bundled JDBC Drivers (compatible with Java 5.0 or later): 
     Apache Derby (Apache License, version 2.0)
+        (Network Server, Embedded Driver, Client Driver)
     PostgreSQL (BSD-2-Clause License)
 =============================================================================
 
@@ -92,7 +93,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 2.9
+        Singkong 3.0
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -204,6 +205,7 @@ types
   - related functions: abs, array_number, integer, number, number_group, 
     random, round, sort_number, words_en, words_id
   - system related functions: delay
+  - Singkong related functions: require
   - sorting: by value
 - BOOLEAN
   - true or false
@@ -363,18 +365,18 @@ To get a list of built-in functions, please call builtins()
 "PARTS", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
 "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
 "RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", 
-"REMOVE_W", "RENAME", "REPLACE", "RESET", "REST", "REVERSE", "RIGHT", "ROUND", 
-"SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", 
-"SHA512", "SHOW", "SHUFFLE", "SINGKONG", "SIZE", "SLICE", "SORT_ARRAY", 
-"SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", 
-"STARTSWITH", "STAT", "STDIN", "STOP", "STRING", "SUM", "SYSTEM", "TAB", 
-"TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_LEFT", "TABLE_MIDDLE", 
-"TABLE_REMOVE", "TABLE_RIGHT", "TABLE_TOP", "TIMER", "TITLE", "TRIM", "TYPE", 
-"TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", "WORDS_EN", 
-"WORDS_ID", "WRITE", "YEAR"]
+"REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", "REST", "REVERSE", "RIGHT", 
+"ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", 
+"SHA384", "SHA512", "SHOW", "SHUFFLE", "SINGKONG", "SIZE", "SLICE", 
+"SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
+"SORT_STRING", "SPLIT", "STARTSWITH", "STAT", "STDIN", "STOP", "STRING", "SUM", 
+"SYSTEM", "TAB", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_LEFT", 
+"TABLE_MIDDLE", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_TOP", "TIMER", "TITLE", 
+"TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", 
+"WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-186
+187
 
 Note: a built-in function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -434,10 +436,10 @@ Please also use do and each functions for simple repetitions:
 Singkong supports simple graphical user interface application development. 
 To keep it as simple as possible:
 - There is only one frame for each Singkong program. No other frames
-  or custom dialogs can be created. An application can only have at most one 
-  top-level frame and no other custom dialogs. To show common dialogs, please 
-  use related built-in functions (confirm, directory, input, open, message, 
-  password, save, login_dialog).
+  or custom dialogs can be created (using Singkong code). 
+  To show common dialogs, please use related built-in functions (confirm, 
+  directory, input, open, message, password, save, login_dialog).
+  To create custom dialogs, please use Java method.
   To set frame title, please use built-in function title.
   To set frame size, please use built-in function size (this might not work on 
   some system configuration and will be ignored).
@@ -627,10 +629,15 @@ database management system).
   (compatible with Java 5.0 or later):
   - Apache Derby
     - org.apache.derby.jdbc.EmbeddedDriver
+    - org.apache.derby.jdbc.ClientDriver
   - PostgreSQL
     - org.postgresql.Driver
   for complete database URLs and their options, please refer to Apache Derby or
   PostgreSQL JDBC documentation
+- Singkong.jar also contains Apache Derby Network Server
+  (compatible with Java 5.0 or later)
+  To run: java -cp Singkong.jar org.apache.derby.drda.NetworkServerControl start
+  Please refer to Apache Derby documentation for more information
 - In order to use external database drivers from another jar file/directory, 
   please run Singkong using the following command:
   java -cp Singkong.jar:<jar> com.noprianto.singkong.Singkong
