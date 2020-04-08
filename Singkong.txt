@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 3.0 (2020-April-08 +07:00)
+Version: 3.1 (2020-April-08 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -93,7 +93,7 @@ comma-separated list of functions.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 3.0
+        Singkong 3.1
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -636,7 +636,33 @@ database management system).
   PostgreSQL JDBC documentation
 - Singkong.jar also contains Apache Derby Network Server
   (compatible with Java 5.0 or later)
-  To run: java -cp Singkong.jar org.apache.derby.drda.NetworkServerControl start
+  - To run the network server with custom security policy and built-in
+    authentication (username: admin, password: admin), please create 
+    derby.policy and derby.properties files in current working directory:
+    - derby.policy
+        grant {
+            permission java.io.FilePermission "${user.dir}${/}-", "read, write, delete";
+
+            permission java.lang.RuntimePermission "getFileStoreAttributes";
+            permission java.lang.RuntimePermission "createClassLoader";
+            permission java.lang.RuntimePermission "accessUserInformation";
+
+            permission java.util.PropertyPermission "derby.__serverStartedFromCmdLine", "read, write";
+            permission java.util.PropertyPermission "user.dir", "read";
+
+            permission java.net.SocketPermission "127.0.0.1:1527", "accept, connect, listen,resolve"; 
+            permission java.net.SocketPermission "127.0.0.1", "accept, resolve"; 
+
+        };
+    - derby.properties
+        derby.connection.requireAuthentication=true
+        derby.authentication.provider=BUILTIN
+        derby.user.admin=admin
+    - Singkong.jar
+        java -cp Singkong.jar -Djava.security.manager -Djava.security.policy=derby.policy org.apache.derby.drda.NetworkServerControl start
+  - To run the network server without security manager and without authentication 
+    (for testing only, please do not do that in production environment):
+    java -cp Singkong.jar org.apache.derby.drda.NetworkServerControl start -noSecurityManager
   Please refer to Apache Derby documentation for more information
 - In order to use external database drivers from another jar file/directory, 
   please run Singkong using the following command:
