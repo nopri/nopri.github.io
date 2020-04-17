@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Singkong Programming Language</title>
+    <meta charset="utf-8">
+    <meta name="description" content="Singkong Programming Language">
+    <meta name="keywords" content="singkong, singkong programming, singkong programming language, Singkong.jar, singkong.jar, java, noprianto">
+    <meta name="author"  content="Noprianto">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body
+        {
+            font-size       : 16px;
+            line-height     : 22px;
+            font-family     : sans-serif;
+        }
+
+        table
+        {
+            border-collapse : collapse;
+            width           : 100%;
+        }
+
+        th, td
+        {
+            padding         : 8px;
+            vertical-align  : top;
+            border          : 1px solid #406080;    
+        }
+
+        h3
+        {
+            padding-top     : 20px;
+        }
+       
+        img {
+            max-width       : 100%;
+            height          : auto;
+        }
+
+        .title
+        {
+            width           : 40%;
+        }
+    </style>
+</head>
+<body>
+    <div id="menu">
+        <h3><a href="https://nopri.github.io">Dr. Noprianto</a></h3>
+        <hr>
+
+        <p>
+        <strong>Singkong Programming Language</strong>: case-insensitive, 
+        dynamically typed, procedural, and interpreted programming language 
+        that runs on Java Virtual Machine (Java 5.0 or later). 
+        It has numbers, booleans, strings, arrays, hash maps, dates, 
+        first-class functions, built-in functions, GUI components, 
+        database connections, and other features. 
+        Singkong program can call Java methods and Singkong interpreter 
+        can be embedded and integrated into another applications. 
+       
+        Singkong interpreter is distributed as single jar file. 
+        It comes with simple GUI editor/interactive evaluator/database 
+        tool and can be run on graphical or text user interfaces.  
+        </p>
+
+        <p>
+        Download: 
+        <a href="https://nopri.github.io/Singkong.jar">Singkong.jar</a>, 
+        <a href="https://nopri.github.io/Singkong.jar.md5">Singkong.jar.md5</a> (checksum),  
+        <a href="https://nopri.github.io/Singkong.txt">Singkong.txt</a> (documentation, also included in Singkong.jar). 
+        </p>
+
+        <p>
+        Singkong book in Bahasa Indonesia: 
+        <a href="https://nopri.github.io/singkong.pdf">singkong.pdf</a> 
+        </p>
+
+        <p>
+        Examples: 
+        <a href="https://nopri.github.io/components.singkong">components.singkong</a>, 
+        <a href="https://nopri.github.io/layout.singkong">layout.singkong</a>,
+        <a href="https://nopri.github.io/info.singkong">info.singkong</a>,
+        <a href="https://nopri.github.io/event.singkong">event.singkong</a>, 
+        <a href="https://nopri.github.io/printer.singkong">printer.singkong</a>, 
+        <a href="https://nopri.github.io/editor.singkong">editor.singkong</a>, 
+        <a href="https://nopri.github.io/timer.singkong">timer.singkong</a>, 
+        <a href="https://nopri.github.io/database.singkong">database.singkong</a>, 
+        <a href="https://nopri.github.io/sort.singkong">sort.singkong</a>, 
+        <a href="https://nopri.github.io/medical.singkong">medical.singkong</a>. 
+        </p>
+    
+        <p>
+        Module examples: 
+        <a href="https://nopri.github.io/HelloWorld.class">HelloWorld.class</a>, 
+        <a href="https://nopri.github.io/HelloWorldArray.class">HelloWorldArray.class</a>, 
+        <a href="https://nopri.github.io/HelloWorldArrayArray.class">HelloWorldArrayArray.class</a>, 
+        <a href="https://nopri.github.io/HelloWorldEval.class">HelloWorldEval.class</a>, 
+        <a href="https://nopri.github.io/Dialog.class">Dialog.class</a>.
+        </p>
+
+        <p>
+        Singkong web application (CGI) demo: <a href="https://www.singkong.dev">www.singkong.dev</a>
+        </p>
+
+        <p>
+        Singkong requires only Java Runtime Environment (Java 5.0 or later) 
+        and has been tested on the following system configurations.
+        </p>
+        <div>
+        <table>
+            <tr>
+                <td>macOS 10.14 (Java 8)</td>
+                <td>Windows 10 (Java 14)</td>
+                <td>Windows 7 (Java 5.0, 8, 13, 14)</td>
+                <td>Windows XP (Java 6)</td>
+            </tr>
+            <tr>
+                <td>Windows 2000 (Java 5.0)</td>
+                <td>Windows 98 (Java 5.0)</td>
+                <td>Ubuntu 16.04 (Java 8)</td>
+                <td>Ubuntu 4.10 (Java 5.0)</td>
+            </tr>
+            <tr>
+                <td>Red Hat Linux 7.3 (Java 5.0)</td>
+                <td>Solaris 11.4 (Java 8)</td>
+                <td>FreeBSD 12.1 (Java 8)</td>
+                <td>OpenBSD 6.6 (Java 11)</td>
+            </tr>
+            <tr>
+                <td>NetBSD 9.0 (Java 11)</td>
+                <td>Haiku beta 1 (Java 8)</td>
+                <td>.NET 3.5 on Windows XP (IKVM.NET 7.2, Java 7)</td>
+                <td>Debian 10 on Android (Java 11)</td>
+            </tr>
+        </table>
+        </div>
+        <br>
+
+        <div>
+        Screenshots:
+        <br>
+        <table>
+            <tr>
+                <td>
+                    Interactive evaluator
+                </td>
+                <td>
+                    <img src="Singkong-eval.png" alt="Interactive evaluator">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Editor  
+                </td>
+                <td>
+                    <img src="Singkong-editor.png" alt="Editor">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Database tool
+                </td>
+                <td>
+                    <img src="Singkong-database.png" alt="Database tool">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Help
+                </td>
+                <td>
+                    <img src="Singkong-help.png" alt="Help">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    macOS 10.14 (Java 8) 
+                </td>
+                <td>
+                    <img src="singkong_java_8_macos_10_14.png" alt="macOS 10.14 (Java 8)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Windows 10 (Java 14) 
+                </td>
+                <td>
+                    <img src="singkong_java_14_win_10.png" alt="Windows 10 (Java 14)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Windows 7 (Java 13) 
+                </td>
+                <td>
+                    <img src="singkong_java_13_win_7.png" alt="Windows 7 (Java 13)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Windows XP (Java 6) 
+                </td>
+                <td>
+                    <img src="singkong_java_6_win_xp.png" alt="Windows XP (Java 6)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Windows 2000 (Java 5.0) 
+                </td>
+                <td>
+                    <img src="singkong_java_5_win_2000.png" alt="Windows 2000 (Java 5.0) ">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Windows 98 (Java 5.0) 
+                </td>
+                <td>
+                    <img src="singkong_java_5_win_98.png" alt="Windows 98 (Java 5.0)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Ubuntu 16.04 (Java 8) 
+                </td>
+                <td>
+                    <img src="singkong_java_8_ubuntu_16_04.png" alt="Ubuntu 16.04 (Java 8)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Ubuntu 4.10 (Java 5.0) 
+                </td>
+                <td>
+                    <img src="singkong_java_5_ubuntu_4_10.png" alt="Ubuntu 4.10 (Java 5.0)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Red Hat Linux 7.3 (Java 5.0) 
+                </td>
+                <td>
+                    <img src="singkong_java_5_redhat_7_3.png" alt="Red Hat Linux 7.3 (Java 5.0)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Solaris 11.4 (Java 8) 
+                </td>
+                <td>
+                    <img src="singkong_java_8_solaris_11_4.png" alt="Solaris 11.4 (Java 8)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    FreeBSD 12.1 (Java 8) 
+                </td>
+                <td>
+                    <img src="singkong_java_8_freebsd_12_1.png" alt="FreeBSD 12.1 (Java 8)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    OpenBSD 6.6 (Java 11) 
+                </td>
+                <td>
+                    <img src="singkong_java_11_openbsd_6_6.png" alt="OpenBSD 6.6 (Java 11)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    NetBSD 9.0 (Java 11) 
+                </td>
+                <td>
+                    <img src="singkong_java_11_netbsd_9_0.png" alt="NetBSD 9.0 (Java 11)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Haiku beta 1 (Java 8) 
+                </td>
+                <td>
+                    <img src="singkong_java_8_haiku_beta_1.png" alt="Haiku beta 1 (Java 8)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    .NET 3.5 on Windows XP (IKVM.NET 7.2, Java 7) 
+                </td>
+                <td>
+                    <img src="singkong_java_7_ikvm_72_net_35_win_xp.png" alt=".NET 3.5 on Windows XP (IKVM.NET 7.2, Java 7)">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Debian 10 on Android (Java 11) 
+                </td>
+                <td>
+                    <img src="singkong_java_11_debian_10_on_android.png" alt="n 10 on Android (Java 11)">
+                </td>
+            </tr>
+        </table>
+        </div>
+    </div>
+</body>
+</html>
+
