@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 3.3 (2020-April-27 +07:00)
+Version: 3.4 (2020-May-01 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -95,7 +95,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 3.3
+        Singkong 3.4
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -123,7 +123,7 @@ built-in functions, please set -DDISABLE=-.
         java -jar Singkong.jar test.singkong
 
     If exception occurred: interpret the argument as Singkong code
-        java -jar Singkong.jar "puts(1,2,3)"
+        java -jar Singkong.jar "println(1,2,3)"
         1
         2
         3
@@ -133,9 +133,9 @@ built-in functions, please set -DDISABLE=-.
 
         java -cp Singkong.jar com.noprianto.singkong.Singkong test.singkong
 
-        java -cp Singkong.jar com.noprianto.singkong.Singkong "puts(1,2,3)"
+        java -cp Singkong.jar com.noprianto.singkong.Singkong "println(1,2,3)"
         
-        java -DSINGKONG=0 -cp Singkong.jar com.noprianto.singkong.Singkong "puts(1,2,3)"
+        java -DSINGKONG=0 -cp Singkong.jar com.noprianto.singkong.Singkong "println(1,2,3)"
 
 - Library
   Please read: Embedding Singkong into another applications 
@@ -153,7 +153,7 @@ identifier.
 
 Assignment is done using var statement:
 var name = "singkong"
-var f = fn(name) { puts(name) }
+var f = fn(name) { println(name) }
 
 Note:
 - Statement optionally ends with ; 
@@ -1258,7 +1258,7 @@ ERROR: built-in function "info" is disabled
 Another applications:
 Example 7: Python
 >>> import subprocess
->>> c = ['java', '-jar', 'Singkong.jar', 'puts("singkong")']
+>>> c = ['java', '-jar', 'Singkong.jar', 'println("singkong")']
 >>> o = subprocess.check_output(c)
 >>> print(o)
 singkong
