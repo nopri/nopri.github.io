@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 3.4 (2020-May-01 +07:00)
+Version: 3.5 (2020-May-06 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -33,17 +33,18 @@ Bundled JDBC Drivers (compatible with Java 5.0 or later):
 11. Simple HTTP client
 12. Calling Java method
 13. Embedding Singkong into another applications
-14. Differences with Monkey Programming Language
-15. Example: GUI: components
-16. Example: GUI: layout
-17. Example: GUI: Singkong information
-18. Example: GUI: event handlers
-19. Example: GUI: printing
-20. Example: GUI: simple text file editor
-21. Example: GUI: timer
-22. Example: Database: create table, insert, update, select, GUI
-23. Example: Web: variables, GET, POST, JSON
-24. Example: Java: custom dialog
+14. Deployment
+15. Differences with Monkey Programming Language
+16. Example: GUI: components
+17. Example: GUI: layout
+18. Example: GUI: Singkong information
+19. Example: GUI: event handlers
+20. Example: GUI: printing
+21. Example: GUI: simple text file editor
+22. Example: GUI: timer
+23. Example: Database: create table, insert, update, select, GUI
+24. Example: Web: variables, GET, POST, JSON
+25. Example: Java: custom dialog
 
 -----------------------------------------------------------------------------
 
@@ -95,7 +96,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 3.4
+        Singkong 3.5
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -373,16 +374,16 @@ To get a list of built-in functions, please call builtins()
 "RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", 
 "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", "REST", "REVERSE", "RIGHT", 
 "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", 
-"SHA384", "SHA512", "SHOW", "SHUFFLE", "SINGKONG", "SIZE", "SLICE", 
-"SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
-"SORT_STRING", "SPLIT", "STARTSWITH", "STAT", "STDIN", "STOP", "STRING", "SUM", 
-"SYSTEM", "TAB", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_LEFT", 
-"TABLE_MIDDLE", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_TOP", "TIMER", "TITLE", 
-"TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", 
-"WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+"SHA384", "SHA512", "SHOW", "SHUFFLE", "SINGKONG", "SINGKONG_INTERPRETER", 
+"SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", 
+"SORT_NUMBER", "SORT_STRING", "SPLIT", "STARTSWITH", "STAT", "STDIN", "STOP", 
+"STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", 
+"TABLE_LEFT", "TABLE_MIDDLE", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_TOP", 
+"TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", 
+"USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-188
+189
 
 Note: a built-in function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -684,6 +685,8 @@ database management system).
   dependent (: or ;). If the driver class file is located in current working 
   directory, <dir> might be replaced with a ., for example:
   java -cp Singkong.jar:. com.noprianto.singkong.Singkong
+
+  (please also read about deployment)
 - Database connection example:
     >  var db = database("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:test;create=true", "", "")
     >  db
@@ -830,6 +833,8 @@ provide functionalities in Java Programming Language.
   dependent (: or ;). If the class file is located in current working directory,
   <dir> might be replaced with a ., for example:
   java -cp Singkong.jar:. com.noprianto.singkong.Singkong
+
+  (please also read about deployment)
 - Called method must be static method named: singkong. It must require a 
   String[][] and return a String, a String[], or a String[][]. 
 - When the method is called, Singkong interpreter will use STRING representation
@@ -1255,7 +1260,7 @@ Hello, World
 ERROR: built-in function "info" is disabled
 
 
-Another applications:
+Another applications (not embedding):
 Example 7: Python
 >>> import subprocess
 >>> c = ['java', '-jar', 'Singkong.jar', 'println("singkong")']
@@ -1274,7 +1279,69 @@ ERROR: built-in function "info" is disabled
 
 -----------------------------------------------------------------------------
 
-14. Differences with Monkey Programming Language
+14. Deployment
+To run applications developed using Singkong programming language, 
+target system must have Java Runtime Environment installed (Java 5.0 or later).
+
+It is technically possible to bundle Java Runtime Environment with Singkong 
+interpreter and applications developed using Singkong, but this is beyond the 
+scope of Singkong documentation.
+
+Assummed that Java Runtime Environment is installed (Java 5.0 or later),
+before Singkong version 3.5, user should download Singkong.jar and application 
+file (*.singkong) then run the application using the following options:
+
+(1) Run Singkong.jar, open file, run (GUI available)
+
+    - java -jar Singkong.jar
+    
+      (double-clicking Singkong.jar may also work)
+    - switch to Editor tab, Open the file (Open button)
+    - click Run button
+
+    Note: this option requires multiple steps and requires user to know the 
+    location of application file (using file open dialog). It is not practical
+    and too technical. 
+
+    Also, if double-clicking Singkong.jar is not working, this option requires
+    user to access command line or terminal emulator, which adds another steps.
+
+(2) Run Singkong.jar with arguments
+
+    - java -jar Singkong.jar <file>
+
+    Note: this option requires user to access command line or terminal emulator,
+    and requires user to know the location of application file. It is probably
+    too technical. 
+
+    Batch file or shell script may ease this option, but still, user may need
+    to download multiple files. 
+ 
+(3) Embedding Singkong interpreter
+
+    Note: this requires writing code, for example, in Java
+
+Since Singkong version 3.5, the following option is available:
+(4) Bundle application file with Singkong interpreter
+
+    This results in only one runnable jar file to distribute.
+
+To bundle application file with Singkong interpreter:
+- The application file must be named: main.singkong
+- The file must be added to Singkong.jar using jar/zip compatible program, 
+  for example: jar
+  
+  jar uf Singkong.jar main.singkong 
+
+- Singkong.jar must be renamed to another name (which does not contain 
+  "Singkong").
+- Optional: another packages (Java class) may be added along with application 
+  file
+  
+
+-----------------------------------------------------------------------------
+
+15. Differences with Monkey Programming Language
 - Singkong is case-insensitive
 - Assignment is done using var statement (let is supported, for compatibility)
 - Identifier starts with a letter or an underscore and optionally followed by 
@@ -1299,7 +1366,7 @@ ERROR: built-in function "info" is disabled
 
 -----------------------------------------------------------------------------
 
-15. Example: GUI: components
+16. Example: GUI: components
 reset()
 var b = component("button", "Hello")
 var c = component("checkbox", "Singkong?")
@@ -1333,7 +1400,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-16. Example: GUI: layout
+17. Example: GUI: layout
 reset()
 var c = component("button", "C")
 var e = component("button", "E")
@@ -1356,7 +1423,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-17. Example: GUI: Singkong information
+18. Example: GUI: Singkong information
 reset()
 var t = component("table","KEY,VALUE,TYPE", true)
 var l = component("label", "Singkong Programming Language information")
@@ -1378,7 +1445,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-18. Example: GUI: event handlers
+19. Example: GUI: event handlers
 reset()
 var b = component("button", "Hello, World")
 var c = component("checkbox", "Singkong?")
@@ -1440,7 +1507,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-19. Example: GUI: printing
+20. Example: GUI: printing
 reset()
 var t = ["Singkong", "Programming", "Language"]
 var s = 16
@@ -1452,7 +1519,7 @@ printer(t, s, x, y, font)
 
 -----------------------------------------------------------------------------
 
-20. Example: GUI: simple text file editor
+21. Example: GUI: simple text file editor
 reset()
 var e = component("edit", "")
 var o = component("button", "open")
@@ -1486,7 +1553,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-21. Example: GUI: timer
+22. Example: GUI: timer
 reset()
 var l = component("label", string(@))
 var b1 = component("button", "start")
@@ -1515,7 +1582,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-22. Example: Database: create table, insert, update, select, GUI
+23. Example: Database: create table, insert, update, select, GUI
 reset()
 var t = component("table", "A,B", true)
 add(t)
@@ -1543,7 +1610,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-23. Example: Web: variables, GET, POST, JSON
+24. Example: Web: variables, GET, POST, JSON
 Note: the following examples require a HTTP server with CGI support. Please
 make sure that the CGI support has been enabled and configured. All of the 
 following CGI scripts are saved in a CGI-enabled directory and accessed from
@@ -1712,7 +1779,7 @@ Singkong program (HTTP client): login.singkong
 
 -----------------------------------------------------------------------------
 
-24. Example: Java: custom dialog
+25. Example: Java: custom dialog
 Please read: Calling Java method. 
 The following file is saved in examples directory, 
 relative to current working directory.
