@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 3.5 (2020-May-06 +07:00)
+Version: 3.6 (2020-May-19 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -96,7 +96,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 3.5
+        Singkong 3.6
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -229,7 +229,8 @@ types
     set, sha1, sha256, sha384, sha512, slice, sort_string, split, startswith, 
     stat, tab, trim, upper
   - special characters: cr, crlf, lf, newline, quote, tab
-  - file related functions: abs, append, read, write, rename, delete, mkdir
+  - file related functions: abs, append, copy_resource, delete, mkdir, read, 
+    rename, write 
   - HTTP client related functions: http_delete, http_get, http_get_file, 
     http_head, http_post, http_post_override, http_put, url_decode, url_encode 
   - system related functions: cwd, separator, user
@@ -248,6 +249,7 @@ types
   - CGI related functions: cgi_contents
   - HTTP client related functions: http_response_ok
   - system related functions: arguments, system
+  - Singkong related functions: singkong_interpreter
   - sorting: by length
 - HASH
   - {}
@@ -358,32 +360,33 @@ To get a list of built-in functions, please call builtins()
 "ARRAY", "ARRAY_NUMBER", "ARRAY_STRING", "AVERAGE", "BASE64_DECODE", 
 "BASE64_ENCODE", "BUILTINS", "CALL", "CALL_INFO", "CENTER", "CGI_CONTENTS", 
 "CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", "CLEAR", "CLOSING", 
-"COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COUNT", 
-"CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", "DATE", "DATETIME", 
-"DAY", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "EACH", 
-"EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EXIT", "FIRST", "FONTS", 
-"FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", 
-"HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", 
-"HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IN", 
-"INDEX", "INFO", "INPUT", "INTEGER", "INTERACTIVE", "IS", "IS_UPDATE_AVAILABLE", 
-"JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOGIN_DIALOG", 
-"LOWER", "MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MONTH", 
-"NEWLINE", "NUMBER", "NUMBER_GROUP", "OPEN", "PARAM", "PARSE_HASH", "PART", 
-"PARTS", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
-"PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
-"RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", 
-"REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", "REST", "REVERSE", "RIGHT", 
-"ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", 
-"SHA384", "SHA512", "SHOW", "SHUFFLE", "SINGKONG", "SINGKONG_INTERPRETER", 
-"SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", 
-"SORT_NUMBER", "SORT_STRING", "SPLIT", "STARTSWITH", "STAT", "STDIN", "STOP", 
-"STRING", "SUM", "SYSTEM", "TAB", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", 
-"TABLE_LEFT", "TABLE_MIDDLE", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_TOP", 
-"TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", 
-"USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+"COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", 
+"COPY_RESOURCE", "COUNT", "CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", 
+"DATE", "DATETIME", "DAY", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", 
+"DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", 
+"EXIT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", 
+"FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", 
+"HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", 
+"HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", "INFO", "INPUT", "INTEGER", 
+"INTERACTIVE", "IS", "IS_UPDATE_AVAILABLE", "JOIN", "KEYS", "KEYWORDS", "LAST", 
+"LEFT", "LEN", "LF", "LOAD", "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", 
+"MESSAGE", "MIN", "MINUTE", "MKDIR", "MONTH", "NEWLINE", "NUMBER", 
+"NUMBER_GROUP", "OPEN", "PARAM", "PARSE_HASH", "PART", "PARTS", "PASSWORD", 
+"POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", 
+"PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", 
+"RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", 
+"RENAME", "REPLACE", "REQUIRE", "RESET", "REST", "REVERSE", "RIGHT", "ROUND", 
+"SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", 
+"SHA512", "SHOW", "SHUFFLE", "SINGKONG", "SINGKONG_INTERPRETER", "SIZE", 
+"SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
+"SORT_STRING", "SPLIT", "STARTSWITH", "STAT", "STDIN", "STOP", "STRING", "SUM", 
+"SYSTEM", "TAB", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_LEFT", 
+"TABLE_MIDDLE", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_TOP", "TIMER", "TITLE", 
+"TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", 
+"WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-189
+190
 
 Note: a built-in function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -486,38 +489,71 @@ To keep it as simple as possible:
   closing.
 - To configure a COMPONENT, please use built-in function config. This function
   accepts three arguments: COMPONENT, STRING (key), and <any type> (value). 
+  If optional fourth argument (BOOLEAN) is true (default: false) and 
+  (key = contents) and (type of COMPONENT is one of: edit/image/password/text/view) 
+  and (type of value is STRING) then read /resource/<value> in interpreter 
+  jar file.
+  (please also read about deployment)
   Different component may have different keys, but common keys are: 
-  - enabled (for all components, expects value as BOOLEAN)
-  - visible (for all components, expects value as BOOLEAN)
-  - focus (for all components, expects value as BOOLEAN)
-  - foreground/background (for all components, expects value as STRING (color name or RGB value))
-  - font (for all components, expects value as ARRAY [STRING (font name), NUMBER (0=plain, 1=bold, 2=italic, 3=bold and italic), NUMBER (size)])
+  - enabled (all components, BOOLEAN)
+  - visible (all components, BOOLEAN)
+  - focus (all components, BOOLEAN)
+  - foreground/background (all components, STRING (color name or RGB value))
+  - font (all components, ARRAY [STRING (font name), NUMBER (0=plain, 1=bold, 2=italic, 3=bold and italic), NUMBER (size)])
   - text (label of button/checkbox/label/radio, selected item of combobox, 
-    title of barchart, expects value as STRING)
-  - active (checkbox/radio expects value as BOOLEAN, combobox/table expects
-    value as NUMBER (selected index))
-  - contents (contents of barchart/combobox/date/edit/password/progress/table/text/view, 
-    image file of image, expects value as STRING, ARRAY of ARRAY (table), 
-    ARRAY (combobox), DATE/STRING (date), NUMBER (progress), or ARRAY of ARRAY 
+    title of barchart, STRING)
+  - active (checkbox/radio BOOLEAN, combobox/table NUMBER (selected index), 
+    button NUMBER (mnemonic index))
+  - contents (contents of edit/password/text/view STRING, 
+    file of image STRING, ARRAY of ARRAY (table), 
+    ARRAY (combobox), DATE/STRING (date), NUMBER (progress), ARRAY of ARRAY 
     (of [NUMBER (value), STRING (label), STRING (color name or RGB value)], barchart))
   (configuration may be ignored if it is not applicable -- no errors will be
    returned).
 - To get a configuration of a COMPONENT configured using config, please use
   built-in function get. This function accepts two arguments: COMPONENT and 
   STRING (key). 
-  - enabled (for all components, returns a BOOLEAN)
-  - visible (for all components, returns a BOOLEAN)
-  - focus (for all components, returns a BOOLEAN)
-  - foreground/background (for all components, returns a STRING (color name or RGB value))
-  - font (for all components, returns an ARRAY [STRING (font name), NUMBER (0=plain, 1=bold, 2=italic, 3=bold and italic), NUMBER (size)])
+  - enabled (all components, BOOLEAN)
+  - visible (all components, BOOLEAN)
+  - focus (all components, BOOLEAN)
+  - foreground/background (all components, STRING (color name or RGB value))
+  - font (all components, ARRAY [STRING (font name), NUMBER (0=plain, 1=bold, 2=italic, 3=bold and italic), NUMBER (size)])
   - text (label of button/checkbox/label/radio, selected item of combobox, 
-    returns a STRING)
-  - active (checkbox/radio returns a BOOLEAN, combobox/table returns a NUMBER)
-  - contents (contents of combobox/date/edit/password/progress/table/text/view, 
-    image file of image, returns a STRING, an ARRAY of ARRAY (of STRING, table), 
-    an ARRAY (of STRING, combobox), a DATE (date), or a NUMBER (progress))
+    STRING)
+  - active (checkbox/radio BOOLEAN, combobox/table NUMBER, button NUMBER)
+  - contents (contents of edit/password/text/view STRING, 
+    file of image STRING, ARRAY of ARRAY (of STRING, table), 
+    ARRAY (of STRING, combobox), DATE (date), NUMBER (progress))
   (configuration may be ignored if it is not applicable and NULL will be
    returned).
+- To use resources for contents of edit/image/password/text/view:
+  - put all resource files in /resource directory in interpreter jar file
+    for example: 
+        /resource/file.png
+        /resource/test.txt
+    (please also read about deployment)
+  - built-in function config examples:
+    (1) image
+        var c = component("image", "")
+        config(c, "contents", "file.png") # from current working directory;
+        add(c)
+        show()     
+
+        var c = component("image", "")
+        config(c, "contents", "file.png", true) # from /resource/file.png in interpreter jar file;
+        add(c)
+        show()
+
+    (2) text
+        var t = component("text", "")
+        config(t, "contents", "test.txt") # text contains: test.txt;
+        add(t)
+        show()
+
+        var t = component("text", "")
+        config(t, "contents", "test.txt", true) # from /resource/test.txt in interpreter jar file;
+        add(t)
+        show()
 - table: to add rows or remove a row, please use built-in function table_add or
   table_remove. 
 - radio: to group an ARRAY of COMPONENT radio buttons (mutual-exclusion set), 
@@ -705,6 +741,32 @@ database management system).
   in the specified ARRAY must be an ARRAY of two elements: STRING (SQL command
   and ARRAY of arguments). SQL queries are run in transaction, which will
   be committed if no errors occurred. 
+  If optional third argument (BOOLEAN) is true (default: false), include column 
+  labels in the result.
+    >  var d = database("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:test;create=true", "", "")
+    >  var q = [ ["create table test(a integer, b integer)", []] ]
+    >  var r = query(d, q)
+    >  r
+    [0]
+    >  var q = [ ["insert into test(a, b) values(?, ?)", [1, 1]] ]
+    >  var r = query(d, q)
+    >  r
+    [1]
+    >  var q = [ ["insert into test(a, b) values(?, ?)", [2, 2]] ]
+    >  var r = query(d, q)
+    >  r
+    [1]
+    >  var q = [ ["select * from test", []] ]
+    >  var r = query(d, q)
+    >  r
+    [[[1, 1], [2, 2]]]
+    >  var r = query(d, q, true)
+    >  r
+    [[["A", "B"], [1, 1], [2, 2]]]
+    >  var q = [ ["select * from test", []], ["insert into test(a, b) values(?, ?)", [3, 3]] ]
+    >  var r = query(d, q, true)
+    >  r
+    [[["A", "B"], [1, 1], [2, 2]], 1]
 - Singkong.jar comes with simple GUI database tool:
   - Table list (double-click to run SQL SELECT command)
   - Query tool (run SQL query)
@@ -1337,6 +1399,13 @@ To bundle application file with Singkong interpreter:
   "Singkong").
 - Optional: another packages (Java class) may be added along with application 
   file
+- Optional: to add resource files:
+  - Put all resource files in /resource directory, in interpreter jar file
+    for example: 
+        /resource/file.png
+        /resource/test.txt
+  - Please also read about GUI application development
+  - To copy a resource to a file, please use built-in function copy_resource
   
 
 -----------------------------------------------------------------------------
