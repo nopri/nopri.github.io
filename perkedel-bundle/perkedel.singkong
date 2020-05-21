@@ -1,0 +1,226 @@
+#
+Perkedel
+Compilers/interpreters bundle 
+for Windows
+
+(c) Noprianto <nopri.anto@icloud.com>, 2020
+Website: nopri.github.io
+License: public domain
+
+Developed using: Singkong, Batch file, C
+Bundled using: 7-Zip, IExpress
+Bundled: 
+ Java Runtime Environment (AdoptOpenJDK)
+ ECJ (Eclipse)
+ MinGW (Code::Blocks)  
+ CHICKEN Scheme (compiled from source)
+ Singkong.jar
+
+Thank you for using Perkedel
+;
+
+var name = "Perkedel"
+var about = name + lf() +
+    "Compilers/interpreters bundle" + lf() + 
+    "for Windows" + lf() + lf() + 
+    "(c) Noprianto <nopri.anto@icloud.com>, 2020" + lf() + 
+    "Website: nopri.github.io" + lf() + 
+    "License: public domain" + lf() + lf() + 
+    "Developed using: Singkong, Batch file, C" + lf() +
+    "Bundled using: 7-Zip, IExpress" + lf() +
+    "Bundled: " + lf() +
+    " Java Runtime Environment (AdoptOpenJDK)" + lf() +
+    " ECJ (Eclipse)" + lf() +
+    " MinGW (Code::Blocks)" + lf() +
+    " CHICKEN Scheme (compiled from source)" + lf() +
+    " Singkong.jar" + lf() + lf() +
+    "Thank you for using Perkedel" + lf() + lf() +
+    "Directory: " + cwd()
+    
+require(3.6)
+    
+var temp = "temp"
+var pattern = "[a-zA-Z]+"
+
+var title_confirm = "Please confirm"
+var title_error = "Error"
+var title_info = "Information"
+var confirm_quit = "Are you sure you want to quit this application?"
+
+var cmd_c = "C"
+var cmd_cpp = "C++"
+var cmd_java = "Java"
+var cmd_scheme = "Scheme"
+var cmd_singkong = "Singkong"
+var cmd_scheme_i = "Scheme Interpreter"
+var cmd_singkong_i = "Singkong Interpreter"
+var cmd_examples = "Examples"
+var cmd_info = "Information"
+
+var msg_code = "Please enter code in "
+var msg_lang = " programming language"
+var msg_error_class = "Cannot find Java class name in source code (please put a space character between class name and {)"
+var msg_error_allow = "Class name is not allowed (a-z, A-Z only; limitation of Perkedel)"
+
+var hash_run = {
+    cmd_scheme_i: 
+        ["perkedel\perkedel-run.exe", "chicken\bin\csi.exe"],
+    cmd_singkong_i: 
+        ["jre\bin\javaw.exe", "-jar", "Singkong.jar"],
+    cmd_examples: 
+        ["perkedel\perkedel-run.exe", 
+            "perkedel\perkedel-open-examples.bat"]
+}
+
+var f_run = fn(command) {
+    system(hash_run[command])
+}
+
+var hash_translate = {
+    cmd_c: [
+        "code.c", 
+        ["perkedel\perkedel-run.exe", "perkedel\perkedel-run-c.bat"]
+        ],
+    cmd_cpp: [
+        "code.cpp", 
+        ["perkedel\perkedel-run.exe", "perkedel\perkedel-run-cpp.bat"]
+        ],
+    cmd_scheme: [
+        "code.scm", 
+        ["perkedel\perkedel-run.exe", 
+            "perkedel\perkedel-run-scheme.bat"]
+        ],
+    cmd_singkong: [
+        "code.singkong", 
+        ["perkedel\perkedel-run.exe", 
+            "perkedel\perkedel-run-singkong.bat"]
+        ]
+}
+
+var f_translate = fn(command, code) {
+    var a = hash_translate[command]
+    var f = temp + "\" + a[0]
+    var cmd = a[1]
+    write(f, code)
+    system(cmd)
+}
+
+var f_lang = fn(editor, button) {
+    var code = trim(get(editor, "contents"))
+    var lang = get(button, "text")
+    if (!empty(code)) {
+        f_translate(lang, code)
+    } else {
+        message(msg_code + lang + msg_lang, title_error)
+    }
+}
+
+var is_allowed = fn(c) {
+    return matches(c, pattern)
+}
+
+var f_lang_java = fn(editor, button) {
+    var code = trim(get(editor, "contents"))
+    var lang = get(button, "text")
+    if (empty(code)) {
+        message(msg_code + lang + msg_lang)
+    } else {
+        var x = split(code, "class")
+        if (len(x) < 2) {
+            message(msg_error_class, title_error)
+        } else {
+            var y = split(x[1], "{")
+            if (len(y) > 1) {
+                var z = trim(y[0])
+                if (empty(z)) {
+                    message(msg_error_class, title_error)
+                } else {
+                    if (is_allowed(z)) {
+                        var n = z + ".java"
+                        var f = temp + "\" + n
+                        var b = temp + "\perkedel-generated-java.bat"
+                        write(f, code)
+                        write(b, "@echo off" + 
+                            crlf() + "cd temp" + 
+                            crlf() + "del *.class 2>nul" + 
+                            crlf() + "..\jre\bin\java.exe -jar ..\ecj\ecj.jar -1.8 " + n +  
+                            crlf() + "..\jre\bin\java.exe " + z + 
+                            crlf() + "echo. " + 
+                            crlf() +  "pause")
+                        system(["perkedel\perkedel-run.exe", 
+                            "temp\perkedel-generated-java.bat"]
+                        )
+                    } else {
+                        message(msg_error_allow, title_error)
+                    }
+                }
+            } else {
+                message(msg_error_class, title_error)
+            }
+        }
+    }
+}
+
+reset()
+title(name)
+closing(confirm_quit, title_confirm)
+
+var l_info = component("label", "Run code: ")
+var b_c = component("button", cmd_c)
+config(b_c, "active", 0)
+var b_cpp = component("button", cmd_cpp)
+var b_java = component("button", cmd_java)
+config(b_java, "active", 0)
+var b_scheme = component("button", cmd_scheme)
+config(b_scheme, "active", 2)
+var b_singkong = component("button", cmd_singkong)
+config(b_singkong, "active", 0)
+var e_code = component("edit", "")
+config(e_code, "font", ["monospaced", 0, 18])
+var b_scheme_i = component("button", cmd_scheme_i)
+var b_singkong_i = component("button", cmd_singkong_i)
+var b_examples = component("button", cmd_examples)
+var b_info = component("button", cmd_info)
+
+add_n([b_scheme_i, b_singkong_i, b_examples, b_info])
+add(e_code)
+add_s([l_info, b_c, b_cpp, b_java, b_scheme, b_singkong])
+config(e_code, "focus", true)
+
+event(b_examples, fn() {
+    f_run(cmd_examples)
+})
+
+event(b_info, fn() {
+    message(about, title_info)
+})
+
+event(b_scheme_i, fn() {
+    f_run(cmd_scheme_i)
+})
+
+event(b_singkong_i, fn() {
+    f_run(cmd_singkong_i)
+})
+
+event(b_c, fn() {
+    f_lang(e_code, b_c)
+})
+
+event(b_cpp, fn() {
+    f_lang(e_code, b_cpp)
+})
+
+event(b_scheme, fn() {
+    f_lang(e_code, b_scheme)
+})
+
+event(b_singkong, fn() {
+    f_lang(e_code, b_singkong)
+})
+
+event(b_java, fn() {
+    f_lang_java(e_code, b_java)
+})
+
+show()
