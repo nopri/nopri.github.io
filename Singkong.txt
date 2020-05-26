@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 3.6 (2020-May-19 +07:00)
+Version: 3.7 (2020-May-26 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -96,7 +96,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 3.6
+        Singkong 3.7
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -233,7 +233,7 @@ types
     rename, write 
   - HTTP client related functions: http_delete, http_get, http_get_file, 
     http_head, http_post, http_post_override, http_put, url_decode, url_encode 
-  - system related functions: cwd, separator, user
+  - system related functions: cwd, inet_address_local, separator, user
   - Singkong related functions: load
   - sorting: lexicographically
 - ARRAY
@@ -248,7 +248,7 @@ types
   - file related functions: dir
   - CGI related functions: cgi_contents
   - HTTP client related functions: http_response_ok
-  - system related functions: arguments, system
+  - system related functions: arguments, inet_address, system
   - Singkong related functions: singkong_interpreter
   - sorting: by length
 - HASH
@@ -367,26 +367,27 @@ To get a list of built-in functions, please call builtins()
 "EXIT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", 
 "FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", 
 "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", 
-"HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", "INFO", "INPUT", "INTEGER", 
-"INTERACTIVE", "IS", "IS_UPDATE_AVAILABLE", "JOIN", "KEYS", "KEYWORDS", "LAST", 
-"LEFT", "LEN", "LF", "LOAD", "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", 
-"MESSAGE", "MIN", "MINUTE", "MKDIR", "MONTH", "NEWLINE", "NUMBER", 
-"NUMBER_GROUP", "OPEN", "PARAM", "PARSE_HASH", "PART", "PARTS", "PASSWORD", 
-"POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", 
-"PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", 
-"RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", 
-"RENAME", "REPLACE", "REQUIRE", "RESET", "REST", "REVERSE", "RIGHT", "ROUND", 
-"SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", 
-"SHA512", "SHOW", "SHUFFLE", "SINGKONG", "SINGKONG_INTERPRETER", "SIZE", 
-"SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
-"SORT_STRING", "SPLIT", "STARTSWITH", "STAT", "STDIN", "STOP", "STRING", "SUM", 
-"SYSTEM", "TAB", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_LEFT", 
-"TABLE_MIDDLE", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_TOP", "TIMER", "TITLE", 
-"TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", 
-"WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+"HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", "INET_ADDRESS", 
+"INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTERACTIVE", "IS", 
+"IS_UPDATE_AVAILABLE", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", 
+"LOAD", "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MESSAGE", "MIN", 
+"MINUTE", "MKDIR", "MONTH", "NEWLINE", "NUMBER", "NUMBER_GROUP", "OPEN", 
+"PARAM", "PARSE_HASH", "PART", "PARTS", "PASSWORD", "POP", "PRINT", "PRINTER", 
+"PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", 
+"QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "REMOVE", 
+"REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", 
+"RESET", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", 
+"SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SHUFFLE", 
+"SINGKONG", "SINGKONG_INTERPRETER", "SIZE", "SLICE", "SORT_ARRAY", 
+"SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", 
+"STARTSWITH", "STAT", "STDIN", "STOP", "STRING", "SUM", "SYSTEM", "TAB", 
+"TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_LEFT", "TABLE_MIDDLE", 
+"TABLE_REMOVE", "TABLE_RIGHT", "TABLE_TOP", "TIMER", "TITLE", "TRIM", "TYPE", 
+"TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", "WORDS_EN", 
+"WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-190
+192
 
 Note: a built-in function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -732,10 +733,11 @@ database management system).
 - Supported Singkong and Java type mapping:
   - BOOLEAN -> Java: boolean
   - DATE -> Java: java.sql.Date
+  - NULL -> Java: null
   - NUMBER -> Java: int (if a NUMBER looks like an integer) or 
               Java: java.math.BigDecimal
   - STRING -> Java: String
-  Unsupported Singkong data type in query: returns error
+  Unsupported Singkong data types in query: STRING representation
 - To run an ARRAY of SQL queries, please use built-in function query. This
   function accepts two arguments: DATABASE and ARRAY of ARRAY. Each element 
   in the specified ARRAY must be an ARRAY of two elements: STRING (SQL command
