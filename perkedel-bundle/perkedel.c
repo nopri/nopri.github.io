@@ -1,7 +1,7 @@
 /*
 perkedel.c
 - Used in Perkedel compilers/interpreters bundle for Windows 
-- (c) Noprianto <nopri.anto@icloud.com>, 2020
+- Created by: Noprianto <nopri.anto@icloud.com>, 2020
 - Website: nopri.github.io
 - License: public domain
 - Compiled perkedel.exe runs on Windows 95 or later
@@ -34,6 +34,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     if (major < 6) {
         MessageBox(NULL, error, "Perkedel", MB_OK);
     } else {
+        ZeroMemory(&startup_info, sizeof(startup_info));
+        startup_info.cb = sizeof(startup_info);
+        ZeroMemory(&process_info, sizeof(process_info));
+        GetStartupInfo (&startup_info);
+        if (CreateProcess(NULL, "cmd.exe /C perkedel\\perkedel-new-singkong.bat", NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &startup_info, &process_info)) {
+            WaitForSingleObject(process_info.hProcess, INFINITE);
+        }
+
         ZeroMemory(&startup_info, sizeof(startup_info));
         startup_info.cb = sizeof(startup_info);
         ZeroMemory(&process_info, sizeof(process_info));

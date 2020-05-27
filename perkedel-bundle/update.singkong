@@ -1,0 +1,21 @@
+
+println("Checking for update...")
+var a = is_update_available()
+if (a == null) {
+    println("Error checking for update.")
+    println("Please try again later")
+    println("(also, please make sure that the system is connected to the Internet).")
+} else {
+    if (a == "") {
+        println("No update is available")
+    } else {
+        println("Downloading Singkong version: " + a + ", please wait...")
+        var d = http_get_file("https://nopri.github.io/Singkong.jar", "Singkong-new.jar")
+        if (d == null) {
+            println("Error downloading file.")
+            var r = delete("Singkong-new.jar")
+        } else {
+            println("Finished downloading file. Please quit Perkedel.")
+        }
+    }
+}
