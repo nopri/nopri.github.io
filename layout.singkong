@@ -1,5 +1,5 @@
 reset()
-var c = component("button", "C")
+var c = component("panel", "")
 var e = component("button", "E")
 var n = component("button", "N")
 var w = component("button", "W")
@@ -14,5 +14,12 @@ add_e(e)
 add_n(n)
 add_s(s)
 add_w(w)
+
+# panel (absolute positioning);
+var items = range(0, 5)
+each(items, fn(i, counter) {
+  var x = (20 + 100) * counter
+  panel_add(c, component("button", string(i+1)), x, 50, 100, 100)
+})
 
 show()
