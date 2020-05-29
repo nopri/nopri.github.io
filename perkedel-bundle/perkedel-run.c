@@ -1,10 +1,10 @@
 /*
 perkedel-run.c
 - Used in Perkedel compilers/interpreters bundle for Windows 
-- (c) Noprianto <nopri.anto@icloud.com>, 2020
+- Author: Noprianto <nopri.anto@icloud.com>, 2020
 - Website: nopri.github.io
 - License: public domain
-- Compiled perkedel-run.exe runs on Windows 95 or later
+- Compile: gcc perkedel-run.c -mwindows -Os -s -o perkedel-run.exe
 */
 
 #include<windows.h>

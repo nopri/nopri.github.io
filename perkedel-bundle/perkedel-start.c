@@ -1,10 +1,10 @@
 /*
 perkedel-start.c
 - Used in Perkedel compilers/interpreters bundle for Windows 
-- (c) Noprianto <nopri.anto@icloud.com>, 2020
+- Author: Noprianto <nopri.anto@icloud.com>, 2020
 - Website: nopri.github.io
 - License: public domain
-- Compiled perkedel-start.exe runs on Windows 95 or later
+- Compile: gcc perkedel-start.c -mwindows -Os -s -o perkedel-start.exe
 */
 
 #include<stdio.h>
@@ -41,7 +41,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     sprintf(path, "%s\\perkedel", drive);
     
     sprintf(error, "Perkedel uses Java 8 and requires Windows Vista or later. This system runs Windows 95/98/Me/2000/XP/Server 2003 (%s).", versions);
-    sprintf(confirm, "Do you want to copy Perkedel to %s? If no is selected, perkedel will be run in a temporary directory (automatically clean up).", path);
+    sprintf(confirm, "Do you want to copy Perkedel to %s? If no is selected, perkedel will be run in a temporary directory.", path);
 
     if (major < 6) {
         MessageBox(NULL, error, "Perkedel", MB_OK);

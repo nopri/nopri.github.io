@@ -1,10 +1,10 @@
 /*
 perkedel.c
 - Used in Perkedel compilers/interpreters bundle for Windows 
-- Created by: Noprianto <nopri.anto@icloud.com>, 2020
+- Author: Noprianto <nopri.anto@icloud.com>, 2020
 - Website: nopri.github.io
 - License: public domain
-- Compiled perkedel.exe runs on Windows 95 or later
+- Compile: gcc perkedel.c -mwindows -Os -s -o perkedel.exe
 */
 
 #include<stdio.h>
