@@ -1,13 +1,23 @@
 reset()
-var b = component("button", "Hello, World")
+var b = component("button", "Hello World (mouse event)")
 var c = component("checkbox", "Singkong?")
 var r = component("radio", "Radio Button")
 var m = component("combobox", "Singkong,Programming,Language")
 var t = component("table", "A,B", true)
+var tm = component("table", "TYPE, X, Y, CLICK COUNT", true)
+var tk = component("table", "TYPE, CHAR, CODE, KEY, ACTION, MODIFIER, LOCATION, ALT, ALT GRAPH, CONTROL, META, SHIFT", true)
+var pm = component("panel", "Mouse")
+var pk = component("panel", "Keyboard")
+var ta = component("tab", "")
 var e = component("edit", "")
 var p = component("password", "")
 var x = component("text", "")
 var v = component("view", "")
+
+panel_add(pm, tm, 10, 10, 300, 500)
+tab_add(ta, pm)
+panel_add(pk, tk, 10, 10, 300, 500)
+tab_add(ta, pk)
 
 var bb = fn() {
     message(get(b,"text"))
@@ -51,8 +61,20 @@ var xx = fn() {
 }
 event(x, xx)
 
+event_mouse(b, fn(m) {
+  table_add(tm, [m])
+  if (m[0] == "EXITED") {
+    var c = len(get(tm, "contents"))
+    table_scroll(tm, c-1)
+  }
+})
+
+event_keyboard_frame(fn(m) {
+  table_add(tk, [m])
+})
+
 add_n([p, x])
 add_s([b, c, r, m])
-add([t, e, v])
+add([t, e, v, ta])
 show()
 
