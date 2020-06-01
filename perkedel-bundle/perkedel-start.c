@@ -21,6 +21,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     char *drive;
 
     char error[255];
+    char errors[255];
 
     char path[16];
     char confirm[255];
@@ -40,38 +41,44 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     drive = getenv("SystemDrive");
     sprintf(path, "%s\\perkedel", drive);
     
-    sprintf(error, "Perkedel uses Java 8 and requires Windows Vista or later. This system runs Windows 95/98/Me/2000/XP/Server 2003 (%s).", versions);
+    sprintf(error,  "Perkedel was tested only on Windows 7 or later. This system runs Windows 95/98/Me/2000/XP/Server 2003 (%s).", versions);
+    sprintf(errors, "Perkedel was tested only on Windows 7 or later. This system runs Windows Vista (%s).", versions);
+
     sprintf(confirm, "Do you want to copy Perkedel to %s? If no is selected, perkedel will be run in a temporary directory.", path);
 
     if (major < 6) {
         MessageBox(NULL, error, "Perkedel", MB_OK);
     } else {
-        int res = MessageBox(NULL, confirm, "Perkedel", MB_YESNO);
-        if (res == IDYES) {
-            sprintf(extract, "perkedel-bundle.exe -o\"%s\" -y", path);
-            sprintf(run, "%s\\perkedel.exe", path);
-            sprintf(dir, "%s\\", path);
-        } else {
-            sprintf(extract, "perkedel-bundle.exe -o . -y");
-            sprintf(run, "perkedel.exe", path);
-            sprintf(dir, ".");
-        }
-        
-        ZeroMemory(&startup_info, sizeof(startup_info));
-        startup_info.cb = sizeof(startup_info);
-        ZeroMemory(&process_info, sizeof(process_info));
-        GetStartupInfo (&startup_info);
-        if (CreateProcess(NULL, extract, NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
-            WaitForSingleObject(process_info.hProcess, INFINITE);
-        }
+        if (minor < 1) {
+            MessageBox(NULL, errors, "Perkedel", MB_OK);
+        } else {            
+            int res = MessageBox(NULL, confirm, "Perkedel", MB_YESNO);
+            if (res == IDYES) {
+                sprintf(extract, "perkedel-bundle.exe -o\"%s\" -y", path);
+                sprintf(run, "%s\\perkedel.exe", path);
+                sprintf(dir, "%s\\", path);
+            } else {
+                sprintf(extract, "perkedel-bundle.exe -o . -y");
+                sprintf(run, "perkedel.exe", path);
+                sprintf(dir, ".");
+            }
+            
+            ZeroMemory(&startup_info, sizeof(startup_info));
+            startup_info.cb = sizeof(startup_info);
+            ZeroMemory(&process_info, sizeof(process_info));
+            GetStartupInfo (&startup_info);
+            if (CreateProcess(NULL, extract, NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
+                WaitForSingleObject(process_info.hProcess, INFINITE);
+            }
 
-        SetCurrentDirectory(dir);
-        ZeroMemory(&startup_info, sizeof(startup_info));
-        startup_info.cb = sizeof(startup_info);
-        ZeroMemory(&process_info, sizeof(process_info));
-        GetStartupInfo (&startup_info);
-        if (CreateProcess(NULL, run, NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
-            WaitForSingleObject(process_info.hProcess, INFINITE);
+            SetCurrentDirectory(dir);
+            ZeroMemory(&startup_info, sizeof(startup_info));
+            startup_info.cb = sizeof(startup_info);
+            ZeroMemory(&process_info, sizeof(process_info));
+            GetStartupInfo (&startup_info);
+            if (CreateProcess(NULL, run, NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
+                WaitForSingleObject(process_info.hProcess, INFINITE);
+            }
         }
     }
     return 0;

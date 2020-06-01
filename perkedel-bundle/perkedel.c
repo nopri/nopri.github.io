@@ -19,6 +19,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     char versions[32];
 
     char error[255];
+    char errors[255];
 
     STARTUPINFO startup_info;
     PROCESS_INFORMATION process_info;
@@ -29,25 +30,30 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     if (version < 0x80000000) build = (DWORD)(HIWORD(version));
     sprintf(versions, "%d.%d.%d", major, minor, build);
     
-    sprintf(error, "Perkedel uses Java 8 and requires Windows Vista or later. This system runs Windows 95/98/Me/2000/XP/Server 2003 (%s).", versions);
+    sprintf(error,  "Perkedel was tested only on Windows 7 or later. This system runs Windows 95/98/Me/2000/XP/Server 2003 (%s).", versions);
+    sprintf(errors, "Perkedel was tested only on Windows 7 or later. This system runs Windows Vista (%s).", versions);
 
     if (major < 6) {
         MessageBox(NULL, error, "Perkedel", MB_OK);
     } else {
-        ZeroMemory(&startup_info, sizeof(startup_info));
-        startup_info.cb = sizeof(startup_info);
-        ZeroMemory(&process_info, sizeof(process_info));
-        GetStartupInfo (&startup_info);
-        if (CreateProcess(NULL, "cmd.exe /C perkedel\\perkedel-new-singkong.bat", NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &startup_info, &process_info)) {
-            WaitForSingleObject(process_info.hProcess, INFINITE);
-        }
+        if (minor < 1) {
+            MessageBox(NULL, errors, "Perkedel", MB_OK);
+        } else {            
+            ZeroMemory(&startup_info, sizeof(startup_info));
+            startup_info.cb = sizeof(startup_info);
+            ZeroMemory(&process_info, sizeof(process_info));
+            GetStartupInfo (&startup_info);
+            if (CreateProcess(NULL, "cmd.exe /C perkedel\\perkedel-new-singkong.bat", NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &startup_info, &process_info)) {
+                WaitForSingleObject(process_info.hProcess, INFINITE);
+            }
 
-        ZeroMemory(&startup_info, sizeof(startup_info));
-        startup_info.cb = sizeof(startup_info);
-        ZeroMemory(&process_info, sizeof(process_info));
-        GetStartupInfo (&startup_info);
-        if (CreateProcess(NULL, "jre\\bin\\javaw.exe -jar Singkong.jar perkedel\\perkedel.singkong", NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
-            WaitForSingleObject(process_info.hProcess, INFINITE);
+            ZeroMemory(&startup_info, sizeof(startup_info));
+            startup_info.cb = sizeof(startup_info);
+            ZeroMemory(&process_info, sizeof(process_info));
+            GetStartupInfo (&startup_info);
+            if (CreateProcess(NULL, "jre\\bin\\javaw.exe -jar Singkong.jar perkedel\\perkedel.singkong", NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
+                WaitForSingleObject(process_info.hProcess, INFINITE);
+            }
         }
     }
     return 0;

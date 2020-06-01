@@ -42,7 +42,7 @@ var about = name + lf() +
     "Singkong version: " + singkong()["version_string"] + lf() + 
     "Directory: " + cwd()
     
-require(3.8)
+require(3.9)
     
 var percent = 0.8
 var temp = "temp"
@@ -80,6 +80,7 @@ var msg_code = "Please enter code in "
 var msg_lang = " programming language"
 var msg_error_class = "Cannot find Java class name in source code"
 var msg_error_allow = "Class name is not allowed (a-z, A-Z only; limitation of Perkedel)"
+var msg_error_dll = "Please install Visual C++ Redistributable (for running Python 3.5)"
 
 var color_0 = ["orange", null]
 var color_1 = ["yellow", null]
@@ -234,6 +235,15 @@ var config_c = fn(b, c) {
     }    
 }
 
+var test_run_py3 = fn () {
+    var r = system(["python3\python.exe", "--version"])
+    if (empty(trim(r[0]))) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 reset()
 title(name)
 closing(confirm_quit, title_confirm)
@@ -312,8 +322,12 @@ event(b_python2_i, fn() {
 })
 
 event(b_python3_i, fn() {
-    f_run_py_pip()
-    f_run(cmd_python3_i)
+    if (!test_run_py3()) {
+        message(msg_error_dll, title_info)
+    } else {
+        f_run_py_pip()
+        f_run(cmd_python3_i)
+    }
 })
 
 event(b_tcl_i, fn() {
@@ -382,7 +396,11 @@ event(b_python2, fn() {
 })
 
 event(b_python3, fn() {
-    f_lang(e_code, b_python3)
+    if (!test_run_py3()) {
+        message(msg_error_dll, title_info)
+    } else {
+        f_lang(e_code, b_python3)
+    }
 })
 
 event(b_scheme, fn() {

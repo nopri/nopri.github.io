@@ -21,7 +21,7 @@ AdminQuietInstCmd=%AdminQuietInstCmd%
 UserQuietInstCmd=%UserQuietInstCmd%
 SourceFiles=SourceFiles
 [Strings]
-InstallPrompt=Perkedel comes with Java Runtime Environment (AdoptOpenJDK), ECJ (Eclipse), MinGW (Code::Blocks), Tcl/Tk (compiled), Python (python.org; pip, ReportLab, web.py, SQLiteBoy), CHICKEN Scheme (compiled), and Singkong. It is possible to run Perkedel in a temporary directory, or install it in perkedel directory of your system drive. Please make sure this system can run Java 8 (Windows Vista or later) and has at least 500 MB of free disk space. Perkedel is public domain software. Continue?
+InstallPrompt=Perkedel comes with Java Runtime Environment (AdoptOpenJDK), ECJ (Eclipse), MinGW (Code::Blocks), Tcl/Tk (compiled), Python (python.org; pip, ReportLab, web.py, SQLiteBoy), CHICKEN Scheme (compiled), and Singkong. It is possible to run Perkedel in a temporary directory, or install it in perkedel directory of your system drive. Please make sure this system can run Java 8 (tested on Windows 7 or later) and has at least 500 MB of free disk space. Perkedel is public domain software. Continue?
 DisplayLicense=
 FinishMessage=
 TargetName=perkedel.exe
