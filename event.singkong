@@ -73,6 +73,10 @@ event_keyboard_frame(fn(m) {
   table_add(tk, [m])
 })
 
+event(ta, fn() {
+  message(get(ta, "active"))
+})
+
 add_n([p, x])
 add_s([b, c, r, m])
 add([t, e, v, ta])
