@@ -42,11 +42,12 @@ var about = name + lf() +
     "Singkong version: " + singkong()["version_string"] + lf() + 
     "Directory: " + cwd()
     
-require(3.9)
+require(4.0)
     
 var percent = 0.8
 var temp = "temp"
 var pattern = "[a-zA-Z]+"
+var whitespace = [" ", tab(), cr(), lf()]
 
 var title_confirm = "Please confirm"
 var title_error = "Error"
@@ -179,7 +180,7 @@ var f_lang_java = fn(editor, button) {
     var code = trim(get(editor, "contents"))
     var lang = get(button, "text")
     if (empty(code)) {
-        message(msg_code + lang + msg_lang)
+        message(msg_code + lang + msg_lang, title_error)
     } else {
         var x = split(code, "class")
         if (len(x) < 2) {
@@ -191,7 +192,22 @@ var f_lang_java = fn(editor, button) {
                 if (empty(z)) {
                     message(msg_error_class, title_error)
                 } else {
-                    if (is_allowed(z)) {
+                    var test = ""
+                    var i = 0
+                    repeat {
+                        var s = slice(z, i, i+1)
+                        if (in(whitespace, s)) {
+                            return i
+                        } else {
+                            var test = test + s
+                        }
+                        var i = i + 1
+                        if (i >= len(z)) {
+                            return i
+                        }
+                    }
+                    var z = test
+                    if (is_allowed(z) == true) {
                         var n = z + ".java"
                         var f = temp + "\" + n
                         var b = temp + "\perkedel-generated-java.bat"
@@ -207,7 +223,7 @@ var f_lang_java = fn(editor, button) {
                             "temp\perkedel-generated-java.bat"]
                         )
                     } else {
-                        message(msg_error_allow, title_error)
+                        message(msg_error_allow + lf() + z, title_error)
                     }
                 }
             } else {
