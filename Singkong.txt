@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 4.0 (2020-June-06 +07:00)
+Version: 4.1 (2020-December-15 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -96,7 +96,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 4.0
+        Singkong 4.1
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -208,7 +208,7 @@ types
   - any integer and decimal
   - precision: 10240, scale: 4
   - operators: + - * / == != %(remainder) ^(power) < <= > >=
-  - related functions: abs, array_number, integer, number, number_group, 
+  - related functions: abs, array_number, chr, integer, number, number_group, 
     random, round, sort_number, words_en, words_id
   - system related functions: delay
   - Singkong related functions: require
@@ -223,10 +223,12 @@ types
   - arbitrary length string
   - operators: +(concatenation) -(remove) ==(equals,case-sensitive) != *(repeat)
   - equals (case-insensitive): please use built-in function equals
+  - index operator
+  - modify STRING: please use built-in function set
   - related functions: array_string, base64_decode, base64_encode, call, center, 
     count, cr, crlf, dir, empty, endswith, equals, eval, in, index, isalpha,
-    isdigit, islower, isupper, join, left, 
-    len, lf, lower, matches, md5, newline, quote, random_string, replace, right, 
+    isdigit, islower, isupper, join, left, len, 
+    lf, lower, matches, md5, newline, ord, quote, random_string, replace, right, 
     set, sha1, sha256, sha384, sha512, slice, sort_string, split, startswith, 
     stat, tab, trim, upper
   - special characters: cr, crlf, lf, newline, quote, tab
@@ -241,6 +243,7 @@ types
   - []
   - array of mixed data types
   - operators: +(add), -(remove) == !=
+  - index operator
   - modify ARRAY: please use built-in function set
   - related functions: array, array_number, array_string, average, call, count, 
     each, empty, first, in, index, join, last, len, max, min, pop, push, 
@@ -344,8 +347,8 @@ types
     gui, hide, panel_add, panel_clear, panel_remove, printer, radio_group, 
     remove, remove_e, remove_n, remove_s, remove_w, reset, resizable, 
     screen, show, size, stop, tab_add, tab_clear, tab_remove, table_add, table_bottom, 
-    table_center, table_left, table_middle, table_remove, table_right, table_scroll, 
-    table_top, timer, title
+    table_center, table_column, table_left, table_middle, table_print,   
+    table_remove, table_right, table_scroll, table_top, timer, title
   - GUI input/output functions: confirm, directory, input, open, message, 
     password, save
     (if GUI is not available: simpler text-based version)
@@ -362,22 +365,23 @@ To get a list of built-in functions, please call builtins()
 ["ABS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", "APPEND", "ARGUMENTS", 
 "ARRAY", "ARRAY_NUMBER", "ARRAY_STRING", "AVERAGE", "BASE64_DECODE", 
 "BASE64_ENCODE", "BUILTINS", "BUTTON_IMAGE", "CALL", "CALL_INFO", "CENTER", 
-"CGI_CONTENTS", "CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", "CLEAR", 
-"CLOSING", "COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", 
-"COPY_RESOURCE", "COUNT", "CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", 
-"DATE", "DATETIME", "DAY", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", 
-"DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", 
-"EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", "EXIT", "FIRST", 
-"FONTS", "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "FRAME", "GET", "GUI", 
-"HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", 
-"HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", 
-"IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", 
-"INTERACTIVE", "IS", "IS_UPDATE_AVAILABLE", "ISALPHA", "ISDIGIT", "ISLOWER", 
-"ISUPPER", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", 
-"LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", 
-"MKDIR", "MONTH", "NEWLINE", "NUMBER", "NUMBER_GROUP", "OPEN", "PANEL_ADD", 
-"PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_HASH", "PART", 
-"PARTS", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
+"CGI_CONTENTS", "CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", "CHR", 
+"CLEAR", "CLOSING", "COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", 
+"CONFIRM", "COPY_RESOURCE", "COUNT", "CR", "CRLF", "CWD", "DATABASE", 
+"DATABASE_CONNECTED", "DATE", "DATETIME", "DAY", "DELAY", "DELETE", "DIFF", 
+"DIR", "DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", "ENV", 
+"EQUALS", "EVAL", "EVENT", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", 
+"EVENT_MOUSE_FRAME", "EXIT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
+"FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", 
+"HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
+"HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", 
+"INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTERACTIVE", 
+"IS", "IS_UPDATE_AVAILABLE", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", "JOIN", 
+"KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOGIN_DIALOG", "LOWER", 
+"MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MONTH", "NEWLINE", 
+"NUMBER", "NUMBER_GROUP", "OPEN", "ORD", "PANEL_ADD", "PANEL_CLEAR", 
+"PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_HASH", "PART", "PARTS", 
+"PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
 "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
 "RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", 
 "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", "REST", 
@@ -387,12 +391,13 @@ To get a list of built-in functions, please call builtins()
 "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "STARTSWITH", 
 "STAT", "STDIN", "STOP", "STRING", "SUM", "SYSTEM", "TAB", "TAB_ADD", 
 "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", 
-"TABLE_LEFT", "TABLE_MIDDLE", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_SCROLL", 
-"TABLE_TOP", "TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", 
-"URL_ENCODE", "USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "YEAR"]
+"TABLE_COLUMN", "TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", 
+"TABLE_RIGHT", "TABLE_SCROLL", "TABLE_TOP", "TIMER", "TITLE", "TRIM", "TYPE", 
+"TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", "WORDS_EN", 
+"WORDS_ID", "WRITE", "YEAR"]
 
 >  len(builtins())
-209
+213
 
 Note: a built-in function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
