@@ -1,8 +1,36 @@
 reset()
-var t = ["Singkong", "Programming", "Language"]
-var s = 16
-var x = 150
-var y = 150
-var font = "monospaced"
-printer(t, s, x, y, font)
 
+var header = component("text", "header")
+var footer = component("text", "footer")
+
+var b_print = component("button", "print")
+var b_table_print = component("button", "print table")
+var b_edit_print = component("button", "print edit")
+
+var table = component("table", "Key, Value")
+table_add(table, [ ["Singkong", "Programming Language"] ])
+
+var edit = component("edit", "Singkong Programming Language")
+
+add_n([header, footer])
+add([table, edit])
+add_s([b_print, b_table_print, b_edit_print])
+
+event(b_print, fn() {
+    var t = ["Singkong", "Programming", "Language"]
+    var s = 16
+    var x = 150
+    var y = 150
+    var font = "monospaced"
+    printer(t, s, x, y, font)
+})
+
+event(b_table_print, fn() {
+    table_print(table, get(header, "contents"), get(footer, "contents"))
+})
+
+event(b_edit_print, fn() {
+    x_edit_print(edit, get(header, "contents"), get(footer, "contents"))
+})
+
+show()
