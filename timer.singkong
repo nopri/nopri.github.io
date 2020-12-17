@@ -1,9 +1,10 @@
 reset()
 var l = component("label", string(@))
+var x = component("label", "")
 var b1 = component("button", "start")
 var b2 = component("button", "stop")
 
-add(l)
+add([l, x])
 add_s([b1, b2])
 
 var f = fn() {
@@ -11,11 +12,15 @@ var f = fn() {
 }
 
 var timer_start = fn() {
-    timer(1000, f)
+    var i = timer(1000, f)
+    config(x, "text", i)
 }
 
 var timer_stop = fn() {
-    stop()
+    stop_timer(number(get(x, "text")))
+    #
+        or use stop() to stop all timers.
+    ;
 }
 
 event(b1, timer_start)

@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 4.2 (2020-December-16 +07:00)
+Version: 4.3 (2020-December-18 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -96,7 +96,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 4.2
+        Singkong 4.3
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -233,7 +233,7 @@ types
     stat, tab, trim, upper
   - special characters: cr, crlf, lf, newline, quote, tab
   - file related functions: abs, append, copy_resource, delete, mkdir, read, 
-    rename, write 
+    rename, temp_file, write 
   - HTTP client related functions: http_delete, http_get, http_get_file, 
     http_head, http_post, http_post_override, http_put, url_decode, url_encode 
   - system related functions: cwd, inet_address_local, separator, user
@@ -347,17 +347,18 @@ types
 - COMPONENT
   - Please read: GUI application development
   - related functions: add, add_e, add_n, add_s, add_w, button_image, clear, closing, 
-    component, component_type, components, config, event, event_keyboard_frame, 
-    event_mouse, event_mouse_frame, frame, fonts, get, 
+    component, component_type, components, config, event, event_frame,  
+    event_keyboard_frame, event_mouse, event_mouse_frame, frame, fonts, get, 
     gui, hide, panel_add, panel_clear, panel_remove, printer, radio_group, 
     remove, remove_e, remove_n, remove_s, remove_w, reset, resizable, 
-    screen, show, size, stop, tab_add, tab_clear, tab_remove, table_add, table_bottom, 
-    table_center, table_column, table_left, table_middle, table_print,   
+    screen, show, size, stop, stop_timer, tab_add, tab_clear, tab_remove, table_add,  
+    table_bottom, table_center, table_column, table_left, table_middle, table_print,   
     table_remove, table_right, table_scroll, table_top, timer, title
   - GUI input/output functions: confirm, directory, input, open, message, 
     password, save
     (if GUI is not available: simpler text-based version)
   - GUI dialogs: login_dialog, panel_dialog
+  - Clipboard: clipboard_get, clipboard_set
   - extended: x_edit_print
 - DATABASE
   - Please read: Database application development
@@ -372,39 +373,39 @@ To get a list of built-in functions, please call builtins()
 "ARRAY", "ARRAY_NUMBER", "ARRAY_STRING", "AVERAGE", "BASE64_DECODE", 
 "BASE64_ENCODE", "BUILTINS", "BUTTON_IMAGE", "CALL", "CALL_INFO", "CENTER", 
 "CGI_CONTENTS", "CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", "CHR", 
-"CLEAR", "CLOSING", "COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", 
-"CONFIRM", "COPY_RESOURCE", "COUNT", "CR", "CRLF", "CWD", "DATABASE", 
-"DATABASE_CONNECTED", "DATE", "DATETIME", "DAY", "DELAY", "DELETE", "DIFF", 
-"DIR", "DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", "ENV", 
-"EQUALS", "EVAL", "EVENT", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", 
-"EVENT_MOUSE_FRAME", "EXIT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
-"FORMAT_DIFF", "FRAME", "GET", "GUI", "HASH", "HELP", "HIDE", "HOUR", 
-"HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
-"HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", 
-"INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTERACTIVE", 
-"IS", "IS_UPDATE_AVAILABLE", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", "JOIN", 
-"KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOGIN_DIALOG", "LOWER", 
-"MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MONTH", "NEWLINE", 
-"NUMBER", "NUMBER_GROUP", "OPEN", "ORD", "PANEL_ADD", "PANEL_CLEAR", 
-"PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_HASH", "PART", "PARTS", 
-"PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
-"PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
-"RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", 
-"REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", "REST", 
-"REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", 
-"SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SHUFFLE", "SINGKONG", 
-"SINGKONG_INTERPRETER", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
-"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "STARTSWITH", 
-"STAT", "STDIN", "STOP", "STRING", "SUM", "SYSTEM", "TAB", "TAB_ADD", 
-"TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", 
-"TABLE_COLUMN", "TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", 
-"TABLE_RIGHT", "TABLE_SCROLL", "TABLE_TOP", "TIMER", "TITLE", "TRIM", "TYPE", 
-"TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", "WORDS_EN", 
-"WORDS_ID", "WRITE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", 
-"X_EDIT_PRINT", "YEAR"]
+"CLEAR", "CLIPBOARD_GET", "CLIPBOARD_SET", "CLOSING", "COMPONENT", 
+"COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY_RESOURCE", "COUNT", 
+"CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", "DATE", "DATETIME", 
+"DAY", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "EACH", 
+"EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FRAME", 
+"EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", "EXIT", "FIRST", 
+"FONTS", "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "FRAME", "GET", "GUI", 
+"HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", 
+"HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", 
+"IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", 
+"INTERACTIVE", "IS", "IS_UPDATE_AVAILABLE", "ISALPHA", "ISDIGIT", "ISLOWER", 
+"ISUPPER", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", 
+"LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", 
+"MKDIR", "MONTH", "NEWLINE", "NUMBER", "NUMBER_GROUP", "OPEN", "ORD", 
+"PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
+"PARSE_HASH", "PART", "PARTS", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", 
+"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
+"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", 
+"REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", 
+"RESIZABLE", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", 
+"SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SHUFFLE", 
+"SINGKONG", "SINGKONG_INTERPRETER", "SIZE", "SLICE", "SORT_ARRAY", 
+"SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", 
+"STARTSWITH", "STAT", "STDIN", "STOP", "STOP_TIMER", "STRING", "SUM", "SYSTEM", 
+"TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", 
+"TABLE_CENTER", "TABLE_COLUMN", "TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", 
+"TABLE_REMOVE", "TABLE_RIGHT", "TABLE_SCROLL", "TABLE_TOP", "TEMP_FILE", 
+"TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", 
+"USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "X_BASE64_DECODE_FILE", 
+"X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-216
+221
 
 Note: a built-in function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -741,13 +742,42 @@ To keep it as simple as possible:
         add(t)
 
         show()  
+- Events for frame: event handler for these events can be registered 
+  using built-in function event_frame. This function accepts one 
+  argument: FUNCTION. Registered FUNCTION will be called whenever event 
+  for frame should be handled. Please note that specified FUNCTION must require 
+  one argument (an ARRAY [type (STRING: ACTIVATED, CLOSED, DEACTIVATED, 
+  DEICONIFIED, GAINEDFOCUS, ICONIFIED, LOSTFOCUS, OPENED, STATECHANGED, RESIZED, 
+  MOVED), width, height, x, y]). 
+  (please also read about built-in function closing)
+        reset()
+	var t = component("table", "TYPE, WIDTH, HEIGHT, X, Y", true)
+
+        var f = fn(x) {
+          table_add(t, [x])
+        }
+        event_frame(f)
+
+        add(t)
+
+	closing("Are you sure you want to quit this application?", 
+  		"Please confirm")
+
+        show()  
+- Clipboard: to set clipboard contents, please use built-in function 
+  clipboard_set. To get clipboard contents, built-in function clipboard_get
+  can be used.
 - Printing: simple printing can be done using print dialog. To show a print
   dialog, please use built-in function printer. Basic settings such as 
   font name, font size, left/top margin are supported. 
+  - To print a table, please use built-in function table_print
+  - To print an edit, please use built-in function x_edit_print. This function
+    requires minimum Java version: 6.
 - To get the size of the screen, please use built-in function screen.
 - To calls a FUNCTION every specified delay, please use built-in function timer.
   This function accepts two arguments: NUMBER (delay in milliseconds) and
-  FUNCTION. To stop all timers, please use built-in function stop. 
+  FUNCTION. To stop all timers, please use built-in function stop.
+  To stop specific timer, please use built-in function stop_timer.
 - To get list of available fonts, please use built-in function fonts.
 - Date: 
   - When creating a date COMPONENT, name is used as format pattern. If it is
@@ -1651,8 +1681,10 @@ var m = component("combobox", "Singkong,Programming,Language")
 var t = component("table", "A,B", true)
 var tm = component("table", "TYPE, X, Y, CLICK COUNT", true)
 var tk = component("table", "TYPE, CHAR, CODE, KEY, ACTION, MODIFIER, LOCATION, ALT, ALT GRAPH, CONTROL, META, SHIFT", true)
+var tf = component("table", "TYPE, WIDTH, HEIGHT, X, Y", true)
 var pm = component("panel", "Mouse")
 var pk = component("panel", "Keyboard")
+var pf = component("panel", "Frame")
 var ta = component("tab", "")
 var e = component("edit", "")
 var p = component("password", "")
@@ -1663,6 +1695,8 @@ panel_add(pm, tm, 10, 10, 300, 500)
 tab_add(ta, pm)
 panel_add(pk, tk, 10, 10, 300, 500)
 tab_add(ta, pk)
+panel_add(pf, tf, 10, 10, 300, 500)
+tab_add(ta, pf)
 
 var bb = fn() {
     message(get(b,"text"))
@@ -1718,6 +1752,10 @@ event_keyboard_frame(fn(m) {
   table_add(tk, [m])
 })
 
+event_frame(fn(m) {
+  table_add(tf, [m])
+})
+
 event(ta, fn() {
   message(get(ta, "active"))
 })
@@ -1725,6 +1763,8 @@ event(ta, fn() {
 add_n([p, x])
 add_s([b, c, r, m])
 add([t, e, v, ta])
+closing("Are you sure you want to quit this application?", 
+  "Please confirm")
 show()
 
 
@@ -1808,10 +1848,11 @@ show()
 22. Example: GUI: timer
 reset()
 var l = component("label", string(@))
+var x = component("label", "")
 var b1 = component("button", "start")
 var b2 = component("button", "stop")
 
-add(l)
+add([l, x])
 add_s([b1, b2])
 
 var f = fn() {
@@ -1819,11 +1860,15 @@ var f = fn() {
 }
 
 var timer_start = fn() {
-    timer(1000, f)
+    var i = timer(1000, f)
+    config(x, "text", i)
 }
 
 var timer_stop = fn() {
-    stop()
+    stop_timer(number(get(x, "text")))
+    #
+        or use stop() to stop all timers.
+    ;
 }
 
 event(b1, timer_start)

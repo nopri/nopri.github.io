@@ -6,8 +6,10 @@ var m = component("combobox", "Singkong,Programming,Language")
 var t = component("table", "A,B", true)
 var tm = component("table", "TYPE, X, Y, CLICK COUNT", true)
 var tk = component("table", "TYPE, CHAR, CODE, KEY, ACTION, MODIFIER, LOCATION, ALT, ALT GRAPH, CONTROL, META, SHIFT", true)
+var tf = component("table", "TYPE, WIDTH, HEIGHT, X, Y", true)
 var pm = component("panel", "Mouse")
 var pk = component("panel", "Keyboard")
+var pf = component("panel", "Frame")
 var ta = component("tab", "")
 var e = component("edit", "")
 var p = component("password", "")
@@ -18,6 +20,8 @@ panel_add(pm, tm, 10, 10, 300, 500)
 tab_add(ta, pm)
 panel_add(pk, tk, 10, 10, 300, 500)
 tab_add(ta, pk)
+panel_add(pf, tf, 10, 10, 300, 500)
+tab_add(ta, pf)
 
 var bb = fn() {
     message(get(b,"text"))
@@ -73,6 +77,10 @@ event_keyboard_frame(fn(m) {
   table_add(tk, [m])
 })
 
+event_frame(fn(m) {
+  table_add(tf, [m])
+})
+
 event(ta, fn() {
   message(get(ta, "active"))
 })
@@ -80,5 +88,7 @@ event(ta, fn() {
 add_n([p, x])
 add_s([b, c, r, m])
 add([t, e, v, ta])
+closing("Are you sure you want to quit this application?", 
+  "Please confirm")
 show()
 
