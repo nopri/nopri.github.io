@@ -1,29 +1,47 @@
 reset()
-var l = component("label", string(@))
-var x = component("label", "")
-var b1 = component("button", "start")
-var b2 = component("button", "stop")
+var l1 = component("label", string(@))
+var l2 = component("label", string(@))
+var b1 = component("button", "toggle timer 1")
+var b2 = component("button", "toggle timer 2")
+var b3 = component("button", "stop all timers")
+var b4 = component("button", "start all timers")
 
-add([l, x])
-add_s([b1, b2])
+add([l1, l2])
+add_s([b1, b2, b3, b4])
 
-var f = fn() {
-    config(l, "text", string(@))
+var f1 = fn() {
+    config(l1, "text", string(@))
 }
 
-var timer_start = fn() {
-    var i = timer(1000, f)
-    config(x, "text", i)
+var f2 = fn() {
+    config(l2, "text", string(@))
 }
 
-var timer_stop = fn() {
-    stop_timer(number(get(x, "text")))
-    #
-        or use stop() to stop all timers.
-    ;
-}
+var t1 = timer(1000, f1)
+var t2 = timer(1000, f2)
 
-event(b1, timer_start)
-event(b2, timer_stop)
+event(b1, fn() {
+    if (timer_running(t1)) {
+        stop_timer(t1)
+    } else {
+        start_timer(t1)
+    }
+})
+
+event(b2, fn() {
+    if (timer_running(t2)) {
+        stop_timer(t2)
+    } else {
+        start_timer(t2)
+    }
+})
+
+event(b3, fn() {
+    stop()
+})
+
+event(b4, fn() {
+    start()
+})
 
 show()

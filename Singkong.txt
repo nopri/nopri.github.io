@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2020
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 4.3 (2020-December-18 +07:00)
+Version: 4.4 (2020-December-20 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -96,7 +96,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 4.3
+        Singkong 4.4
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -351,9 +351,9 @@ types
     event_keyboard_frame, event_mouse, event_mouse_frame, frame, fonts, get, 
     gui, hide, panel_add, panel_clear, panel_remove, printer, radio_group, 
     remove, remove_e, remove_n, remove_s, remove_w, reset, resizable, 
-    screen, show, size, stop, stop_timer, tab_add, tab_clear, tab_remove, table_add,  
+    screen, show, size, start, start_timer, stop, stop_timer, tab_add, tab_clear, tab_remove, table_add,  
     table_bottom, table_center, table_column, table_left, table_middle, table_print,   
-    table_remove, table_right, table_scroll, table_top, timer, title
+    table_remove, table_right, table_scroll, table_top, timer, timer_running, title, wait
   - GUI input/output functions: confirm, directory, input, open, message, 
     password, save
     (if GUI is not available: simpler text-based version)
@@ -396,16 +396,17 @@ To get a list of built-in functions, please call builtins()
 "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SHUFFLE", 
 "SINGKONG", "SINGKONG_INTERPRETER", "SIZE", "SLICE", "SORT_ARRAY", 
 "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", 
-"STARTSWITH", "STAT", "STDIN", "STOP", "STOP_TIMER", "STRING", "SUM", "SYSTEM", 
-"TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", 
-"TABLE_CENTER", "TABLE_COLUMN", "TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", 
-"TABLE_REMOVE", "TABLE_RIGHT", "TABLE_SCROLL", "TABLE_TOP", "TEMP_FILE", 
-"TIMER", "TITLE", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", 
-"USER", "VALUES", "WORDS_EN", "WORDS_ID", "WRITE", "X_BASE64_DECODE_FILE", 
-"X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
+"START", "START_TIMER", "STARTSWITH", "STAT", "STDIN", "STOP", "STOP_TIMER", 
+"STRING", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", 
+"TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_LEFT", 
+"TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_SCROLL", 
+"TABLE_TOP", "TEMP_FILE", "TIMER", "TIMER_RUNNING", "TITLE", "TRIM", "TYPE", 
+"TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", "WAIT", 
+"WORDS_EN", "WORDS_ID", "WRITE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", 
+"X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-221
+225
 
 Note: a built-in function may be disabled when the interpreter in run. In such
 case, an error will be returned when the function is called. 
@@ -776,8 +777,43 @@ To keep it as simple as possible:
 - To get the size of the screen, please use built-in function screen.
 - To calls a FUNCTION every specified delay, please use built-in function timer.
   This function accepts two arguments: NUMBER (delay in milliseconds) and
-  FUNCTION. To stop all timers, please use built-in function stop.
-  To stop specific timer, please use built-in function stop_timer.
+  FUNCTION. 
+  - To stop all timers, please use built-in function stop.
+  - To stop specific timer, please use built-in function stop_timer.
+  - To start all timers, please use built-in function start.
+  - To start specific timer, please use built-in function start_timer.
+  - To get whether specific timer is running, please use built-in function 
+    timer_running.
+- Long running process: to display please wait message and call FUNCTION or BUILTIN
+  in another thread, please use built-in function wait. This function accepts 
+  two arguments (at least): COMPONENT (label) and (FUNCTION or BUILTIN). 
+  If FUNCTION or BUILTIN requires arguments, please also pass the arguments to 
+  wait function. 
+  Note: Singkong is not thread safe
+        var l1 = component("label", "please wait...")
+        config(l1, "font", ["monospaced", 1, 20])
+
+        var l2 = component("label", "busy...")
+        config(l2, "font", ["monospaced", 1, 20])
+
+        var b1 = component("button", "Delay")
+        var b2 = component("button", "Busy")
+
+        add_s([b1, b2])
+
+        var busy = fn() {
+                delay(2000)
+        }
+
+        event(b1, fn() {
+                wait(l1, delay, 1000)
+        })
+
+        event(b2, fn() {
+                wait(l2, busy)
+        })
+
+        show()
 - To get list of available fonts, please use built-in function fonts.
 - Date: 
   - When creating a date COMPONENT, name is used as format pattern. If it is
@@ -1847,32 +1883,50 @@ show()
 
 22. Example: GUI: timer
 reset()
-var l = component("label", string(@))
-var x = component("label", "")
-var b1 = component("button", "start")
-var b2 = component("button", "stop")
+var l1 = component("label", string(@))
+var l2 = component("label", string(@))
+var b1 = component("button", "toggle timer 1")
+var b2 = component("button", "toggle timer 2")
+var b3 = component("button", "stop all timers")
+var b4 = component("button", "start all timers")
 
-add([l, x])
-add_s([b1, b2])
+add([l1, l2])
+add_s([b1, b2, b3, b4])
 
-var f = fn() {
-    config(l, "text", string(@))
+var f1 = fn() {
+    config(l1, "text", string(@))
 }
 
-var timer_start = fn() {
-    var i = timer(1000, f)
-    config(x, "text", i)
+var f2 = fn() {
+    config(l2, "text", string(@))
 }
 
-var timer_stop = fn() {
-    stop_timer(number(get(x, "text")))
-    #
-        or use stop() to stop all timers.
-    ;
-}
+var t1 = timer(1000, f1)
+var t2 = timer(1000, f2)
 
-event(b1, timer_start)
-event(b2, timer_stop)
+event(b1, fn() {
+    if (timer_running(t1)) {
+        stop_timer(t1)
+    } else {
+        start_timer(t1)
+    }
+})
+
+event(b2, fn() {
+    if (timer_running(t2)) {
+        stop_timer(t2)
+    } else {
+        start_timer(t2)
+    }
+})
+
+event(b3, fn() {
+    stop()
+})
+
+event(b4, fn() {
+    start()
+})
 
 show()
 
