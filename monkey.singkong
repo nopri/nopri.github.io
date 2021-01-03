@@ -1,0 +1,2074 @@
+#
+    Simple implementation of The Monkey Programming Language
+    interpreter in Singkong Programming Language
+    Monkey.singkong
+    (c) Noprianto <nopri.anto@icloud.com>, 2020-2021
+    Website: nopri.github.io
+    License: MIT
+    Version: 0.1
+    
+    Requires Singkong version 4.4 or later
+    Download Monkey.singkong: https://nopri.github.io/monkey.singkong
+    Download Monkey.singkong runnable jar: https://nopri.github.io/monkeyinterpreter.jar
+    
+    --------------------------------------------------------
+
+    Singkong is case-insensitive, dynamically typed, procedural, and interpreted 
+    programming language that runs on Java Virtual Machine (Java 5.0 or later). 
+    It has numbers, booleans, strings, arrays, hash maps, dates, first-class 
+    functions, built-in functions, GUI components, database connections, and 
+    other features. Singkong program can call Java methods and Singkong interpreter 
+    can be embedded and integrated into another applications. 
+
+    Singkong interpreter is distributed as single jar file. It comes with simple GUI 
+    editor/interactive evaluator/database tool and can be run on graphical or 
+    text user interfaces. 
+    
+    More information: https://nopri.github.io/singkong.html
+    Download Singkong: https://nopri.github.io/Singkong.jar
+    (free to use or redistribute)
+
+    --------------------------------------------------------
+
+    Singkong is based on Monkey.java: an open source, simple implementation of 
+    Monkey programming language interpreter in Java.
+    Monkey.java is based on monkey.py: an open source, simple implementation of 
+    Monkey programming language interpreter in Python.
+    Monkey.java and monkey.py, (c) Noprianto <nopri.anto@icloud.com>, 2019.
+
+    Monkey.singkong is based on monkey.py
+
+    monkey.py is based on code (in Go) in book: Writing an interpreter in Go    
+;
+
+require(4.4)
+
+var MONKEY_VERSION = "0.1"
+var MONKEY_TITLE = "Monkey.singkong " + MONKEY_VERSION
+var MONKEY_MESSAGE = "Press ENTER to quit"
+
+var MONKEY_TOKEN = {
+    "ILLEGAL": "ILLEGAL",
+    "EOF": "EOF",
+    "IDENT": "IDENT",
+    "INT": "INT",
+    "ASSIGN": "=",
+    "PLUS": "+",
+    "MINUS": "-",
+    "BANG": "!",
+    "ASTERISK": "*",
+    "SLASH": "/",
+    "LT": "<",
+    "GT": ">",
+    "COMMA": ",",
+    "SEMICOLON": ";",
+    "LPAREN": "(",
+    "RPAREN": ")",
+    "LBRACE": "{",
+    "RBRACE": "}",
+    "FUNCTION": "FUNCTION",
+    "LET": "LET",
+    "TRUE": "true",
+    "FALSE": "false",
+    "IF": "if",
+    "ELSE": "else",
+    "RETURN": "return",
+    "EQ": "==",
+    "NOT_EQ": "!=",
+    "STRING": "STRING",
+    "LBRACKET": "[",
+    "RBRACKET": "]",
+    "COLON": ":"
+}
+
+var monkey_token_create = fn(type_, literal_) {
+    return {"type": type_, "literal": literal_}
+}
+
+var MONKEY_LEXER = {
+    "KEYWORDS": {
+                "fn": MONKEY_TOKEN["FUNCTION"],
+                "let": MONKEY_TOKEN["LET"],
+                "true": MONKEY_TOKEN["TRUE"],
+                "false": MONKEY_TOKEN["FALSE"],
+                "if": MONKEY_TOKEN["IF"],
+                "else": MONKEY_TOKEN["ELSE"],
+                "return": MONKEY_TOKEN["RETURN"]
+            },
+    "VALID_IDENTS": array("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"),
+    "VALID_NUMBERS": array("0123456789"),
+    "WHITESPACES": [" ", tab(), cr(), lf()],
+      
+    "read_char": fn(x) {   
+        if (x["read"] >= len(x["input"])) {
+            set(x, "ch", "")
+        } else {
+            set(x, "ch", x["input"][x["read"]])
+        }
+        set(x, "position", x["read"])
+        set(x, "read", x["read"] + 1)
+    },
+    
+    "peek_char": fn(x) {
+        if (x["read"] >= len(x["input"])) {
+            return ""
+        } else {
+            return x["input"][x["read"]]
+        }
+    },
+
+    "new_token": fn(x, token, t, ch) {
+        set(token, "type", t)
+        set(token, "literal", ch)
+        return token
+    },
+    
+    "next_token": fn(x) {
+        var t = monkey_token_create("", "")
+
+        x["skip_whitespace"](x)
+        
+        if (in(["=", "+", "-", "!", "/", "*", "<", ">", ";", "(", ")", ",", "{", "}", "", quote(), "[", "]", ":"], x["ch"])) {
+            if (x["ch"] == "=") {
+                if (x["peek_char"](x) == "=") {
+                    var ch = x["ch"]
+                    x["read_char"](x)
+                    var t = x["new_token"](x, t, MONKEY_TOKEN["EQ"], ch + x["ch"])
+                } else {
+                    var t = x["new_token"](x, t, MONKEY_TOKEN["ASSIGN"], x["ch"])
+                }
+            }
+            if (x["ch"] == "+") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["PLUS"], x["ch"])            
+            }
+
+            if (x["ch"] == "-") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["MINUS"], x["ch"])            
+            }
+
+            if (x["ch"] == "!") {
+                if (x["peek_char"](x) == "=") {
+                    var ch = x["ch"]
+                    x["read_char"](x)
+                    var t = x["new_token"](x, t, MONKEY_TOKEN["NOT_EQ"], ch + x["ch"])
+                } else {
+                    var t = x["new_token"](x, t, MONKEY_TOKEN["BANG"], x["ch"])
+                }
+            }
+            if (x["ch"] == "/") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["SLASH"], x["ch"])            
+            }
+
+            if (x["ch"] == "*") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["ASTERISK"], x["ch"])            
+            }
+
+            if (x["ch"] == "<") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["LT"], x["ch"])            
+            }
+
+            if (x["ch"] == ">") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["GT"], x["ch"])            
+            }
+
+            if (x["ch"] == ";") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["SEMICOLON"], x["ch"])            
+            }
+
+            if (x["ch"] == "(") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["LPAREN"], x["ch"])            
+            }
+
+            if (x["ch"] == ")") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["RPAREN"], x["ch"])            
+            }
+
+            if (x["ch"] == ",") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["COMMA"], x["ch"])            
+            }
+
+            if (x["ch"] == "{") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["LBRACE"], x["ch"])            
+            }
+
+            if (x["ch"] == "}") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["RBRACE"], x["ch"])            
+            }
+
+            if (x["ch"] == "") {
+                set(t, "literal", "")
+                set(t, "type", MONKEY_TOKEN["EOF"])
+            }
+
+            if (x["ch"] == quote()) {
+                set(t, "literal", x["read_string"](x))
+                set(t, "type", MONKEY_TOKEN["STRING"])
+            }
+
+            if (x["ch"] == "[") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["LBRACKET"], x["ch"])            
+            }
+
+            if (x["ch"] == "]") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["RBRACKET"], x["ch"])            
+            }
+
+            if (x["ch"] == ":") {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["COLON"], x["ch"])            
+            }
+        } else {            
+            if (x["is_letter"](x, x["ch"]) | x["is_digit"](x, x["ch"])) {
+                if (x["is_letter"](x, x["ch"])) {
+                    set(t, "literal", x["read_ident"](x))
+                    set(t, "type", x["lookup_ident"](x, t["literal"]))     
+                    return t               
+                } else {
+                    set(t, "literal", x["read_number"](x))
+                    set(t, "type", MONKEY_TOKEN["INT"])
+                    return t
+                }
+            } else {
+                var t = x["new_token"](x, t, MONKEY_TOKEN["ILLEGAL"], x["ch"])            
+            }
+        }
+        x["read_char"](x)
+        return t
+    },
+    
+    "read_ident": fn(x) {
+        var pos = x["position"]
+        repeat {
+            if (empty(x["ch"]) | x["ch"] == null) {
+                return x
+            } 
+            
+            var test = x["is_letter"](x, x["ch"])
+            if (!test) {
+                return x
+            }
+            
+            x["read_char"](x)
+        }
+        var ret = slice(x["input"], pos, x["position"])
+        return ret
+    },
+    
+    "read_number": fn(x) {
+        var pos = x["position"]
+        repeat {
+            if (empty(x["ch"]) | x["ch"] == null) {
+                return x
+            } 
+            
+            var test = x["is_digit"](x, x["ch"])
+            if (!test) {
+                return x
+            }
+            
+            x["read_char"](x)
+        }
+        var ret = slice(x["input"], pos, x["position"])
+        return ret
+    },
+
+    "read_string": fn(x) {
+        var pos = x["position"] + 1
+        repeat {
+            x["read_char"](x)
+            if (empty(x["ch"]) | x["ch"] == quote()) {
+                return x
+            } 
+        }
+        var ret = slice(x["input"], pos, x["position"])
+        return ret
+    },
+
+    "lookup_ident": fn(x, s) {
+        var ret = MONKEY_LEXER["KEYWORDS"][s]
+        if (ret != null) {
+            return ret
+        }
+        return MONKEY_TOKEN["IDENT"]
+    },
+
+    "is_letter": fn(x, ch) {
+        return in(MONKEY_LEXER["VALID_IDENTS"], ch)
+    },
+
+    "is_digit": fn(x, ch) {
+        return in(MONKEY_LEXER["VALID_NUMBERS"], ch)
+    },
+    
+    "skip_whitespace": fn(x) {
+        repeat {
+            if (in(MONKEY_LEXER["WHITESPACES"], x["ch"])) {
+                x["read_char"](x)
+            } else {
+                return x
+            }
+        }
+    }    
+}
+
+var monkey_lexer_create = fn(input_, position, read_, ch) {
+    return {"input": input_, "position": position, "read": read_, "ch": ch} + MONKEY_LEXER
+}
+
+var monkey_lexer_new = fn(s) {
+    var l = monkey_lexer_create("", 0, 0, "")
+    set(l, "input", s)
+    l["read_char"](l)
+    return l
+}
+
+var MONKEY_NODE = {
+    "type": "node",
+    
+    "token_literal": fn(x) {
+        return ""
+    },
+    
+    "string": fn(x) {
+        return ""
+    }
+}
+
+var MONKEY_STATEMENT = {} + MONKEY_NODE
+set(MONKEY_STATEMENT, "type", "statement")
+set(MONKEY_STATEMENT, "statement_node", fn () { return "" })
+
+var MONKEY_EXPRESSION = {} + MONKEY_NODE
+set(MONKEY_EXPRESSION, "type", "expression")
+set(MONKEY_EXPRESSION, "expression_node", fn () { return "" })
+
+var monkey_expression_create = fn() {
+    var r = {} + MONKEY_EXPRESSION
+    return r
+}
+
+var MONKEY_IDENTIFIER = {} + MONKEY_EXPRESSION
+set(MONKEY_IDENTIFIER, "type", "identifier")
+set(MONKEY_IDENTIFIER, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_IDENTIFIER, "string", fn(x) { return x["value"] })
+
+var monkey_identifier_create = fn(value) {
+    var r = {} + MONKEY_IDENTIFIER
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "value", value)
+    return r
+}
+
+var MONKEY_LET_STATEMENT = {} + MONKEY_STATEMENT
+set(MONKEY_LET_STATEMENT, "type", "let_statement")
+set(MONKEY_LET_STATEMENT, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_LET_STATEMENT, "string", fn(x) { 
+    var r = x["token_literal"](x) + " "
+    var r = r + x["name"]["string"](x["name"])
+    var r = r + " = "
+    if (x["value"] != null) {
+        var r = r + x["value"]["string"](x["value"])
+    }
+    var r = r + ";"
+    return r
+})
+
+var monkey_let_statement_create = fn() {
+    var r = {} + MONKEY_LET_STATEMENT
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "name", monkey_identifier_create(""))
+    set(r, "value", monkey_expression_create())
+    return r
+}
+
+var MONKEY_RETURN_STATEMENT = {} + MONKEY_STATEMENT
+set(MONKEY_RETURN_STATEMENT, "type", "return_statement")
+set(MONKEY_RETURN_STATEMENT, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_RETURN_STATEMENT, "string", fn(x) { 
+    var r = x["token_literal"](x) + " "
+    if (x["return_value"] != null) {
+        var r = r + x["return_value"]["string"](x["return_value"])
+    }
+    var r = r + ";"
+    return r
+})
+
+var monkey_return_statement_create = fn() {
+    var r = {} + MONKEY_RETURN_STATEMENT
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "return_value", monkey_expression_create())
+    return r
+}
+
+var MONKEY_EXPRESSION_STATEMENT = {} + MONKEY_STATEMENT
+set(MONKEY_EXPRESSION_STATEMENT, "type", "expression_statement")
+set(MONKEY_EXPRESSION_STATEMENT, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_EXPRESSION_STATEMENT, "string", fn(x) { 
+    if (x["expression"] != null) {
+        return x["expression"]["string"](x["expression"])
+    }
+    return ""
+})
+
+var monkey_expression_statement_create = fn() {
+    var r = {} + MONKEY_EXPRESSION_STATEMENT
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "expression", monkey_expression_create())
+    return r
+}
+
+var MONKEY_BLOCK_STATEMENT = {} + MONKEY_STATEMENT
+set(MONKEY_BLOCK_STATEMENT, "type", "block_statement")
+set(MONKEY_BLOCK_STATEMENT, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_BLOCK_STATEMENT, "is_empty", fn(x) { return len(x["statements"]) == 0 })
+set(MONKEY_BLOCK_STATEMENT, "string", fn(x) { 
+    var r = ["{"]
+    each(x["statements"], fn(e, i) {
+        var r = r + e["string"](e) 
+        var r = r + ";"
+    })
+    var r = r + "}"
+    return join(newline(), r)
+})
+
+var monkey_block_statement_create = fn() {
+    var r = {} + MONKEY_BLOCK_STATEMENT
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "statements", [])
+    return r
+}
+
+var MONKEY_INTEGER_LITERAL = {} + MONKEY_EXPRESSION
+set(MONKEY_INTEGER_LITERAL, "type", "integer_literal")
+set(MONKEY_INTEGER_LITERAL, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_INTEGER_LITERAL, "string", fn(x) { return x["token"]["literal"] })
+
+var monkey_integer_literal_create = fn(value) {
+    var r = {} + MONKEY_INTEGER_LITERAL
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "value", value)
+    return r
+}
+
+var MONKEY_STRING_LITERAL = {} + MONKEY_EXPRESSION
+set(MONKEY_STRING_LITERAL, "type", "string_literal")
+set(MONKEY_STRING_LITERAL, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_STRING_LITERAL, "string", fn(x) { return x["token"]["literal"] })
+
+var monkey_string_literal_create = fn(value) {
+    var r = {} + MONKEY_STRING_LITERAL
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "value", value)
+    return r
+}
+
+var MONKEY_FUNCTION_LITERAL = {} + MONKEY_EXPRESSION
+set(MONKEY_FUNCTION_LITERAL, "type", "function_literal")
+set(MONKEY_FUNCTION_LITERAL, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_FUNCTION_LITERAL, "string", fn(x) { 
+    var params = []
+    each(x["parameters"], fn(e, i) {
+        var params = params + e["string"](e)
+    })
+    var r = x["token_literal"](x)
+    var r = r + "("
+    var r = r + join(", ", params)
+    var r = r + ")"
+    var r = r + x["body"]["string"](x["body"])
+    return r
+})
+
+var monkey_function_literal_create = fn() {
+    var r = {} + MONKEY_FUNCTION_LITERAL
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "parameters", [])
+    set(r, "body", monkey_block_statement_create())
+    return r
+}
+
+var MONKEY_CALL_EXPRESSION = {} + MONKEY_EXPRESSION
+set(MONKEY_CALL_EXPRESSION, "type", "call_expression")
+set(MONKEY_CALL_EXPRESSION, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_CALL_EXPRESSION, "string", fn(x) { 
+    var args = []
+    each(x["arguments"], fn(e, i) {
+        var args = args + e["string"](e)
+    })
+    var r = x["function"]["string"](x["function"])
+    var r = r + "("
+    var r = r + join(", ", args)
+    var r = r + ")"
+    return r
+})
+
+var monkey_call_expression_create = fn() {
+    var r = {} + MONKEY_CALL_EXPRESSION
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "function", monkey_expression_create())
+    set(r, "arguments", [])
+    return r
+}
+
+var MONKEY_BOOLEAN = {} + MONKEY_EXPRESSION
+set(MONKEY_BOOLEAN, "type", "boolean")
+set(MONKEY_BOOLEAN, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_BOOLEAN, "string", fn(x) { return x["token"]["literal"] })
+
+var monkey_boolean_create = fn(value) {
+    var r = {} + MONKEY_BOOLEAN
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "value", value)
+    return r
+}
+
+var MONKEY_PREFIX_EXPRESSION = {} + MONKEY_EXPRESSION
+set(MONKEY_PREFIX_EXPRESSION, "type", "prefix_expression")
+set(MONKEY_PREFIX_EXPRESSION, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_PREFIX_EXPRESSION, "string", fn(x) { 
+    var r = "("
+    var r = r + x["operator"]
+    var r = r + x["right"]["string"](x["right"])
+    var r = r + ")"
+    return r
+})
+
+var monkey_prefix_expression_create = fn() {
+    var r = {} + MONKEY_PREFIX_EXPRESSION
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "operator", "")
+    set(r, "right", monkey_expression_create())
+    return r
+}
+
+var MONKEY_INFIX_EXPRESSION = {} + MONKEY_EXPRESSION
+set(MONKEY_INFIX_EXPRESSION, "type", "infix_expression")
+set(MONKEY_INFIX_EXPRESSION, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_INFIX_EXPRESSION, "string", fn(x) { 
+    var r = "("
+    var r = r + x["left"]["string"](x["left"])
+    var r = r + " " + x["operator"] + " "
+    var r = r + x["right"]["string"](x["right"])
+    var r = r + ")"
+    return r
+})
+
+var monkey_infix_expression_create = fn() {
+    var r = {} + MONKEY_INFIX_EXPRESSION
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "left", monkey_expression_create())
+    set(r, "operator", "")
+    set(r, "right", monkey_expression_create())
+    return r
+}
+
+var MONKEY_IF_EXPRESSION = {} + MONKEY_EXPRESSION
+set(MONKEY_IF_EXPRESSION, "type", "if_expression")
+set(MONKEY_IF_EXPRESSION, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_IF_EXPRESSION, "string", fn(x) { 
+    var r = "if"
+    var r = r + x["condition"]["string"](x["condition"])
+    var r = r + " "
+    var r = r + x["consequence"]["string"](x["consequence"])
+    if (!x["alternative"]["is_empty"](x["alternative"])) {
+        var r = r + " else "
+        var r = r + x["alternative"]["string"](x["alternative"])
+    }
+    return r
+})
+
+var monkey_if_expression_create = fn() {
+    var r = {} + MONKEY_IF_EXPRESSION
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "condition", monkey_expression_create())
+    set(r, "consequence", monkey_block_statement_create())
+    set(r, "alternative", monkey_block_statement_create())
+    return r
+}
+
+var MONKEY_ARRAY_LITERAL = {} + MONKEY_EXPRESSION
+set(MONKEY_ARRAY_LITERAL, "type", "array_literal")
+set(MONKEY_ARRAY_LITERAL, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_ARRAY_LITERAL, "string", fn(x) { 
+    var elements = []
+    each(x["elements"], fn(e, i) {
+        var elements = elements + e["string"](e)
+    })
+    var r = "["
+    var r = r + join(", ", elements)
+    var r = r + "]"
+    return r
+})
+
+var monkey_array_literal_create = fn() {
+    var r = {} + MONKEY_ARRAY_LITERAL
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "elements", [])
+    return r
+}
+
+var MONKEY_INDEX_EXPRESSION = {} + MONKEY_EXPRESSION
+set(MONKEY_INDEX_EXPRESSION, "type", "index_expression")
+set(MONKEY_INDEX_EXPRESSION, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_INDEX_EXPRESSION, "string", fn(x) { 
+    var r = "("
+    var r = r + x["left"]["string"](x["left"])
+    var r = r + "["
+    var r = r + x["index"]["string"](x["index"])
+    var r = r + "])"
+    return r
+})
+
+var monkey_index_expression_create = fn() {
+    var r = {} + MONKEY_INDEX_EXPRESSION
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "left", monkey_expression_create())
+    set(r, "index", monkey_expression_create())
+    return r
+}
+
+var MONKEY_HASH_LITERAL = {} + MONKEY_EXPRESSION
+set(MONKEY_HASH_LITERAL, "type", "hash_literal")
+set(MONKEY_HASH_LITERAL, "token_literal", fn(x) { return x["token"]["literal"] })
+set(MONKEY_HASH_LITERAL, "string", fn(x) { 
+    var pairs = []
+    each(keys(x["pairs"]), fn(e, i) {
+        var v = x["pairs"][e]
+        var pairs = pairs + (e["string"](e) + ":" + v["string"](v))
+    })
+    var r = "{"
+    var r = r + join(", ", pairs)
+    var r = r + "}"
+    return r
+})
+
+var monkey_hash_literal_create = fn() {
+    var r = {} + MONKEY_HASH_LITERAL
+    set(r, "token", monkey_token_create("", ""))
+    set(r, "pairs", {})
+    return r
+}
+
+var MONKEY_PARSER_PRECEDENCES = {
+    "LOWEST": 1,
+    "EQUALS": 2,
+    "LESSGREATER": 3,
+    "SUM": 4,
+    "PRODUCT": 5,
+    "PREFIX": 6,
+    "CALL": 7,
+    "INDEX": 8
+}
+
+var MONKEY_PARSER = {
+    "PRECEDENCES": {
+        MONKEY_TOKEN["LPAREN"]: MONKEY_PARSER_PRECEDENCES["CALL"],
+        MONKEY_TOKEN["EQ"]: MONKEY_PARSER_PRECEDENCES["EQUALS"],
+        MONKEY_TOKEN["NOT_EQ"]: MONKEY_PARSER_PRECEDENCES["EQUALS"],
+        MONKEY_TOKEN["LT"]: MONKEY_PARSER_PRECEDENCES["LESSGREATER"],
+        MONKEY_TOKEN["GT"]: MONKEY_PARSER_PRECEDENCES["LESSGREATER"],
+        MONKEY_TOKEN["PLUS"]: MONKEY_PARSER_PRECEDENCES["SUM"],
+        MONKEY_TOKEN["MINUS"]: MONKEY_PARSER_PRECEDENCES["SUM"],
+        MONKEY_TOKEN["SLASH"]: MONKEY_PARSER_PRECEDENCES["PRODUCT"],
+        MONKEY_TOKEN["ASTERISK"]: MONKEY_PARSER_PRECEDENCES["PRODUCT"],
+        MONKEY_TOKEN["LBRACKET"]: MONKEY_PARSER_PRECEDENCES["INDEX"]
+    },
+      
+    "next_token": fn(x) {   
+        set(x, "cur_token", x["peek_token"])
+        set(x, "peek_token", x["lexer"]["next_token"](x["lexer"]))
+    },
+
+    "parse_program": fn(x) {   
+        var program = monkey_program_create()
+        var temp = []
+        
+        repeat {
+            if (x["cur_token"]["type"] == MONKEY_TOKEN["EOF"]) {
+                return null
+            }
+            var s = x["parse_statement"](x)
+            if (s) {
+                var temp = temp + s
+            }
+            x["next_token"](x)
+        }
+        
+        set(program, "statements", temp)
+        return program
+    },
+    
+    "parse_statement": fn(x) {   
+        if (in([MONKEY_TOKEN["LET"], MONKEY_TOKEN["RETURN"]], x["cur_token"]["type"])) {            
+            if (x["cur_token"]["type"] == MONKEY_TOKEN["LET"]) {
+                return x["parse_let_statement"](x)
+            }
+            if (x["cur_token"]["type"] == MONKEY_TOKEN["RETURN"]) {
+                return x["parse_return_statement"](x)
+            }
+        } else {
+            return x["parse_expression_statement"](x)
+        }
+        return null
+    },
+    
+    "parse_let_statement": fn(x) {   
+        var s = monkey_let_statement_create()
+        set(s, "token", x["cur_token"])
+        if (!x["expect_peek"](x, MONKEY_TOKEN["IDENT"])) {
+            return null
+        }
+        set(s, "name", monkey_identifier_create(""))
+        set(s["name"], "token", x["cur_token"])
+        set(s["name"], "value", x["cur_token"]["literal"])        
+        if (!x["expect_peek"](x, MONKEY_TOKEN["ASSIGN"])) {
+            return null
+        }
+        x["next_token"](x)
+        set(s, "value", x["parse_expression"](x, MONKEY_PARSER_PRECEDENCES["LOWEST"]))
+        if (x["peek_token_is"](x, MONKEY_TOKEN["SEMICOLON"])) {
+            x["next_token"](x)
+        }
+        return s
+    },
+
+    "parse_return_statement": fn(x) {   
+        var s = monkey_return_statement_create()
+        set(s, "token", x["cur_token"])
+        x["next_token"](x)
+        set(s, "return_value", x["parse_expression"](x, MONKEY_PARSER_PRECEDENCES["LOWEST"]))
+        if (x["peek_token_is"](x, MONKEY_TOKEN["SEMICOLON"])) {
+            x["next_token"](x)
+        }
+        return s
+    },
+    
+    "parse_expression_statement": fn(x) {   
+        var s = monkey_expression_statement_create()
+        set(s, "token", x["cur_token"])
+        set(s, "expression", x["parse_expression"](x, MONKEY_PARSER_PRECEDENCES["LOWEST"]))
+        if (x["peek_token_is"](x, MONKEY_TOKEN["SEMICOLON"])) {
+            x["next_token"](x)
+        }
+        return s
+    },
+
+    "parse_block_statement": fn(x) {   
+        var block = monkey_block_statement_create()
+        set(block, "token", x["cur_token"])
+        x["next_token"](x)
+        repeat {
+            if (x["cur_token_is"](x, MONKEY_TOKEN["RBRACE"]) | x["cur_token_is"](x, MONKEY_TOKEN["EOF"])) {
+                return null
+            }
+            var s = x["parse_statement"](x)
+            if (s != null) {
+                set(block, "statements", block["statements"] + s)
+            }
+            x["next_token"](x)
+        }
+        return block
+    },
+    
+    "parse_expression": fn(x, precedence) { 
+        var prefix = x["prefix_parse_fns"][x["cur_token"]["type"]]
+        if (prefix == null) {
+            x["no_prefix_parse_fn_error"](x, x["cur_token"]["type"])
+            return null
+        }
+        var temp = []
+        var left_exp = prefix(x)
+        repeat {
+            if (x["peek_token_is"](x, MONKEY_TOKEN["SEMICOLON"]) | precedence >= x["peek_precedence"](x)) {
+                return null
+            }
+            var infix = x["infix_parse_fns"][x["peek_token"]["type"]]
+            if (infix == null) {
+                var temp = [left_exp]
+                return left_exp
+            }
+            x["next_token"](x)
+            var left_exp = infix(x, left_exp)
+        }
+        if (len(temp) > 0) {
+            return temp[0]
+        }
+        return left_exp
+    },
+    
+    "parse_identifier": fn(x) {   
+        var ret = monkey_identifier_create("")
+        set(ret, "token", x["cur_token"])
+        set(ret, "value", x["cur_token"]["literal"])
+        return ret
+    },
+    
+    "parse_integer_literal": fn(x) {
+        var lit = monkey_integer_literal_create("")
+        set(lit, "token", x["cur_token"])
+        var test = integer(number(x["cur_token"]["literal"]))
+        if (string(test) != x["cur_token"]["literal"]) {
+            var msg = "could not parse " + x["cur_token"]["literal"] + " as integer"
+            set(x, "errors", x["errors"] + msg)
+            return null
+        }
+        set(lit, "value", test)
+        return lit
+    },
+    
+    "parse_string_literal": fn(x) {
+        var lit = monkey_string_literal_create("")
+        set(lit, "token", x["cur_token"])        
+        set(lit, "value", x["cur_token"]["literal"])
+        return lit
+    },
+    
+    "parse_array_literal": fn(x) {
+        var a = monkey_array_literal_create()
+        set(a, "token", x["cur_token"])        
+        set(a, "elements", x["parse_expression_list"](x, MONKEY_TOKEN["RBRACKET"]))
+        return a        
+    },
+    
+    "parse_hash_literal": fn(x) {
+        var h = monkey_hash_literal_create()
+        set(h, "token", x["cur_token"]) 
+        var temp = [0]
+        repeat {
+            if (x["peek_token_is"](x, MONKEY_TOKEN["RBRACE"])) {
+                return null
+            }
+            x["next_token"](x)
+            var key = x["parse_expression"](x, MONKEY_PARSER_PRECEDENCES["LOWEST"])
+            if (!x["expect_peek"](x, MONKEY_TOKEN["COLON"])) {
+                set(temp, 0, 1)
+                return null
+            }
+            x["next_token"](x)
+            var value = x["parse_expression"](x, MONKEY_PARSER_PRECEDENCES["LOWEST"])
+            set(h["pairs"], key, value)
+            if (!x["peek_token_is"](x, MONKEY_TOKEN["RBRACE"])) {
+                if (!x["expect_peek"](x, MONKEY_TOKEN["COMMA"])) {
+                    set(temp, 0, 2)
+                    return null
+                }
+            }
+        } 
+        if (temp[0] != 0) {
+            return null
+        }
+
+        if (!x["expect_peek"](x, MONKEY_TOKEN["RBRACE"])) {
+            return null
+        }
+
+        return h
+    },
+    
+    "parse_boolean": fn(x) {
+        var ret = monkey_boolean_create("")
+        set(ret, "token", x["cur_token"])        
+        set(ret, "value", x["cur_token_is"](x, MONKEY_TOKEN["TRUE"]))
+        return ret
+    },
+
+    "parse_prefix_expression": fn(x) {
+        var e = monkey_prefix_expression_create()
+        set(e, "token", x["cur_token"])        
+        set(e, "operator", x["cur_token"]["literal"])
+        x["next_token"](x)
+        set(e, "right", x["parse_expression"](x, MONKEY_PARSER_PRECEDENCES["PREFIX"]))    
+        return e    
+    },
+
+    "parse_infix_expression": fn(x, left_) {
+        var e = monkey_infix_expression_create()
+        set(e, "token", x["cur_token"])        
+        set(e, "operator", x["cur_token"]["literal"])
+        set(e, "left", left_)        
+        var precedence = x["cur_precedence"](x)
+        x["next_token"](x)
+        set(e, "right", x["parse_expression"](x, precedence))    
+        return e    
+    },
+    
+    "parse_grouped_expression": fn(x) {
+        x["next_token"](x)
+        var e = x["parse_expression"](x, MONKEY_PARSER_PRECEDENCES["LOWEST"])
+        if (!x["expect_peek"](x, MONKEY_TOKEN["RPAREN"])) {
+            return null
+        }
+        return e    
+    },
+    
+    "parse_if_expression": fn(x) {
+        var e = monkey_if_expression_create()
+        set(e, "token", x["cur_token"])        
+        if (!x["expect_peek"](x, MONKEY_TOKEN["LPAREN"])) {
+            return null
+        }
+        x["next_token"](x)
+        set(e, "condition", x["parse_expression"](x, MONKEY_PARSER_PRECEDENCES["LOWEST"]))
+        if (!x["expect_peek"](x, MONKEY_TOKEN["RPAREN"])) {
+            return null
+        }        
+        if (!x["expect_peek"](x, MONKEY_TOKEN["LBRACE"])) {
+            return null
+        }        
+        set(e, "consequence", x["parse_block_statement"](x))        
+        if (x["peek_token_is"](x, MONKEY_TOKEN["ELSE"])) {
+            x["next_token"](x)
+            if (!x["expect_peek"](x, MONKEY_TOKEN["LBRACE"])) {
+                return null
+            }              
+            set(e, "alternative", x["parse_block_statement"](x))          
+        }        
+        return e    
+    },
+
+    "parse_function_literal": fn(x) {
+        var lit = monkey_function_literal_create()
+        set(lit, "token", x["cur_token"])        
+        if (!x["expect_peek"](x, MONKEY_TOKEN["LPAREN"])) {
+            return null
+        }
+        set(lit, "parameters", x["parse_function_parameters"](x))        
+        if (!x["expect_peek"](x, MONKEY_TOKEN["LBRACE"])) {
+            return null
+        }
+        set(lit, "body", x["parse_block_statement"](x))   
+        return lit     
+    },
+    
+    "parse_function_parameters": fn(x) {
+        var identifiers = []
+        if (x["peek_token_is"](x, MONKEY_TOKEN["RPAREN"])) {
+            x["next_token"](x)
+            return identifiers
+        }
+        x["next_token"](x)
+        var ident = monkey_identifier_create("")
+        set(ident, "token", x["cur_token"])        
+        set(ident, "value", x["cur_token"]["literal"])   
+        var identifiers = identifiers + ident
+        repeat {
+            if (!x["peek_token_is"](x, MONKEY_TOKEN["COMMA"])) {
+                return null
+            }        
+            x["next_token"](x)
+            x["next_token"](x)
+            var ident = monkey_identifier_create("")
+            set(ident, "token", x["cur_token"])        
+            set(ident, "value", x["cur_token"]["literal"])     
+            var identifiers = identifiers + ident                          
+        }             
+        if (!x["expect_peek"](x, MONKEY_TOKEN["RPAREN"])) {
+            return null
+        }
+        return identifiers
+    },
+    
+    "parse_call_expression": fn(x, function) {
+        var exp = monkey_call_expression_create()
+        set(exp, "token", x["cur_token"])        
+        set(exp, "function", function)
+        set(exp, "arguments", x["parse_expression_list"](x, MONKEY_TOKEN["RPAREN"]))
+        return exp
+    },
+    
+    "parse_expression_list": fn(x, end) {
+        var ret = []
+        if (x["peek_token_is"](x, end)) {
+            x["next_token"](x)
+            return ret
+        }
+        x["next_token"](x)
+        var ret = ret + x["parse_expression"](x, MONKEY_PARSER_PRECEDENCES["LOWEST"])
+        repeat {
+            if (!x["peek_token_is"](x, MONKEY_TOKEN["COMMA"])) {
+                return null
+            }        
+            x["next_token"](x)
+            x["next_token"](x)
+            var ret = ret + x["parse_expression"](x, MONKEY_PARSER_PRECEDENCES["LOWEST"])
+        }
+        if (!x["expect_peek"](x, end)) {
+            return null
+        }
+        return ret
+    },
+    
+    "parse_index_expression": fn(x, left_) {
+        var exp = monkey_index_expression_create()
+        set(exp, "token", x["cur_token"])        
+        set(exp, "left", left_)        
+        x["next_token"](x)
+        set(exp, "index", x["parse_expression"](x, MONKEY_PARSER_PRECEDENCES["LOWEST"]))
+        if (!x["expect_peek"](x, MONKEY_TOKEN["RBRACKET"])) {
+            return null
+        }
+        return exp
+    },
+
+    "cur_token_is": fn(x, t) {
+        return x["cur_token"]["type"] == t
+    },
+
+    "peek_token_is": fn(x, t) {
+        return x["peek_token"]["type"] == t
+    },
+
+    "expect_peek": fn(x, t) {
+        if (x["peek_token_is"](x, t)) {
+            x["next_token"](x)
+            return true
+        } else {
+            x["peek_error"](x, t)
+            return false
+        }
+    },
+
+    "peek_error": fn(x, t) {
+        var m = "expected next token to be " + t + ", got " + x["peek_token"]["type"] + " instead"
+        set(x, "errors", x["errors"] + m)
+    },
+
+    "register_prefix": fn(x, token_type, f) {
+        set(x["prefix_parse_fns"], token_type, f)
+    },
+
+    "register_infix": fn(x, token_type, f) {
+        set(x["infix_parse_fns"], token_type, f)
+    },
+
+    "no_prefix_parse_fn_error": fn(x, token_type) {
+        var m = "no prefix parse function for " + token_type + " found"
+        set(x, "errors", x["errors"] + m)
+    },
+
+    "peek_precedence": fn(x) {
+        var p = x["PRECEDENCES"][x["peek_token"]["type"]]
+        if (p) {
+            return p
+        }
+        return MONKEY_PARSER_PRECEDENCES["LOWEST"]
+    },
+    
+    "cur_precedence": fn(x) {
+        var p = x["PRECEDENCES"][x["cur_token"]["type"]]
+        if (p) {
+            return p
+        }
+        return MONKEY_PARSER_PRECEDENCES["LOWEST"]
+    },    
+}
+
+var monkey_parser_create = fn() {
+    var r = {} + MONKEY_PARSER
+    set(r, "lexer", null)
+    set(r, "cur_token", null)
+    set(r, "peek_token", null)
+    set(r, "errors", [])
+    set(r, "prefix_parse_fns", {})
+    set(r, "infix_parse_fns", {})
+    
+    r["register_prefix"](r, MONKEY_TOKEN["IDENT"], r["parse_identifier"])
+    r["register_prefix"](r, MONKEY_TOKEN["INT"], r["parse_integer_literal"])
+    r["register_prefix"](r, MONKEY_TOKEN["BANG"], r["parse_prefix_expression"])
+    r["register_prefix"](r, MONKEY_TOKEN["MINUS"], r["parse_prefix_expression"])
+    r["register_prefix"](r, MONKEY_TOKEN["TRUE"], r["parse_boolean"])
+    r["register_prefix"](r, MONKEY_TOKEN["FALSE"], r["parse_boolean"])
+    r["register_prefix"](r, MONKEY_TOKEN["LPAREN"], r["parse_grouped_expression"])
+    r["register_prefix"](r, MONKEY_TOKEN["IF"], r["parse_if_expression"])
+    r["register_prefix"](r, MONKEY_TOKEN["FUNCTION"], r["parse_function_literal"])
+    r["register_prefix"](r, MONKEY_TOKEN["STRING"], r["parse_string_literal"])
+    r["register_prefix"](r, MONKEY_TOKEN["LBRACKET"], r["parse_array_literal"])
+    r["register_prefix"](r, MONKEY_TOKEN["LBRACE"], r["parse_hash_literal"])
+    
+    r["register_infix"](r, MONKEY_TOKEN["PLUS"], r["parse_infix_expression"])
+    r["register_infix"](r, MONKEY_TOKEN["MINUS"], r["parse_infix_expression"])
+    r["register_infix"](r, MONKEY_TOKEN["SLASH"], r["parse_infix_expression"])
+    r["register_infix"](r, MONKEY_TOKEN["ASTERISK"], r["parse_infix_expression"])
+    r["register_infix"](r, MONKEY_TOKEN["EQ"], r["parse_infix_expression"])
+    r["register_infix"](r, MONKEY_TOKEN["NOT_EQ"], r["parse_infix_expression"])
+    r["register_infix"](r, MONKEY_TOKEN["LT"], r["parse_infix_expression"])
+    r["register_infix"](r, MONKEY_TOKEN["GT"], r["parse_infix_expression"])
+    r["register_infix"](r, MONKEY_TOKEN["LPAREN"], r["parse_call_expression"])
+    r["register_infix"](r, MONKEY_TOKEN["LBRACKET"], r["parse_index_expression"])
+
+    return r
+}
+
+var monkey_parser_new = fn(l) {
+    var p = monkey_parser_create()
+    set(p, "lexer", l)
+    p["next_token"](p)
+    p["next_token"](p)
+    return p
+}
+
+var MONKEY_PROGRAM = {} + MONKEY_NODE
+set(MONKEY_PROGRAM, "type", "program")
+set(MONKEY_PROGRAM, "token_literal", fn(x) { 
+    if (len(x["statements"]) > 0) {
+        return x["statements"][0]["token_literal"](x)
+    } else {
+        return ""
+    }
+})
+set(MONKEY_PROGRAM, "string", fn(x) {
+    var ret = []
+    each(x["statements"], fn(e, i) {
+        var ret = ret + e["string"](e)
+    })
+    return join("", ret)
+})
+
+var monkey_program_create = fn() {
+    var r = {} + MONKEY_PROGRAM
+    set(r, "statements", [])
+    return r
+}
+
+var MONKEY_HASHABLE = {}
+set(MONKEY_HASHABLE, "hashable", true)
+set(MONKEY_HASHABLE, "hash_key", fn(x) { 
+})
+
+var monkey_hashable_create = fn() {
+    var r = {} + MONKEY_HASHABLE
+    return r
+}
+
+var MONKEY_OBJECT_TYPES = {
+    "INTEGER_OBJ": "INTEGER",
+    "BOOLEAN_OBJ": "BOOLEAN",
+    "NULL_OBJ": "NULL",
+    "RETURN_VALUE_OBJ": "RETURN_VALUE",
+    "ERROR_OBJ": "ERROR",
+    "FUNCTION_OBJ": "FUNCTION",
+    "STRING_OBJ": "STRING",
+    "BUILTIN_OBJ": "BUILTIN",
+    "ARRAY_OBJ": "ARRAY",
+    "HASH_OBJ": "HASH"  
+}
+
+var MONKEY_OBJECT = {
+    "type": fn(x) {
+        return x["object_type"]
+    },
+    
+    "inspect": fn(x) {
+        return ""
+    },
+    
+    "inspect_value": fn(x) {
+        return x["inspect"](x)
+    }
+}
+
+var monkey_object_create = fn(value, type_) {
+    var r = {} + MONKEY_OBJECT
+    set(r, "value", value)
+    set(r, "object_type", type_)
+    return r
+}
+
+var MONKEY_OBJECT_INTEGER = {} + MONKEY_OBJECT + MONKEY_HASHABLE
+set(MONKEY_OBJECT_INTEGER, "object_type", MONKEY_OBJECT_TYPES["INTEGER_OBJ"])
+set(MONKEY_OBJECT_INTEGER, "inspect", fn(x) {
+    return "" + x["value"]
+})
+set(MONKEY_OBJECT_INTEGER, "hash_key", fn(x) {
+    return hash("" + x["type"](x) + "-" + x["value"])
+})
+
+var monkey_object_integer_create = fn() {
+    var r = {} + MONKEY_OBJECT_INTEGER
+    return r
+}
+
+var MONKEY_OBJECT_STRING = {} + MONKEY_OBJECT + MONKEY_HASHABLE
+set(MONKEY_OBJECT_STRING, "object_type", MONKEY_OBJECT_TYPES["STRING_OBJ"])
+set(MONKEY_OBJECT_STRING, "inspect", fn(x) {
+    return "" + quote() + x["value"] + quote()
+})
+set(MONKEY_OBJECT_STRING, "inspect_value", fn(x) {
+    return "" + x["value"]
+})
+set(MONKEY_OBJECT_STRING, "hash_key", fn(x) {
+    return hash("" + x["type"](x) + "-" + hash(x["value"]))
+})
+
+var monkey_object_string_create = fn() {
+    var r = {} + MONKEY_OBJECT_STRING
+    return r
+}
+
+var MONKEY_OBJECT_BOOLEAN = {} + MONKEY_OBJECT + MONKEY_HASHABLE
+set(MONKEY_OBJECT_BOOLEAN, "object_type", MONKEY_OBJECT_TYPES["BOOLEAN_OBJ"])
+set(MONKEY_OBJECT_BOOLEAN, "inspect", fn(x) {
+    return lower(string(x["value"]))
+})
+set(MONKEY_OBJECT_BOOLEAN, "hash_key", fn(x) {
+    var v = 0
+    if (x["value"]) {
+        var v = 1
+    }
+    return hash("" + x["type"](x) + "-" + v)
+})
+
+var monkey_object_boolean_create = fn(value) {
+    var r = {} + MONKEY_OBJECT_BOOLEAN
+    set(r, "value", value)
+    return r
+}
+
+var MONKEY_OBJECT_NULL = {} + MONKEY_OBJECT
+set(MONKEY_OBJECT_NULL, "object_type", MONKEY_OBJECT_TYPES["NULL_OBJ"])
+set(MONKEY_OBJECT_NULL, "inspect", fn(x) {
+    return "null"
+})
+
+var monkey_object_null_create = fn() {
+    var r = {} + MONKEY_OBJECT_NULL
+    return r
+}
+
+var MONKEY_OBJECT_RETURN_VALUE = {} + MONKEY_OBJECT
+set(MONKEY_OBJECT_RETURN_VALUE, "object_type", MONKEY_OBJECT_TYPES["RETURN_VALUE_OBJ"])
+set(MONKEY_OBJECT_RETURN_VALUE, "inspect", fn(x) {
+    return x["value"]["inspect"](x["value"])
+})
+
+var monkey_object_return_value_create = fn() {
+    var r = {} + MONKEY_OBJECT_RETURN_VALUE
+    return r
+}
+
+var MONKEY_OBJECT_ERROR = {} + MONKEY_OBJECT
+set(MONKEY_OBJECT_ERROR, "object_type", MONKEY_OBJECT_TYPES["ERROR_OBJ"])
+set(MONKEY_OBJECT_ERROR, "inspect", fn(x) {
+    return "ERROR: " + x["message"]
+})
+
+var monkey_object_error_create = fn(value, message_) {
+    var r = {} + MONKEY_OBJECT_ERROR
+    set(r, "message", message_)
+    set(r, "value", value)
+    return r
+}
+
+var MONKEY_OBJECT_FUNCTION = {} + MONKEY_OBJECT
+set(MONKEY_OBJECT_FUNCTION, "object_type", MONKEY_OBJECT_TYPES["FUNCTION_OBJ"])
+set(MONKEY_OBJECT_FUNCTION, "inspect", fn(x) {
+    var params = []
+    each(x["parameters"], fn(e, i) {
+        var params = params + e["string"](e)
+    })
+    var r = "fn"
+    var r = r + "("
+    var r = r + join(", ", params)
+    var r = r + ")"
+    var r = r + x["body"]["string"](x["body"])
+    return r
+})
+
+var monkey_object_function_create = fn() {
+    var r = {} + MONKEY_OBJECT_FUNCTION
+    set(r, "parameters", [])
+    set(r, "body", monkey_block_statement_create())
+    set(r, "env", monkey_environment_new())
+    return r
+}
+
+var MONKEY_OBJECT_BUILTIN = {} + MONKEY_OBJECT
+set(MONKEY_OBJECT_BUILTIN, "object_type", MONKEY_OBJECT_TYPES["BUILTIN_OBJ"])
+set(MONKEY_OBJECT_BUILTIN, "inspect", fn(x) {
+    return "builtin function"
+})
+
+var monkey_object_builtin_create = fn(f, value) {
+    var r = {} + MONKEY_OBJECT_BUILTIN
+    set(r, "fn", f)
+    set(r, "value", value)
+    return r
+}
+
+var MONKEY_OBJECT_ARRAY = {} + MONKEY_OBJECT
+set(MONKEY_OBJECT_ARRAY, "object_type", MONKEY_OBJECT_TYPES["ARRAY_OBJ"])
+set(MONKEY_OBJECT_ARRAY, "inspect", fn(x) {
+    var elements = []
+    each(x["elements"], fn(e, i) {
+        var elements = elements + e["inspect"](e)
+    })
+    var r = "["
+    var r = r + join(", ", elements)
+    var r = r + "]"
+    return r
+})
+
+var monkey_object_array_create = fn() {
+    var r = {} + MONKEY_OBJECT_ARRAY
+    set(r, "elements", [])
+    return r
+}
+
+var MONKEY_OBJECT_HASH = {} + MONKEY_OBJECT
+set(MONKEY_OBJECT_HASH, "object_type", MONKEY_OBJECT_TYPES["HASH_OBJ"])
+set(MONKEY_OBJECT_HASH, "inspect", fn(x) {
+    var pairs = []
+    each(keys(x["pairs"]), fn(e, i) {
+        var v = x["pairs"][e]
+        var pair = v["key"]["inspect"](v["key"]) + ": " + v["value"]["inspect"](v["value"])
+        var pairs = pairs + pair
+    })
+    var r = "{"
+    var r = r + join(", ", pairs)
+    var r = r + "}"
+    return r
+})
+
+var monkey_object_hash_create = fn() {
+    var r = {} + MONKEY_OBJECT_HASH
+    set(r, "pairs", {})
+    return r
+}
+
+var MONKEY_HASH_PAIR = {} 
+set(MONKEY_HASH_PAIR, "type", "hash_pair")
+
+var monkey_hash_pair_create = fn() {
+    var r = {} + MONKEY_HASH_PAIR
+    set(r, "key", monkey_object_create("", ""))
+    set(r, "value", monkey_object_create("", ""))
+    return r
+}
+
+var MONKEY_ENVIRONMENT = {    
+    "get": fn(x, name) {
+        var obj = x["store"][name]
+        if (obj != null) {
+            return obj
+        }
+        var o = x["outer"]["store"]
+        if (o != null) {
+            var obj = o[name]
+            return obj
+        }
+        return null
+    },
+    
+    "set": fn(x, name, value) {
+        set(x["store"], name, value)
+        return value
+    },
+    
+    "debug": fn(x) {
+        each(keys(x["store"]), fn(e, i) {
+            var v = x["store"][e]
+            if (v != null) {
+                println(e, ": ", v["inspect"](v))
+            }
+        })
+    },
+} 
+
+var monkey_environment_new = fn() {
+    var r = {} + MONKEY_ENVIRONMENT
+    set(r, "type", "environment")
+    set(r, "store", {})
+    set(r, "outer", {})
+    return r
+}
+
+var monkey_environment_enclosed = fn(outer) {
+    var r = {} + MONKEY_ENVIRONMENT
+    set(r, "type", "environment")
+    set(r, "store", {})
+    set(r, "outer", outer)
+    return r
+}
+
+var MONKEY_BUILTIN_FUNCTIONS = {
+    "len": fn(evaluator, args) {
+        if (len(args) != 1) {
+            return evaluator["new_error"](evaluator, "wrong number of arguments, got=" + len(args) + ", want=1")
+        }
+        var a = args[0]
+        if(in([MONKEY_OBJECT_TYPES["STRING_OBJ"], MONKEY_OBJECT_TYPES["ARRAY_OBJ"]], a["object_type"])) {
+            if (a["object_type"] == MONKEY_OBJECT_TYPES["STRING_OBJ"]) {
+                var o = monkey_object_integer_create()
+                set(o, "value", len(a["value"]))
+                return o
+            }
+            if (a["object_type"] == MONKEY_OBJECT_TYPES["ARRAY_OBJ"]) {
+                var o = monkey_object_integer_create()
+                set(o, "value", len(a["elements"]))
+                return o
+            }
+        } else {
+            return evaluator["new_error"](evaluator, "argument to len not supported, got " + a["type"](a))
+        }
+    },
+
+    "first": fn(evaluator, args) {
+        if (len(args) != 1) {
+            return evaluator["new_error"](evaluator, "wrong number of arguments, got=" + len(args) + ", want=1")
+        }
+        var a = args[0]
+        if (a["object_type"] == MONKEY_OBJECT_TYPES["ARRAY_OBJ"]) {
+            if (len(a["elements"]) > 0) {
+                return a["elements"][0]
+            }
+            return evaluator["NULL"]
+        } else {
+            return evaluator["new_error"](evaluator, "argument to first must be ARRAY, got " + a["type"](a))
+        }
+    },
+    
+    "last": fn(evaluator, args) {
+        if (len(args) != 1) {
+            return evaluator["new_error"](evaluator, "wrong number of arguments, got=" + len(args) + ", want=1")
+        }
+        var a = args[0]
+        if (a["object_type"] == MONKEY_OBJECT_TYPES["ARRAY_OBJ"]) {
+            var length = len(a["elements"])
+            if (length > 0) {
+                return a["elements"][length-1]
+            }
+            return evaluator["NULL"]
+        } else {
+            return evaluator["new_error"](evaluator, "argument to last must be ARRAY, got " + a["type"](a))
+        }
+    },
+
+    "rest": fn(evaluator, args) {
+        if (len(args) != 1) {
+            return evaluator["new_error"](evaluator, "wrong number of arguments, got=" + len(args) + ", want=1")
+        }
+        var a = args[0]
+        if (a["object_type"] == MONKEY_OBJECT_TYPES["ARRAY_OBJ"]) {
+            var length = len(a["elements"])
+            if (length > 0) {
+                var o = monkey_object_array_create()
+                set(o, "elements", slice(a["elements"], 1, length))
+                return o
+            }
+            return evaluator["NULL"]
+        } else {
+            return evaluator["new_error"](evaluator, "argument to rest must be ARRAY, got " + a["type"](a))
+        }
+    },
+
+    "push": fn(evaluator, args) {
+        if (len(args) != 2) {
+            return evaluator["new_error"](evaluator, "wrong number of arguments, got=" + len(args) + ", want=2")
+        }
+        var a = args[0]
+        if (a["object_type"] == MONKEY_OBJECT_TYPES["ARRAY_OBJ"]) {
+            var temp = []
+            each(a["elements"], fn(e, i) {
+                var temp = temp + e
+            })
+            var o = monkey_object_array_create()
+            set(o, "elements", temp + args[1])
+            return o
+        } else {
+            return evaluator["new_error"](evaluator, "argument to push must be ARRAY, got " + a["type"](a))
+        }
+    },
+    
+    "puts": fn(evaluator, args) {
+        var f = println
+        if (gui()) {
+            var f = message
+        }
+        each(args, fn(e, i) {
+            f(e["inspect_value"](e)) 
+        })
+        return evaluator["NULL"]
+    },
+}
+
+var MONKEY_BUILTINS = {
+    "BUILTINS": {
+        "len": monkey_object_builtin_create(MONKEY_BUILTIN_FUNCTIONS["len"], null),
+        "first": monkey_object_builtin_create(MONKEY_BUILTIN_FUNCTIONS["first"], null),
+        "last": monkey_object_builtin_create(MONKEY_BUILTIN_FUNCTIONS["last"], null),
+        "rest": monkey_object_builtin_create(MONKEY_BUILTIN_FUNCTIONS["rest"], null),
+        "push": monkey_object_builtin_create(MONKEY_BUILTIN_FUNCTIONS["push"], null),
+        "puts": monkey_object_builtin_create(MONKEY_BUILTIN_FUNCTIONS["puts"], null),
+    },
+    
+    "get": fn(x, f) {
+        return x["BUILTINS"][f]
+    },
+}
+
+var MONKEY_EVALUATOR = {
+    "NULL": monkey_object_null_create(),
+    "TRUE": monkey_object_boolean_create(true),
+    "FALSE": monkey_object_boolean_create(false),
+
+    "eval": fn(x, node, env_) {
+        if (node["type"] == "program") {
+            return x["eval_program"](x, node, env_)
+        }
+        if (node["type"] == "expression_statement") {
+            return x["eval"](x, node["expression"], env_)
+        }
+        if (node["type"] == "integer_literal") {
+            var o = monkey_object_integer_create()
+            set(o, "value", node["value"])
+            return o
+        }
+        if (node["type"] == "boolean") {
+            return x["get_boolean"](x, node["value"])
+        }        
+        if (node["type"] == "prefix_expression") {
+            var right_ = x["eval"](x, node["right"], env_)
+            if (x["is_error"](x, right_)) {
+                return right_
+            }
+            return x["eval_prefix_expression"](x, node["operator"], right_)
+        }
+        if (node["type"] == "infix_expression") {
+            var left_ = x["eval"](x, node["left"], env_)
+            if (x["is_error"](x, left_)) {
+                return left_
+            }
+            var right_ = x["eval"](x, node["right"], env_)
+            if (x["is_error"](x, right_)) {
+                return right_
+            }
+            return x["eval_infix_expression"](x, node["operator"], left_, right_)
+        }
+        if (node["type"] == "block_statement") {
+            return x["eval_block_statement"](x, node, env_)
+        }
+        if (node["type"] == "if_expression") {
+            return x["eval_if_expression"](x, node, env_)
+        }
+        if (node["type"] == "return_statement") {
+            var val = x["eval"](x, node["return_value"], env_)
+            if (x["is_error"](x, val)) {
+                return val
+            }
+            var o = monkey_object_return_value_create()
+            set(o, "value", val)
+            return o
+        }
+        if (node["type"] == "let_statement") {
+            var val = x["eval"](x, node["value"], env_)
+            if (x["is_error"](x, val)) {
+                return val
+            }
+            env_["set"](env_, node["name"]["value"], val) 
+        }        
+        if (node["type"] == "identifier") {
+            return x["eval_identifier"](x, node, env_)
+        }
+        if (node["type"] == "function_literal") {
+            var params = node["parameters"]
+            var body = node["body"]
+            
+            var en = monkey_environment_new()
+            set(en, "outer", env_["outer"])
+            var s = {}
+            each(keys(env_["store"]), fn(e, i) {
+                set(s, e, env_["store"][e])
+            })
+            set(en, "store", s)
+            
+            var o = monkey_object_function_create()
+            set(o, "parameters", params)
+            set(o, "body", body)
+            set(o, "env", en)
+            return o
+        }
+        if (node["type"] == "call_expression") {
+            var function = x["eval"](x, node["function"], env_)
+            if (x["is_error"](x, function)) {
+                return function
+            }
+            var args = x["eval_expressions"](x, node["arguments"], env_)
+            if (len(args) == 1 & x["is_error"](x, args[0])) {
+                return args[0]
+            }
+            return x["apply_function"](x, function, args)
+        }
+        if (node["type"] == "string_literal") {
+            var o = monkey_object_string_create()
+            set(o, "value", node["value"])
+            return o
+        }
+        if (node["type"] == "array_literal") {
+            var elements = x["eval_expressions"](x, node["elements"], env_)
+            if (len(elements) == 1 & x["is_error"](x, elements[0])) {
+                return elements[0]
+            }
+            var o = monkey_object_array_create()
+            set(o, "elements", elements)
+            return o
+        }
+        if (node["type"] == "index_expression") {
+            var left_ = x["eval"](x, node["left"], env_)
+            if (x["is_error"](x, left_)) {
+                return left_
+            }
+            var index_ = x["eval"](x, node["index"], env_)
+            if (x["is_error"](x, index_)) {
+                return index_
+            }
+            return x["eval_index_expression"](x, left_, index_)
+        }
+        if (node["type"] == "hash_literal") {
+            return x["eval_hash_literal"](x, node, env_)
+        }
+        return null
+    },
+    
+    "eval_program": fn(x, program, env_) {
+        var r = [monkey_object_create("", "")]
+        each(program["statements"], fn(e, i) {
+            var ret = x["eval"](x, e, env_)
+            set(r, 0, ret)
+            if (ret["object_type"] == MONKEY_OBJECT_TYPES["RETURN_VALUE_OBJ"]) {
+                return ret["value"]
+            }
+            if (ret["object_type"] == MONKEY_OBJECT_TYPES["ERROR_OBJ"]) {
+                return ret
+            }
+        })
+        return r[0]
+    },
+    
+    "eval_block_statement": fn(x, block, env_) {
+        var r = [monkey_object_create("", "")]
+        each(block["statements"], fn(e, i) {
+            var ret = x["eval"](x, e, env_)
+            set(r, 0, ret)
+            if (ret) {
+                var rt = ret["type"](ret)
+                if (in([MONKEY_OBJECT_TYPES["RETURN_VALUE_OBJ"], MONKEY_OBJECT_TYPES["ERROR_OBJ"]], rt)) {
+                    set(r, 0, ret)
+                    return ret
+                }
+            }
+        })
+        return r[0]
+    },
+    
+    "get_boolean": fn(x, val) {
+        if (val) {
+            return x["TRUE"]
+        }
+        return x["FALSE"]
+    },
+    
+    "eval_prefix_expression": fn(x, operator, right_) {
+        if (operator == "!") {
+            return x["eval_bang_operator_expression"](x, right_)
+        }
+        if (operator == "-") {
+            return x["eval_minus_prefix_operator_expression"](x, right_)
+        }
+        return x["new_error"](x, "unknown operator: " + operator + right_["type"](right_))
+    },
+    
+    "eval_infix_expression": fn(x, operator, left_, right_) {
+        if ((left_["type"](left_) == MONKEY_OBJECT_TYPES["INTEGER_OBJ"]) & (right_["type"](right_) == MONKEY_OBJECT_TYPES["INTEGER_OBJ"])) {
+            return x["eval_integer_infix_expression"](x, operator, left_, right_)
+        }
+        if ((left_["type"](left_) == MONKEY_OBJECT_TYPES["STRING_OBJ"]) & (right_["type"](right_) == MONKEY_OBJECT_TYPES["STRING_OBJ"])) {
+            return x["eval_string_infix_expression"](x, operator, left_, right_)
+        }
+        if (operator == "==") {
+            return x["get_boolean"](x, left_["hash_key"](left_) == right_["hash_key"](right_))
+        }
+        if (operator == "!=") {
+            return x["get_boolean"](x, left_["hash_key"](left_) != right_["hash_key"](right_))
+        }        
+        if (left_["type"](left_) != right_["type"](right_)) {
+            return x["new_error"](x, "type mismatch: " + left_["type"](left_) + " " + operator + " " + right_["type"](right_))
+        }
+        return x["new_error"](x, "unknown operator: " + left_["type"](left_) + " " + operator + " " + right_["type"](right_))
+    },
+    
+    "eval_integer_infix_expression": fn(x, operator, left_, right_) {
+        var left_val = left_["value"]
+        var right_val = right_["value"]
+        var o = monkey_object_integer_create()
+        if (operator == "+") {
+            set(o, "value", left_val + right_val)
+            return o
+        }
+        if (operator == "-") {
+            set(o, "value", left_val - right_val)
+            return o
+        }
+        if (operator == "*") {
+            set(o, "value", left_val * right_val)
+            return o
+        }
+        if (operator == "/") {
+            var t = left_val / right_val
+            if (t != null) {
+                set(o, "value", integer(t))
+                return o
+            } else {
+                return x["NULL"]
+            }
+        }    
+        if (operator == "<") {
+            return x["get_boolean"](x, left_val < right_val)
+        }
+        if (operator == ">") {
+            return x["get_boolean"](x, left_val > right_val)
+        }
+        if (operator == "==") {
+            return x["get_boolean"](x, left_val == right_val)
+        }
+        if (operator == "!=") {
+            return x["get_boolean"](x, left_val != right_val)
+        }
+        return x["new_error"](x, "unknown operator: " + left_["type"](left_) + " " + operator + " " + right_["type"](right_))        
+    },
+
+    "eval_string_infix_expression": fn(x, operator, left_, right_) {
+        var left_val = left_["value"]
+        var right_val = right_["value"]
+        var o = monkey_object_string_create()
+        if (operator != "+") {
+            return x["new_error"](x, "unknown operator: " + left_["type"](left_) + " " + operator + " " + right_["type"](right_))        
+        }        
+        set(o, "value", left_val + right_val)
+        return o
+    },
+    
+    "eval_bang_operator_expression": fn(x, right_) {
+        if (right_["hash_key"](right_) == x["TRUE"]["hash_key"](x["TRUE"])) {
+            return x["FALSE"]
+        }    
+        if (right_["hash_key"](right_) == x["FALSE"]["hash_key"](x["FALSE"])) {
+            return x["TRUE"]
+        }    
+        if (right_["hash_key"](right_) == x["NULL"]["hash_key"](x["NULL"])) {
+            return x["TRUE"]
+        }    
+        return x["FALSE"]
+    },
+    
+    "eval_minus_prefix_operator_expression": fn(x, right_) {
+        if (right_["type"](right_) != MONKEY_OBJECT_TYPES["INTEGER_OBJ"]) {
+            return x["new_error"](x, "unknown operator: -" + right_["type"](right_))        
+        }
+        var val = right_["value"]
+        var ret = monkey_object_integer_create()
+        set(ret, "value", -val)
+        return ret
+    },
+
+    "eval_if_expression": fn(x, expression, env_) {
+        var condition = x["eval"](x, expression["condition"], env_)
+        if (x["is_error"](x, condition)) {
+            return condition
+        }
+        if (x["is_truthy"](x, condition)) {
+            return x["eval"](x, expression["consequence"], env_)
+        }
+        if (!expression["alternative"]["is_empty"](expression["alternative"])) {
+            return x["eval"](x, expression["alternative"], env_)
+        }
+        return x["NULL"]
+    },
+    
+    "eval_identifier": fn(x, node, env_) {
+        var val = env_["get"](env_, node["value"])
+        if (val) {
+            return val
+        }
+        var builtin = MONKEY_BUILTINS["get"](MONKEY_BUILTINS, node["value"])
+        if (builtin) {
+            return builtin
+        }
+        return x["new_error"](x, "identifier not found: " + node["value"])                
+    },
+
+    "eval_expressions": fn(x, exp, env_) {
+        var result = []
+        each(exp, fn(e, i) {
+            var evaluated = x["eval"](x, e, env_)
+            if (x["is_error"](x, evaluated)) {
+                var result = result + evaluated
+                return result
+            }
+            var result = result + evaluated
+        })
+        return result
+    },
+
+    "eval_index_expression": fn(x, left_, index_) {
+        if ((left_["type"](left_) == MONKEY_OBJECT_TYPES["ARRAY_OBJ"]) & (index_["type"](index_) == MONKEY_OBJECT_TYPES["INTEGER_OBJ"])) {
+            return x["eval_array_index_expression"](x, left_, index_)
+        }
+        if (left_["type"](left_) == MONKEY_OBJECT_TYPES["HASH_OBJ"]) {
+            return x["eval_hash_index_expression"](x, left_, index_)            
+        }
+        return x["new_error"](x, "index operator not supported: " + left_["type"](left_)) 
+    },
+    
+    "eval_array_index_expression": fn(x, array_, index_) {
+        var idx = index_["value"]
+        var max_idx = len(array_["elements"]) - 1
+        if (idx < 0 | idx > max_idx) {
+            return x["NULL"]
+        }
+        return array_["elements"][idx]
+    },
+    
+    "eval_hash_literal": fn(x, node, env_) {
+        var pairs = {}
+        var monkey_hash_pair_create = monkey_hash_pair_create
+        var temp = []
+        each(keys(node["pairs"]), fn(e, i) {
+            var key = x["eval"](x, e, env_)
+            if (x["is_error"](x, key)) {
+                var temp = temp + key
+                return key
+            }
+            if (key["hashable"] != true) {
+                var err = x["new_error"](x, "unusable as hash key: " + key["type"](key)) 
+                var temp = temp + err
+                return err
+            }
+            var v = node["pairs"][e]
+            var val = x["eval"](x, v, env_)
+            if (x["is_error"](x, val)) {
+                var temp = temp + val
+                return val
+            }
+            var hashed = key["hash_key"](key)
+            var p = monkey_hash_pair_create()
+            set(p, "key", key)
+            set(p, "value", val)
+            set(pairs, hashed, p)
+        })
+        if (!empty(temp)) {
+            return temp[0]
+        }
+        var o = monkey_object_hash_create()
+        set(o, "pairs", pairs)
+        return o
+    },
+    
+    "eval_hash_index_expression": fn(x, hashtable, index_) {
+        if (index_["hashable"] != true) {
+            return x["new_error"](x, "unusable as hash key: " + index_["type"](key)) 
+        }
+        var pair = hashtable["pairs"][index_["hash_key"](index_)]  
+        if (pair == null) {
+            return x["NULL"]
+        }      
+        return pair["value"]
+    },
+    
+    "apply_function": fn(x, f, args) {
+        if (f["object_type"] == MONKEY_OBJECT_TYPES["FUNCTION_OBJ"]) {
+            var extended_env = x["extend_function_env"](x, f, args)
+            var evaluated = x["eval"](x, f["body"], extended_env)
+            return x["unwrap_return_value"](x, evaluated)
+        }
+        if (f["object_type"] == MONKEY_OBJECT_TYPES["BUILTIN_OBJ"]) {
+            return f["fn"](x, args)
+        }
+        return x["new_error"](x, "not a function: " + f["type"](f)) 
+    },
+    
+    "extend_function_env": fn(x, f, args) {
+        var env_ = monkey_environment_enclosed(f["env"])
+        each(f["parameters"], fn(e, i) {
+            var p = e
+            env_["set"](env_, p["value"], args[i])
+        })
+        return env_
+    },
+    
+    "unwrap_return_value": fn(x, obj) {
+        if (obj["object_type"] == MONKEY_OBJECT_TYPES["RETURN_VALUE_OBJ"]) {
+            return obj["value"]
+        }        
+        return obj
+    },
+    
+    "is_truthy": fn(x, obj) {
+        if (obj["type"](obj) == MONKEY_OBJECT_TYPES["NULL_OBJ"]) {
+            return false
+        }            
+        if (obj["hash_key"](obj) == x["TRUE"]["hash_key"](x["TRUE"])) {
+            return true
+        }            
+        if (obj["hash_key"](obj) == x["FALSE"]["hash_key"](x["FALSE"])) {
+            return false
+        } 
+        return true           
+    },
+    
+    "new_error": fn(x, message_) {
+        var ret = monkey_object_error_create("", "")
+        set(ret, "message", message_)
+        return ret
+    },
+    
+    "is_error": fn(x, obj) {
+        if (obj) {
+            return obj["type"](obj) == MONKEY_OBJECT_TYPES["ERROR_OBJ"]
+        }
+        return false
+    },
+}
+
+var monkey_evaluator_new = fn() {
+    var e = {} + MONKEY_EVALUATOR
+    return e
+}
+
+var MONKEY = {
+    "PROMPT": ">> ",
+    
+    "input": fn(s) {
+        return input(s, MONKEY_TITLE)
+    },
+    
+    "output": fn(s) {
+        each(s, fn(e, i) {
+            print(e)
+        })
+        println("")
+    },
+    
+    "lexer": fn(m) {
+        m["output"]([MONKEY_TITLE])
+        m["output"]([MONKEY_MESSAGE])
+        repeat {
+            var inp = trim(m["input"](m["PROMPT"]))
+            if (empty(inp)) {
+                return null
+            }
+            var l = monkey_lexer_new(inp)
+            repeat {
+                var t = l["next_token"](l)
+                if (t["type"] == MONKEY_TOKEN["EOF"]) {
+                    return null
+                }
+                m["output"](["Type: ", t["type"], ", Literal: ", t["literal"]])
+            }
+        }
+    },
+    
+    "parser": fn(m) {
+        m["output"]([MONKEY_TITLE])
+        m["output"]([MONKEY_MESSAGE])
+        repeat {
+            var inp = trim(m["input"](m["PROMPT"]))
+            if (empty(inp)) {
+                return null
+            }
+            var l = monkey_lexer_new(inp)
+            var p = monkey_parser_new(l)
+            var program = p["parse_program"](p)
+            if (!empty(p["errors"])) {
+                m["print_parse_errors"](m, p["errors"])
+            } else {
+                m["output"]([program["string"](program)])
+            }
+        }
+    },
+    
+    "print_parse_errors": fn(m, error) {
+        each(error, fn(e, i) {
+            m["output"](["PARSER ERROR: ", e])
+        })
+    },
+
+    "evaluator_text": fn(m) {
+        m["output"]([MONKEY_TITLE])
+        m["output"]([MONKEY_MESSAGE])
+        var env_ = monkey_environment_new()
+        repeat {
+            var inp = trim(m["input"](m["PROMPT"]))
+            if (empty(inp)) {
+                return null
+            }
+            var l = monkey_lexer_new(inp)
+            var p = monkey_parser_new(l)
+            var program = p["parse_program"](p)
+            if (!empty(p["errors"])) {
+                m["print_parse_errors"](m, p["errors"])
+            } else {
+                var evaluator = monkey_evaluator_new()
+                var evaluated = evaluator["eval"](evaluator, program, env_)
+                if (evaluated != null) {
+                    m["output"]([evaluated["inspect"](evaluated)])
+                }
+            }
+        }
+    },
+
+    "evaluator_gui": fn(m) {
+        var env_ = monkey_environment_new()
+        reset()
+        title(MONKEY_TITLE)
+        var ue = component("edit","", true)
+        config(ue, "font", ["monospaced", 1, 14])
+        var ut = component("text", "")
+        config(ut, "font", ["monospaced", 1, 14])
+        var ub = component("button", "eval")
+        config(ub, "active", 0)
+        add(ue)
+        add_s([ut, ub])
+
+        var monkey_lexer_new = monkey_lexer_new
+        var monkey_parser_new = monkey_parser_new
+        var monkey_evaluator_new = monkey_evaluator_new
+        
+        event(ub, fn() {
+            var inp = trim(get(ut, "contents"))
+            config(ut, "contents", "")
+            config(ut, "focus", true)
+            if (!empty(inp)) {
+                var ue = ue
+                var c = get(ue, "contents")
+                config(ue, "contents", c + newline() + m["PROMPT"] + inp )
+                               
+                var l = monkey_lexer_new(inp)
+                var p = monkey_parser_new(l)
+                var program = p["parse_program"](p)
+                if (!empty(p["errors"])) {
+                    var errors = []
+                    each(p["errors"], fn(e, i) {
+                        var errors = errors + ("PARSER ERROR: " + e)
+                    })
+                    config(ue, "contents", c + newline() + m["PROMPT"] + inp + newline() + join(newline(), errors))
+                } else {
+                    var evaluator = monkey_evaluator_new()
+                    var evaluated = evaluator["eval"](evaluator, program, env_)
+                    if (evaluated != null) {
+                        config(ue, "contents", c + newline() + m["PROMPT"] + inp + newline() + evaluated["inspect"](evaluated))
+                    }
+                }
+            }
+        })
+        closing("Are you sure you want to quit this application?", "Please confirm")
+        show()
+    },
+    
+    "evaluator": fn(m) {
+        if (gui()) {
+            m["evaluator_gui"](m)
+        } else {
+            m["evaluator_text"](m)
+        }
+    },
+}
+
+MONKEY["evaluator"](MONKEY)
