@@ -1,8 +1,8 @@
 Singkong Programming Language Interpreter
-(c) Noprianto <nopri.anto@icloud.com>, 2019-2020
+(c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 4.4 (2020-December-20 +07:00)
+Version: 4.5 (2021-January-04 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -45,6 +45,7 @@ Bundled JDBC Drivers (compatible with Java 5.0 or later):
 23. Example: Database: create table, insert, update, select, GUI
 24. Example: Web: variables, GET, POST, JSON
 25. Example: Java: custom dialog
+26. Example: Monkey programming language interpreter in Singkong
 
 -----------------------------------------------------------------------------
 
@@ -96,7 +97,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 4.4
+        Singkong 4.5
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -256,6 +257,14 @@ types
   - system related functions: arguments, inet_address, system
   - Singkong related functions: singkong_interpreter
   - sorting: by length
+  - copy:
+        var a = ["hello", "world"]
+        var b = []
+        each(a, fn(e,i) {
+          var b = b + e
+	})
+        set(a, 1, "hello world")
+        println(a, b)    
 - HASH
   - {}
   - hash table/dictionary
@@ -269,6 +278,11 @@ types
   - system related functions: env, info
   - Singkong related functions: singkong
   - sorting: by length
+  - copy:
+        var a = {"hello": "world"}
+        var b = {} + a
+        set(a, "hello", "hello world")
+        println(a, b)    
 - DATE
   - @ @Y @YY @YYY @YYYY @YYYYM @YYYYMM @YYYYMMD @YYYYMMDD @YYYYMMDDh 
     @YYYYMMDDhh @YYYYMMDDhhm @YYYYMMDDhhmm @YYYYMMDDhhmms @YYYYMMDDhhmmss
@@ -359,6 +373,7 @@ types
     (if GUI is not available: simpler text-based version)
   - GUI dialogs: login_dialog, panel_dialog
   - Clipboard: clipboard_get, clipboard_set
+  - Sound: beep, play_sound
   - extended: x_edit_print
 - DATABASE
   - Please read: Database application development
@@ -371,9 +386,9 @@ types
 To get a list of built-in functions, please call builtins()
 ["ABS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", "APPEND", "ARGUMENTS", 
 "ARRAY", "ARRAY_NUMBER", "ARRAY_STRING", "AVERAGE", "BASE64_DECODE", 
-"BASE64_ENCODE", "BUILTINS", "BUTTON_IMAGE", "CALL", "CALL_INFO", "CENTER", 
-"CGI_CONTENTS", "CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", "CHR", 
-"CLEAR", "CLIPBOARD_GET", "CLIPBOARD_SET", "CLOSING", "COMPONENT", 
+"BASE64_ENCODE", "BEEP", "BUILTINS", "BUTTON_IMAGE", "CALL", "CALL_INFO", 
+"CENTER", "CGI_CONTENTS", "CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", 
+"CHR", "CLEAR", "CLIPBOARD_GET", "CLIPBOARD_SET", "CLOSING", "COMPONENT", 
 "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY_RESOURCE", "COUNT", 
 "CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", "DATE", "DATETIME", 
 "DAY", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "EACH", 
@@ -388,27 +403,27 @@ To get a list of built-in functions, please call builtins()
 "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", 
 "MKDIR", "MONTH", "NEWLINE", "NUMBER", "NUMBER_GROUP", "OPEN", "ORD", 
 "PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
-"PARSE_HASH", "PART", "PARTS", "PASSWORD", "POP", "PRINT", "PRINTER", "PRINTLN", 
-"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
-"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", 
-"REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", 
-"RESIZABLE", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", 
-"SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", "SHOW", "SHUFFLE", 
-"SINGKONG", "SINGKONG_INTERPRETER", "SIZE", "SLICE", "SORT_ARRAY", 
-"SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", 
-"START", "START_TIMER", "STARTSWITH", "STAT", "STDIN", "STOP", "STOP_TIMER", 
-"STRING", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", 
-"TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_LEFT", 
-"TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_SCROLL", 
-"TABLE_TOP", "TEMP_FILE", "TIMER", "TIMER_RUNNING", "TITLE", "TRIM", "TYPE", 
-"TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", "WAIT", 
-"WORDS_EN", "WORDS_ID", "WRITE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", 
-"X_EDIT_PRINT", "YEAR"]
+"PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", "PRINT", 
+"PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", 
+"QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", 
+"REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", 
+"REQUIRE", "RESET", "RESIZABLE", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", 
+"SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", 
+"SHOW", "SHUFFLE", "SINGKONG", "SINGKONG_INTERPRETER", "SIZE", "SLICE", 
+"SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
+"SORT_STRING", "SPLIT", "START", "START_TIMER", "STARTSWITH", "STAT", "STDIN", 
+"STOP", "STOP_TIMER", "STRING", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", 
+"TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", 
+"TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", 
+"TABLE_SCROLL", "TABLE_TOP", "TEMP_FILE", "TIMER", "TIMER_RUNNING", "TITLE", 
+"TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", 
+"WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "X_BASE64_DECODE_FILE", 
+"X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-225
+227
 
-Note: a built-in function may be disabled when the interpreter in run. In such
+Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
 
 To get basic information of a built-in function, please enter its name in
@@ -790,6 +805,7 @@ To keep it as simple as possible:
   If FUNCTION or BUILTIN requires arguments, please also pass the arguments to 
   wait function. 
   Note: Singkong is not thread safe
+        reset()
         var l1 = component("label", "please wait...")
         config(l1, "font", ["monospaced", 1, 20])
 
@@ -832,6 +848,16 @@ To keep it as simple as possible:
         var d = component("date","")
         config(d, "contents", @)
   - Get a configuration of a date COMPONENT: a DATE is returned 
+- Sound:
+  - To play a beep sound, please use built-in function beep.
+  - To play a sound from file or resource, please use built-in function 
+    play_sound.
+    - resource: put all supported resource files in /resource directory in 
+      interpreter jar file. For example: 
+        play_sound("sound.wav", true) # from /resource/sound.wav in interpreter jar file;
+      (please also read about deployment)
+    - file:
+        play_sound("sound.wav", false) # from current working directory;
 
 
 -----------------------------------------------------------------------------
@@ -2214,6 +2240,14 @@ relative to current working directory.
 
     >  value
     "Hello World"
+
+
+-----------------------------------------------------------------------------
+
+26. Example: Monkey programming language interpreter in Singkong
+
+Download Monkey.singkong: https://nopri.github.io/monkey.singkong
+Download Monkey.singkong runnable jar: https://nopri.github.io/monkeyinterpreter.jar
 
 
 =============================================================================
