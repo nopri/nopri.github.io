@@ -1,5 +1,5 @@
 books, paper presentations, talks, stories,
-monkey programming language interpreters (in Java and Python),
+monkey programming language interpreters (in Java, Python, and Singkong),
 website, unmaintained code
  
 (c) Noprianto <nopri.anto@icloud.com>
@@ -175,9 +175,11 @@ pangsit_perkedel-tiga_windu_yang_lalu.pdf
 
 7. Monkey Programming Language Interpreters
 =============================================
-- monkey.py
-- test file: monkey_tests.py
-- Monkey.java
-- Monkey.jar (compiled)
+- Python: monkey.py
+- Python: test file: monkey_tests.py
+- Java: Monkey.java
+- Java: Monkey.jar (compiled)
+- Singkong: monkey.singkong
+- Singkong: monkeyinterpreter.jar (bundled)
 
 
