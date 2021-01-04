@@ -5,9 +5,9 @@
     (c) Noprianto <nopri.anto@icloud.com>, 2020-2021
     Website: nopri.github.io
     License: MIT
-    Version: 0.1
+    Version: 0.3
     
-    Requires Singkong version 4.4 or later
+    Requires Singkong version 4.5 or later
     Download Monkey.singkong: https://nopri.github.io/monkey.singkong
     Download Monkey.singkong runnable jar: https://nopri.github.io/monkeyinterpreter.jar
     
@@ -41,9 +41,9 @@
     monkey.py is based on code (in Go) in book: Writing an interpreter in Go    
 ;
 
-require(4.4)
+require(4.5)
 
-var MONKEY_VERSION = "0.1"
+var MONKEY_VERSION = "0.3"
 var MONKEY_TITLE = "Monkey.singkong " + MONKEY_VERSION
 var MONKEY_MESSAGE = "Press ENTER to quit"
 
@@ -1373,10 +1373,15 @@ var MONKEY_ENVIRONMENT = {
 } 
 
 var monkey_environment_new = fn() {
+    var o = {} + MONKEY_ENVIRONMENT
+    set(o, "type", "environment")
+    set(o, "store", {})
+    set(o, "outer", {} + MONKEY_ENVIRONMENT)
+
     var r = {} + MONKEY_ENVIRONMENT
     set(r, "type", "environment")
     set(r, "store", {})
-    set(r, "outer", {})
+    set(r, "outer", o) 
     return r
 }
 
@@ -1587,6 +1592,12 @@ var MONKEY_EVALUATOR = {
         }
         if (node["type"] == "call_expression") {
             var function = x["eval"](x, node["function"], env_)
+
+            var s = {}
+            each(keys(env_["store"]), fn(e, i) {
+                set(s, e, env_["store"][e])
+            })
+            
             if (x["is_error"](x, function)) {
                 return function
             }
@@ -1594,7 +1605,7 @@ var MONKEY_EVALUATOR = {
             if (len(args) == 1 & x["is_error"](x, args[0])) {
                 return args[0]
             }
-            return x["apply_function"](x, function, args)
+            return x["apply_function"](x, function, args, s)
         }
         if (node["type"] == "string_literal") {
             var o = monkey_object_string_create()
@@ -1872,9 +1883,9 @@ var MONKEY_EVALUATOR = {
         return pair["value"]
     },
     
-    "apply_function": fn(x, f, args) {
+    "apply_function": fn(x, f, args, s) {
         if (f["object_type"] == MONKEY_OBJECT_TYPES["FUNCTION_OBJ"]) {
-            var extended_env = x["extend_function_env"](x, f, args)
+            var extended_env = x["extend_function_env"](x, f, args, s)
             var evaluated = x["eval"](x, f["body"], extended_env)
             return x["unwrap_return_value"](x, evaluated)
         }
@@ -1884,8 +1895,9 @@ var MONKEY_EVALUATOR = {
         return x["new_error"](x, "not a function: " + f["type"](f)) 
     },
     
-    "extend_function_env": fn(x, f, args) {
+    "extend_function_env": fn(x, f, args, s) {
         var env_ = monkey_environment_enclosed(f["env"])
+        set(env_, "store", s)
         each(f["parameters"], fn(e, i) {
             var p = e
             env_["set"](env_, p["value"], args[i])
@@ -2020,12 +2032,15 @@ var MONKEY = {
         title(MONKEY_TITLE)
         var ue = component("edit","", true)
         config(ue, "font", ["monospaced", 1, 14])
-        var ut = component("text", "")
+        config(ue, "border", "result")
+        config(ue, "background", "gray")
+        var ut = component("edit", "")
         config(ut, "font", ["monospaced", 1, 14])
+        config(ut, "border", "prompt")
         var ub = component("button", "eval")
         config(ub, "active", 0)
-        add(ue)
-        add_s([ut, ub])
+        add([ut, ue])
+        add_s(ub)
 
         var monkey_lexer_new = monkey_lexer_new
         var monkey_parser_new = monkey_parser_new
