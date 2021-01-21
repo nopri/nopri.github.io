@@ -1,0 +1,32 @@
+#
+    Util
+    util.singkong
+
+    Part of Singkong Programming Language Interpreter
+    (c) Noprianto <nopri.anto@icloud.com>
+
+    More information: https://nopri.github.io/singkong.html
+    Download Singkong: https://nopri.github.io/Singkong.jar
+    (free to use or redistribute)
+;
+
+require(4.5)
+
+var array_copy = fn(a) {
+    if (!is(a, "ARRAY")) {
+        return null
+    }
+    var ret = []
+    each(a, fn(e,i) {
+      var ret = ret + e
+    })
+    return ret
+}
+
+var hash_copy = fn(h) {
+    if (!is(h, "HASH")) {
+        return null
+    }
+    return {} + h
+}
+

@@ -1,0 +1,200 @@
+#
+    Comma-Separated Values
+    csv.singkong
+
+    Part of Singkong Programming Language Interpreter
+    (c) Noprianto <nopri.anto@icloud.com>
+
+    More information: https://nopri.github.io/singkong.html
+    Download Singkong: https://nopri.github.io/Singkong.jar
+    (free to use or redistribute)
+;
+
+require(4.5)
+
+var csv_from_string = fn(sep, s) {
+    if (!is(s, "STRING") | !is(sep, "STRING")) {
+        return null
+    }
+    if (len(sep) != 1) {
+        return null
+    }
+    if (empty(trim(s))) {
+        return null
+    }
+
+    var TOKEN = {
+        "EOF": "EOF",
+        "VALUE": "VALUE",
+        "QUOTED": "QUOTED",
+        "SEPARATOR": "SEPARATOR",
+        "NEWLINE": "NEWLINE",
+    }
+
+    var token_create = fn(type_, literal_) {
+        return {"type": type_, "literal": literal_}
+    }
+
+    var LEXER = {
+        "read_char": fn(x) {   
+            if (x["read"] >= len(x["input"])) {
+                set(x, "ch", "")
+            } else {
+                set(x, "ch", x["input"][x["read"]])
+            }
+            set(x, "position", x["read"])
+            set(x, "read", x["read"] + 1)
+        },
+
+        "peek_char": fn(x) {
+            if (x["read"] >= len(x["input"])) {
+                return ""
+            } else {
+                return x["input"][x["read"]]
+            }
+        },
+
+        "new_token": fn(x, token, t, ch) {
+            set(token, "type", t)
+            set(token, "literal", ch)
+            return token
+        },
+
+        "next_token": fn(x) {
+            var t = token_create("", "")
+            if (in([cr(), lf(), quote(), sep, ""], x["ch"])) {
+                if (x["ch"] == quote()) {
+                    set(t, "literal", x["read_quoted"](x))
+                    set(t, "type", TOKEN["QUOTED"])
+                }
+                if (x["ch"] == cr()) {
+                    if (x["peek_char"](x) == lf()) {
+                        x["read_char"](x)
+                    }
+                    var t = x["new_token"](x, t, TOKEN["NEWLINE"], TOKEN["NEWLINE"])            
+                }
+                if (x["ch"] == lf()) {
+                    var t = x["new_token"](x, t, TOKEN["NEWLINE"], TOKEN["NEWLINE"])            
+                }
+                if (x["ch"] == sep) {
+                    var t = x["new_token"](x, t, TOKEN["SEPARATOR"], x["ch"])            
+                }
+                if (x["ch"] == "") {
+                    set(t, "literal", "")
+                    set(t, "type", TOKEN["EOF"])
+                }
+            } else {            
+                set(t, "literal", x["read_value"](x))
+                set(t, "type", TOKEN["VALUE"])
+            }
+            x["read_char"](x)
+            return t
+        },
+
+        "read_quoted": fn(x) {
+            var pos = x["position"] + 1
+            repeat {
+                x["read_char"](x)
+                if (empty(x["ch"]) | x["ch"] == null | x["ch"] == quote()) {
+                    return x
+                } 
+            }
+            var ret = slice(x["input"], pos, x["position"])
+            return ret
+        },
+
+        "read_value": fn(x) {
+            var pos = x["position"]
+            repeat {
+                if (empty(x["ch"]) | x["ch"] == null | in([sep, cr(), lf()], x["peek_char"](x))) {
+                    return x
+                } 
+                x["read_char"](x)
+            }
+            var ret = slice(x["input"], pos, x["position"]+1)
+            return ret
+        },
+    }
+
+    var lexer_create = fn(input_, position, read_, ch) {
+        return {"input": input_, "position": position, "read": read_, "ch": ch} + LEXER
+    }
+
+    var lexer_new = fn(s) {
+        var l = lexer_create("", 0, 0, "")
+        set(l, "input", s)
+        l["read_char"](l)
+        return l
+    }
+
+    var ret = []
+    var temp = []
+    var l = lexer_new(s)
+    repeat {
+        var t = l["next_token"](l)
+        if (t["type"] == TOKEN["EOF"]) {
+            return ret
+        }
+        if (t["type"] == TOKEN["NEWLINE"]) {
+            var ret = ret + temp
+            var temp = []
+        } 
+        if (!in([TOKEN["SEPARATOR"], TOKEN["NEWLINE"]], t["type"])) {
+            var temp = temp + t["literal"]
+        }
+    }
+    if (len(temp) > 0) {
+        var ret = ret + temp
+    }
+    return ret
+}
+
+var csv_from_string_default = fn(s) {
+    return csv_from_string(",", s)
+}
+
+var csv_to_string = fn(sep, a) {
+    var ret = []
+    each(a, fn(e, i) {
+        var temp = []
+        var sep = sep
+        each(e, fn(ee, ii) {
+            var c = string(ee)
+            if (in(c, sep)) {
+                var c = quote() + c + quote()
+            }
+            var temp = temp + c
+        })
+        var ret = ret + join(sep, temp)
+    })
+    return join(newline(), ret)
+}
+
+var csv_to_string_default = fn(a) {
+    return csv_to_string(",", a)
+}
+
+var csv_functions = fn(a, f) {
+    if (!is(a, "ARRAY")) {
+        return null
+    }
+    if (!is(f, "ARRAY")) {
+        return a
+    }
+    var ret = []
+    each(a, fn(e, i) {
+        var f = f
+        var temp = []
+        each(e, fn(ee, ii) {
+            var c = f[ii]
+            if (is(c, "BUILTIN") | is(c, "FUNCTION")) {
+                var temp = temp + f[ii](ee)
+            } else {
+                var temp = temp + ee
+            }
+        })
+        var ret = ret + temp
+    })
+    return ret
+}
+
