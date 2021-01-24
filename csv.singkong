@@ -8,11 +8,20 @@
     More information: https://nopri.github.io/singkong.html
     Download Singkong: https://nopri.github.io/Singkong.jar
     (free to use or redistribute)
+
+    To use this module:
+    load_module("csv")
 ;
 
-require(4.5)
+require(4.6)
 
-var csv_from_string = fn(sep, s) {
+var csv_from_string = fn(sep, s) 
+"
+[csv] function: csv_from_string: returns ARRAY from CSV STRING (with separator).
+arguments: 2: STRING (separator) and STRING (CSV)
+return value: ARRAY or NULL (error)
+" 
+{
     if (!is(s, "STRING") | !is(sep, "STRING")) {
         return null
     }
@@ -149,11 +158,23 @@ var csv_from_string = fn(sep, s) {
     return ret
 }
 
-var csv_from_string_default = fn(s) {
+var csv_from_string_default = fn(s) 
+"
+[csv] function: csv_from_string_default: returns ARRAY from CSV STRING (separator:,).
+arguments: 1: STRING (CSV)
+return value: ARRAY or NULL (error)
+" 
+{
     return csv_from_string(",", s)
 }
 
-var csv_to_string = fn(sep, a) {
+var csv_to_string = fn(sep, a) 
+"
+[csv] function: csv_to_string: returns CSV STRING from ARRAY (with separator).
+arguments: 2: STRING (separator) and ARRAY
+return value: STRING
+" 
+{
     var ret = []
     each(a, fn(e, i) {
         var temp = []
@@ -170,11 +191,23 @@ var csv_to_string = fn(sep, a) {
     return join(newline(), ret)
 }
 
-var csv_to_string_default = fn(a) {
+var csv_to_string_default = fn(a) 
+"
+[csv] function: csv_to_string_default: returns CSV STRING from ARRAY (separator:,).
+arguments: 1: ARRAY
+return value: STRING
+" 
+{
     return csv_to_string(",", a)
 }
 
-var csv_functions = fn(a, f) {
+var csv_functions = fn(a, f) 
+"
+[csv] function: csv_functions: applies FUNCTION or BUILTIN for each element in each CSV row.
+arguments: 2: ARRAY and ARRAY (of FUNCTION or BUILTIN)
+return value: ARRAY or NULL (error)
+" 
+{
     if (!is(a, "ARRAY")) {
         return null
     }

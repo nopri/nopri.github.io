@@ -8,11 +8,20 @@
     More information: https://nopri.github.io/singkong.html
     Download Singkong: https://nopri.github.io/Singkong.jar
     (free to use or redistribute)
+
+    To use this module:
+    load_module("util")
 ;
 
-require(4.5)
+require(4.6)
 
-var array_copy = fn(a) {
+var array_copy = fn(a) 
+"
+[util] function: array_copy: copies an ARRAY.
+arguments: 1: ARRAY
+return value: ARRAY
+" 
+{
     if (!is(a, "ARRAY")) {
         return null
     }
@@ -23,7 +32,13 @@ var array_copy = fn(a) {
     return ret
 }
 
-var hash_copy = fn(h) {
+var hash_copy = fn(h) 
+"
+[util] function: hash_copy: copies a HASH.
+arguments: 1: HASH
+return value: HASH
+" 
+{
     if (!is(h, "HASH")) {
         return null
     }

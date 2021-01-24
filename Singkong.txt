@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute
-Version: 4.5 (2021-January-04 +07:00)
+Version: 4.6 (2021-January-25 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -24,7 +24,7 @@ Bundled JDBC Drivers (compatible with Java 5.0 or later):
  2. System requirements
  3. Getting started
  4. Identifier, keywords, data types, and operators
- 5. Builtin functions
+ 5. Built-in functions and modules
  6. If condition
  7. Repeat loop
  8. GUI application development
@@ -46,6 +46,7 @@ Bundled JDBC Drivers (compatible with Java 5.0 or later):
 24. Example: Web: variables, GET, POST, JSON
 25. Example: Java: custom dialog
 26. Example: Monkey programming language interpreter in Singkong
+27. Example: Working with Comma-Separated Values file
 
 -----------------------------------------------------------------------------
 
@@ -97,7 +98,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 4.5
+        Singkong 4.6
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -197,7 +198,7 @@ Note: to get list of keywords, please use built-in function keywords.
 
 Data types:
 Related functions: builtins, eval, is, hash, print, println, puts, string, type, 
-types
+types, variables
 
 - NULL
   - null
@@ -229,8 +230,9 @@ types
   - related functions: array_string, base64_decode, base64_encode, call, center, 
     count, cr, crlf, dir, empty, endswith, equals, eval, in, index, isalpha,
     isdigit, islower, isupper, join, left, len, 
-    lf, lower, matches, md5, newline, ord, quote, random_string, replace, right, 
-    set, sha1, sha256, sha384, sha512, slice, sort_string, split, startswith, 
+    lf, lower, matches, md5, md5_file, newline, ord, quote, random_string, replace, right, 
+    set, sha1, sha1_file, sha256, sha256_file, sha384, sha384_file, sha512, sha512_file, 
+    slice, sort_string, split, startswith, 
     stat, tab, trim, upper
   - special characters: cr, crlf, lf, newline, quote, tab
   - file related functions: abs, append, copy_resource, delete, mkdir, read, 
@@ -238,7 +240,7 @@ types
   - HTTP client related functions: http_delete, http_get, http_get_file, 
     http_head, http_post, http_post_override, http_put, url_decode, url_encode 
   - system related functions: cwd, inet_address_local, separator, user
-  - Singkong related functions: load
+  - Singkong related functions: load, load_module, load_resource
   - extended: x_base64_decode_file, x_base64_encode_file
   - sorting: lexicographically
 - ARRAY
@@ -255,7 +257,7 @@ types
   - CGI related functions: cgi_contents
   - HTTP client related functions: http_response_ok
   - system related functions: arguments, inet_address, system
-  - Singkong related functions: singkong_interpreter
+  - Singkong related functions: builtins, modules, singkong_interpreter
   - sorting: by length
   - copy:
         var a = ["hello", "world"]
@@ -263,6 +265,12 @@ types
         each(a, fn(e,i) {
           var b = b + e
 	})
+        set(a, 1, "hello world")
+        println(a, b)    
+  - copy (using array_copy function from util module, since Singkong version 4.6):
+	load_module("util")
+        var a = ["hello", "world"]
+        var b = array_copy(a)
         set(a, 1, "hello world")
         println(a, b)    
 - HASH
@@ -283,6 +291,12 @@ types
         var b = {} + a
         set(a, "hello", "hello world")
         println(a, b)    
+  - copy (using hash_copy function from util module, since Singkong version 4.6):
+	load_module("util")
+        var a = {"hello": "world"}
+        var b = hash_copy(a)
+        set(a, "hello", "hello world")
+        println(a, b)    
 - DATE
   - @ @Y @YY @YYY @YYYY @YYYYM @YYYYMM @YYYYMMD @YYYYMMDD @YYYYMMDDh 
     @YYYYMMDDhh @YYYYMMDDhhm @YYYYMMDDhhmm @YYYYMMDDhhmms @YYYYMMDDhhmmss
@@ -297,7 +311,28 @@ types
   - function definition: var statement
   - function call: function name followed by (, optional comma-separated 
     arguments, and )
-  - related functions: do, each, param
+  - documentation string (since Singkong version 4.6):
+        without documentation string:
+            >  var f = fn(x) {x}
+            >  f
+            fn(x)
+            {
+            x;
+            }
+
+
+            >  help(f)
+            ""
+
+        with documentation string:
+            >  var f = fn(x) "test" {x}
+            >  f
+            [documentation string] test
+
+            >  help(f)
+            "[documentation string] test"
+  - related functions: do, each, help, param
+  - Singkong related functions: load, load_module, load_resource
   - nested function is supported:
     code:
         var a = fn() {
@@ -351,6 +386,18 @@ types
                 c()
         }
         b()
+    fix (using variables built-in function, since Singkong version 4.6):
+        var a = "A"
+        var b = fn() {
+                # a is available here;
+                println(a)
+                var c = fn() {
+                        # using variables();
+                        println(variables()["A"][1])
+                }
+                c()
+        }
+        b()
 - BUILTIN
   - built-in function
   - related functions: builtins, disabled, help, param
@@ -382,7 +429,7 @@ types
 
 -----------------------------------------------------------------------------
 
-5. Builtin functions
+5. Built-in functions and modules
 To get a list of built-in functions, please call builtins()
 ["ABS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", "APPEND", "ARGUMENTS", 
 "ARRAY", "ARRAY_NUMBER", "ARRAY_STRING", "AVERAGE", "BASE64_DECODE", 
@@ -400,28 +447,30 @@ To get a list of built-in functions, please call builtins()
 "IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", 
 "INTERACTIVE", "IS", "IS_UPDATE_AVAILABLE", "ISALPHA", "ISDIGIT", "ISLOWER", 
 "ISUPPER", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", 
-"LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MESSAGE", "MIN", "MINUTE", 
-"MKDIR", "MONTH", "NEWLINE", "NUMBER", "NUMBER_GROUP", "OPEN", "ORD", 
-"PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
-"PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", "PRINT", 
-"PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", 
-"QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", 
-"REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", 
-"REQUIRE", "RESET", "RESIZABLE", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", 
-"SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA256", "SHA384", "SHA512", 
-"SHOW", "SHUFFLE", "SINGKONG", "SINGKONG_INTERPRETER", "SIZE", "SLICE", 
-"SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
-"SORT_STRING", "SPLIT", "START", "START_TIMER", "STARTSWITH", "STAT", "STDIN", 
-"STOP", "STOP_TIMER", "STRING", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", 
-"TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", 
-"TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", 
-"TABLE_SCROLL", "TABLE_TOP", "TEMP_FILE", "TIMER", "TIMER_RUNNING", "TITLE", 
-"TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", 
-"WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "X_BASE64_DECODE_FILE", 
-"X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
+"LOAD_MODULE", "LOAD_RESOURCE", "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", 
+"MD5", "MD5_FILE", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", "MONTH", 
+"NEWLINE", "NUMBER", "NUMBER_GROUP", "OPEN", "ORD", "PANEL_ADD", "PANEL_CLEAR", 
+"PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_HASH", "PART", "PARTS", 
+"PASSWORD", "PLAY_SOUND", "POP", "PRINT", "PRINTER", "PRINTLN", 
+"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
+"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", 
+"REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", 
+"RESIZABLE", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", 
+"SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", 
+"SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SINGKONG", 
+"SINGKONG_INTERPRETER", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
+"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "START", 
+"START_TIMER", "STARTSWITH", "STAT", "STDIN", "STOP", "STOP_TIMER", "STRING", 
+"SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
+"TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_LEFT", "TABLE_MIDDLE", 
+"TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_SCROLL", "TABLE_TOP", 
+"TEMP_FILE", "TIMER", "TIMER_RUNNING", "TITLE", "TRIM", "TYPE", "TYPES", 
+"UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", "VARIABLES", "WAIT", 
+"WORDS_EN", "WORDS_ID", "WRITE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", 
+"X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-227
+236
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -435,6 +484,29 @@ exclusive), random number between min and max (both inclusive), random element
 in ARRAY, random key in HASH
 arguments: 0, 1 (ARRAY or HASH), 2: (NUMBER and NUMBER)
 return value: <any type>
+
+
+To get a list of built-in modules, please call modules()
+["csv", "util"]
+
+To load a built-in module, please use built-in function load_module, 
+for example:
+>  load_module("csv")
+>  load_module("util")
+
+Note: reusing function name from built-in modules as identifier is allowed:
+>  var len = "hello, world"
+ERROR: [line: 1] len is a built-in function
+
+>  load_module("csv")
+>  csv_from_string
+[documentation string] [csv] function: csv_from_string: returns ARRAY from CSV STRING (with separator).
+arguments: 2: STRING (separator) and STRING (CSV)
+return value: ARRAY or NULL (error)
+
+>  var csv_from_string = "hello, world"
+>  csv_from_string
+"hello, world"
 
 
 -----------------------------------------------------------------------------
@@ -452,6 +524,23 @@ if (name == "singkong") {
 }
 
 Note: HASH (key: condition, value: FUNCTION) may also be used 
+Example:
+var test = {
+	"hello": fn() {
+		println("Hello")
+	},
+	"world": fn() {
+		println("World")
+	},
+}
+
+var x = lower(input("Enter: "))
+if (!in(keys(test), x)) {
+	println("Error")
+} else {
+	test[x]()
+}
+
 
 -----------------------------------------------------------------------------
 
@@ -473,6 +562,29 @@ Please also use do and each functions for simple repetitions:
 - each: for each element in an ARRAY, calls a function a number of times 
   (with arguments). Specified function must accept two arguments: 
   the element and index (zero based).
+
+Examples:
+do(5, print, "Hello World ")
+
+do(5, println, "hello", "world")
+
+var a = ["Hello", "World"]
+each(a, fn(e, i) {
+	print(i, ": ", e, newline())
+})
+
+var a = {"Hello": "World"}
+each(keys(a), fn(e, i) {
+	print(e, ": ", a[e], newline())
+})
+
+var a = "Hello World"
+each(array(a), fn(e, i) {
+	println(e)
+})
+
+var a = ["Hello", "World"]
+each(a, println)
 
 
 -----------------------------------------------------------------------------
@@ -701,6 +813,21 @@ To keep it as simple as possible:
                         # please also read about nested function;
                         # in Singkong documentation;
                         message(hello)
+                })
+                show()
+        }
+        a()
+    fix (using variables built-in function, since Singkong version 4.6):
+        var hello = "Hello World"
+        var a = fn() {
+                reset()
+                var b = component("button", "Button")
+                add(b)
+                event(b, fn() {
+                        # using variables();
+                        # please also read about nested function;
+                        # in Singkong documentation;
+                        message(variables()["HELLO"][1])
                 })
                 show()
         }
@@ -1103,7 +1230,7 @@ provide functionalities in Java Programming Language.
   <dir> might be replaced with a ., for example:
   java -cp Singkong.jar:. com.noprianto.singkong.Singkong
 
-  (please also read about deployment)
+  (please also read about deployment and bundling with interpreter file)
 - Called method must be static method named: singkong. It must require a 
   String[][] and return a String, a String[], or a String[][]. 
 - When the method is called, Singkong interpreter will use STRING representation
@@ -1167,6 +1294,16 @@ provide functionalities in Java Programming Language.
     java -cp Singkong.jar:examples com.noprianto.singkong.Singkong
     or (depending on the operating system)
     java -cp Singkong.jar;examples com.noprianto.singkong.Singkong
+
+    or 
+    
+    bundle HelloWorld.class with Singkong.jar:
+    (assume that HelloWorld.class has been copied to current working directory)
+
+    jar uf Singkong.jar HelloWorld.class 
+    java -jar Singkong.jar
+
+    (please also read about deployment)
 
   - Singkong program can call the method (a STRING is returned):
 
@@ -1629,7 +1766,7 @@ To bundle application file with Singkong interpreter:
 - Additional operators for NUMBER: % ^ <= >=
 - Additional operators for BOOLEAN: & |
 - HASH: any data type can be used as key/value, maintains insertion-order
-- More built-in functions
+- More built-in functions and modules
 - Additional data types: DATE, COMPONENT (GUI application development), and
   DATABASE (database connection, database application development)
 - Singkong uses operators for operations on data types, wherever possible
@@ -1638,6 +1775,11 @@ To bundle application file with Singkong interpreter:
 - Repeat loop (and built-in functions: do, each for simple looping)
 - Some (or all) built-in functions may be disabled when the interpreter in run 
 - Singkong supports multi-line comment (between # and ;)
+- Singkong supports documentation string for FUNCTION
+- There is a Monkey implementation in Singkong (monkey.singkong):
+    monkey.singkong: https://nopri.github.io/monkey.singkong
+    monkey.singkong runnable jar: https://nopri.github.io/monkeyinterpreter.jar
+    (bundled with Singkong interpreter)
 
 
 -----------------------------------------------------------------------------
@@ -2246,8 +2388,66 @@ relative to current working directory.
 
 26. Example: Monkey programming language interpreter in Singkong
 
-Download Monkey.singkong: https://nopri.github.io/monkey.singkong
-Download Monkey.singkong runnable jar: https://nopri.github.io/monkeyinterpreter.jar
+Download monkey.singkong: https://nopri.github.io/monkey.singkong
+Download monkey.singkong runnable jar: https://nopri.github.io/monkeyinterpreter.jar
+(bundled with Singkong interpreter)
+
+
+-----------------------------------------------------------------------------
+
+27. Example: Working with Comma-Separated Values file
+(since Singkong version 4.6)
+
+- test.csv in current working directory
+    id,name
+    1,"Hello,World"
+    2,Singkong
+
+- Load csv module:
+  (csv is a built-in module; written in Singkong)
+    >  load_module("csv")
+
+- From CSV STRING to ARRAY:
+    >  var a = csv_from_string(",", read("test.csv"))
+    >  a
+    [["id", "name"], ["1", "Hello,World"], ["2", "Singkong"], []]
+
+- From ARRAY to CSV STRING:
+  (for example, using ; as separator)
+    >  write("output.csv", csv_to_string(";", a))
+    true
+
+- From CSV STRING to ARRAY, using ; as separator:
+    >  var b = csv_from_string(";", read("output.csv"))
+    >  b
+    [["id", "name"], ["1", "Hello,World"], ["2", "Singkong"]]
+
+- Applying functions:
+    >  var c = csv_functions(slice(b, 1, len(b)), [number])
+    >  c
+    [[1, "Hello,World"], [2, "Singkong"]]
+
+- Double quotes will be automatically added:
+  ("Hello, World" contains ,; default separator: ,)
+    >  b
+    [["id", "name"], ["1", "Hello,World"], ["2", "Singkong"]]
+
+    >  write("output-test.csv", csv_to_string_default(b))
+    true
+
+    >  print(read("output-test.csv"))
+    id,name
+    1,"Hello,World"
+    2,Singkong
+
+- Embedded newline is supported:
+    >  write("out.csv", csv_to_string_default([[1, "singkong" + newline() + "programming language"]]))
+    true
+    >  print(read("out.csv"))
+    1,singkong
+    programming language
+
+- Note: embedded double quote is not supported
 
 
 =============================================================================
