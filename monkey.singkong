@@ -5,9 +5,9 @@
     (c) Noprianto <nopri.anto@icloud.com>, 2020-2021
     Website: nopri.github.io
     License: MIT
-    Version: 0.3
+    Version: 0.4
     
-    Requires Singkong version 4.5 or later
+    Requires Singkong version 4.6 or later
     Download Monkey.singkong: https://nopri.github.io/monkey.singkong
     Download Monkey.singkong runnable jar: https://nopri.github.io/monkeyinterpreter.jar
     
@@ -41,9 +41,9 @@
     monkey.py is based on code (in Go) in book: Writing an interpreter in Go    
 ;
 
-require(4.5)
+require(4.6)
 
-var MONKEY_VERSION = "0.3"
+var MONKEY_VERSION = "0.4"
 var MONKEY_TITLE = "Monkey.singkong " + MONKEY_VERSION
 var MONKEY_MESSAGE = "Press ENTER to quit"
 
@@ -967,11 +967,11 @@ var MONKEY_PARSER = {
     },
     
     "parse_call_expression": fn(x, function) {
-        var exp = monkey_call_expression_create()
-        set(exp, "token", x["cur_token"])        
-        set(exp, "function", function)
-        set(exp, "arguments", x["parse_expression_list"](x, MONKEY_TOKEN["RPAREN"]))
-        return exp
+        var expr = monkey_call_expression_create()
+        set(expr, "token", x["cur_token"])        
+        set(expr, "function", function)
+        set(expr, "arguments", x["parse_expression_list"](x, MONKEY_TOKEN["RPAREN"]))
+        return expr
     },
     
     "parse_expression_list": fn(x, end) {
@@ -997,15 +997,15 @@ var MONKEY_PARSER = {
     },
     
     "parse_index_expression": fn(x, left_) {
-        var exp = monkey_index_expression_create()
-        set(exp, "token", x["cur_token"])        
-        set(exp, "left", left_)        
+        var expr = monkey_index_expression_create()
+        set(expr, "token", x["cur_token"])        
+        set(expr, "left", left_)        
         x["next_token"](x)
-        set(exp, "index", x["parse_expression"](x, MONKEY_PARSER_PRECEDENCES["LOWEST"]))
+        set(expr, "index", x["parse_expression"](x, MONKEY_PARSER_PRECEDENCES["LOWEST"]))
         if (!x["expect_peek"](x, MONKEY_TOKEN["RBRACKET"])) {
             return null
         }
-        return exp
+        return expr
     },
 
     "cur_token_is": fn(x, t) {
@@ -1805,9 +1805,9 @@ var MONKEY_EVALUATOR = {
         return x["new_error"](x, "identifier not found: " + node["value"])                
     },
 
-    "eval_expressions": fn(x, exp, env_) {
+    "eval_expressions": fn(x, expr, env_) {
         var result = []
-        each(exp, fn(e, i) {
+        each(expr, fn(e, i) {
             var evaluated = x["eval"](x, e, env_)
             if (x["is_error"](x, evaluated)) {
                 var result = result + evaluated
