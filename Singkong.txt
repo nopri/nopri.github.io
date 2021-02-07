@@ -1,8 +1,8 @@
 Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
-License: Free to use or redistribute
-Version: 4.6 (2021-January-25 +07:00)
+License: Free to use or redistribute, no warranty
+Version: 4.7 (2021-February-08 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -98,7 +98,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 4.6
+        Singkong 4.7
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -197,8 +197,8 @@ VAR
 Note: to get list of keywords, please use built-in function keywords.
 
 Data types:
-Related functions: builtins, eval, is, hash, print, println, puts, string, type, 
-types, variables
+Related functions: builtins, eval, is, is_array_of, is_array_of_component_of, 
+hash, print, println, puts, string, type, types, variables
 
 - NULL
   - null
@@ -208,13 +208,47 @@ types, variables
     print, println, puts, or message. 
 - NUMBER
   - any integer and decimal
-  - precision: 10240, scale: 4
+  - precision: 10240, default scale: 4
+  - to change the number scale, please use built-in function number_scale 
   - operators: + - * / == != %(remainder) ^(power) < <= > >=
   - related functions: abs, array_number, chr, integer, number, number_group, 
     random, round, sort_number, words_en, words_id
   - system related functions: delay
   - Singkong related functions: require
+  - trigonometric functions (degrees): sin, cos, tan, asin, acos, atan
+  - degrees radians conversion functions: to_degrees, to_radians
+  - hyperbolic functions: sinh, cosh, tanh
+  - natural exponential, logarithm, square/cube root functions: exp, log, log10, sqrt, cbrt
   - sorting: by value
+  - constant values: _e, _pi
+        >  number_scale(15)
+        true
+        >  _e()
+        2.718281828459045
+        >  _pi()
+        3.141592653589793
+  - number scale setting example (since Singkong version 4.7):
+        >  _pi()
+        3.1416
+        >  number_scale(8)
+        true
+        >  _pi()
+        3.14159265
+        >  number_scale(16)
+        true
+        >  _pi()
+        3.1415926535897930
+  - mean, median, mode, range (using built-in util module):
+        >  load_module("util")
+        >  var a = [0, 1, 2, 3, 4, 3, 2, 1, 0, 0]
+        >  mean(a)
+        1.6000
+        >  median(a)
+        1.5000
+        >  mode(a)
+        [0, 3]
+        >  range_(a)
+        4
 - BOOLEAN
   - true or false
   - operators: == != & |
@@ -235,7 +269,7 @@ types, variables
     slice, sort_string, split, startswith, 
     stat, tab, trim, upper
   - special characters: cr, crlf, lf, newline, quote, tab
-  - file related functions: abs, append, copy_resource, delete, mkdir, read, 
+  - file related functions: abs, append, copy, copy_resource, delete, mkdir, read, 
     rename, temp_file, write 
   - HTTP client related functions: http_delete, http_get, http_get_file, 
     http_head, http_post, http_post_override, http_put, url_decode, url_encode 
@@ -253,12 +287,38 @@ types, variables
     each, empty, first, in, index, join, last, len, max, min, pop, push, 
     random, range, rest, reverse, shuffle, slice, sort_array, sort_boolean, 
     sort_date, sort_hash, sort_number, sort_string, sum
+  - array check functions: is_array_of, is_array_of_component_of
   - file related functions: dir
   - CGI related functions: cgi_contents
   - HTTP client related functions: http_response_ok
   - system related functions: arguments, inet_address, system
   - Singkong related functions: builtins, modules, singkong_interpreter
   - sorting: by length
+  - rectangular array: array whose each element is an array, and all elements have the same length
+  - rectangular array functions: is_rect_array, is_rect_array_of, rect_array_size, 
+    rect_array_size_of
+  - rectangular array example:
+        >  var a = []
+        >  var b = [[], []]
+        >  var c = [[1, 2, 3], ["Singkong", "Programming", "Language"]]
+        >  var d = [[1, 2, 3], [4, 5, 6]]
+        >  is_rect_array(a)
+        false
+        >  is_rect_array(b)
+        true
+        >  is_rect_array(c)
+        true
+        >  is_rect_array_of(c, "NUMBER")
+        false
+        >  is_rect_array_of(d, "NUMBER")
+        true
+        >  rect_array_size(c)
+        [2, 3]
+        >  rect_array_size_of(c, "NUMBER")
+        >  rect_array_size_of(c, "NUMBER") == null
+        true
+        >  rect_array_size_of(d, "NUMBER")
+        [2, 3]
   - copy:
         var a = ["hello", "world"]
         var b = []
@@ -421,6 +481,7 @@ types, variables
   - GUI dialogs: login_dialog, panel_dialog
   - Clipboard: clipboard_get, clipboard_set
   - Sound: beep, play_sound
+  - array of component check: is_array_of_component_of
   - extended: x_edit_print
 - DATABASE
   - Please read: Database application development
@@ -431,46 +492,50 @@ types, variables
 
 5. Built-in functions and modules
 To get a list of built-in functions, please call builtins()
-["ABS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", "APPEND", "ARGUMENTS", 
-"ARRAY", "ARRAY_NUMBER", "ARRAY_STRING", "AVERAGE", "BASE64_DECODE", 
-"BASE64_ENCODE", "BEEP", "BUILTINS", "BUTTON_IMAGE", "CALL", "CALL_INFO", 
-"CENTER", "CGI_CONTENTS", "CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", 
-"CHR", "CLEAR", "CLIPBOARD_GET", "CLIPBOARD_SET", "CLOSING", "COMPONENT", 
-"COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY_RESOURCE", "COUNT", 
-"CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", "DATE", "DATETIME", 
-"DAY", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "EACH", 
-"EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FRAME", 
-"EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", "EXIT", "FIRST", 
-"FONTS", "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "FRAME", "GET", "GUI", 
-"HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", 
-"HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", 
-"IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", 
-"INTERACTIVE", "IS", "IS_UPDATE_AVAILABLE", "ISALPHA", "ISDIGIT", "ISLOWER", 
-"ISUPPER", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", 
-"LOAD_MODULE", "LOAD_RESOURCE", "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", 
+["_E", "_PI", "ABS", "ACOS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", 
+"APPEND", "ARGUMENTS", "ARRAY", "ARRAY_NUMBER", "ARRAY_STRING", "ASIN", "ATAN", 
+"AVERAGE", "BASE64_DECODE", "BASE64_ENCODE", "BEEP", "BUILTINS", "BUTTON_IMAGE", 
+"CALL", "CALL_INFO", "CBRT", "CENTER", "CGI_CONTENTS", "CGI_GET", "CGI_HEADER", 
+"CGI_POST", "CGI_POST_HASH", "CHR", "CLEAR", "CLIPBOARD_GET", "CLIPBOARD_SET", 
+"CLOSING", "COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", 
+"COPY", "COPY_RESOURCE", "COS", "COSH", "COUNT", "CR", "CRLF", "CWD", 
+"DATABASE", "DATABASE_CONNECTED", "DATE", "DATETIME", "DAY", "DELAY", "DELETE", 
+"DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", 
+"ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FRAME", "EVENT_KEYBOARD_FRAME", 
+"EVENT_MOUSE", "EVENT_MOUSE_FRAME", "EXIT", "EXP", "FIRST", "FONTS", 
+"FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "FRAME", "FRAME_CLOSE", "GET", 
+"GUI", "HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", 
+"HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", 
+"HTTP_RESPONSE_OK", "IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", 
+"INPUT", "INTEGER", "INTERACTIVE", "IS", "IS_ARRAY_OF", 
+"IS_ARRAY_OF_COMPONENT_OF", "IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", 
+"IS_UPDATE_AVAILABLE", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", "JOIN", 
+"KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOAD_MODULE", 
+"LOAD_RESOURCE", "LOG", "LOG10", "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", 
 "MD5", "MD5_FILE", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", "MONTH", 
-"NEWLINE", "NUMBER", "NUMBER_GROUP", "OPEN", "ORD", "PANEL_ADD", "PANEL_CLEAR", 
-"PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_HASH", "PART", "PARTS", 
-"PASSWORD", "PLAY_SOUND", "POP", "PRINT", "PRINTER", "PRINTLN", 
+"NEWLINE", "NUMBER", "NUMBER_GROUP", "NUMBER_SCALE", "OPEN", "ORD", "PANEL_ADD", 
+"PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_HASH", "PART", 
+"PARTS", "PASSWORD", "PLAY_SOUND", "POP", "PRINT", "PRINTER", "PRINTLN", 
 "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
-"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "REMOVE", "REMOVE_E", 
-"REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", 
-"RESIZABLE", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", 
-"SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", 
-"SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SINGKONG", 
-"SINGKONG_INTERPRETER", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
-"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "START", 
-"START_TIMER", "STARTSWITH", "STAT", "STDIN", "STOP", "STOP_TIMER", "STRING", 
+"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "RECT_ARRAY_SIZE", 
+"RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", 
+"RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", "REST", "REVERSE", 
+"RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
+"SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", "SHA512", 
+"SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", "SINGKONG_INTERPRETER", 
+"SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", 
+"SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", "START", "START_TIMER", 
+"STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", "STOP_TIMER", "STRING", 
 "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
 "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_LEFT", "TABLE_MIDDLE", 
 "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_SCROLL", "TABLE_TOP", 
-"TEMP_FILE", "TIMER", "TIMER_RUNNING", "TITLE", "TRIM", "TYPE", "TYPES", 
-"UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", "VARIABLES", "WAIT", 
-"WORDS_EN", "WORDS_ID", "WRITE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", 
-"X_EDIT_PRINT", "YEAR"]
+"TAN", "TANH", "TEMP_FILE", "TIMER", "TIMER_RUNNING", "TITLE", "TO_DEGREES", 
+"TO_RADIANS", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", 
+"USER", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", 
+"X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-236
+264
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -604,8 +669,9 @@ To keep it as simple as possible:
   To get frame properties (width, height, title, resizable), please use built-in function
   frame.
   To reset frame (remove all COMPONENTs, reset frame title and size to default
-  values, stop all timers, disable frame closing confirmation), 
+  values, stop all timers, disable frame closing confirmation, reset status bar), 
   please use built-in function reset. 
+  To programmatically close frame, please use built-in function frame_close.
 - Every user interface component is a COMPONENT in Singkong.
 - To create a user interface component, please use built-in function component.
   This function accepts two arguments: component type and name, both as string.
@@ -985,6 +1051,13 @@ To keep it as simple as possible:
       (please also read about deployment)
     - file:
         play_sound("sound.wav", false) # from current working directory;
+- Status bar:
+  - Number of sections: 8 (0 to 7)
+  - To set status bar text and whether or not the text is enabled, for specific 
+    section, please use built-in function statusbar.
+        each(range(0,8), fn(e, i) {
+                statusbar(e, "Status: " + e, i%2 == 0)
+        })
 
 
 -----------------------------------------------------------------------------
@@ -1750,6 +1823,8 @@ To bundle application file with Singkong interpreter:
         /resource/test.txt
   - Please also read about GUI application development
   - To copy a resource to a file, please use built-in function copy_resource
+  - To evaluate/run Singkong code saved as resource, 
+    please use built-in function load_resource
   
 
 -----------------------------------------------------------------------------
@@ -1816,6 +1891,10 @@ config(z, "contents", [[10, "A", "green"], [20, "B", "blue"]])
 add([e, a, z])
 add_n([i, l, x, p, c, r, m, b])
 add_s([v, d, g])
+
+each(range(0,8), fn(e, i) {
+	statusbar(e, "Status: " + e, i%2 == 0)
+})
 
 closing("Are you sure you want to quit this application?", 
   "Please confirm")

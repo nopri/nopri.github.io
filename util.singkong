@@ -7,13 +7,32 @@
 
     More information: https://nopri.github.io/singkong.html
     Download Singkong: https://nopri.github.io/Singkong.jar
-    (free to use or redistribute)
+    (License: Free to use or redistribute, no warranty)
 
     To use this module:
     load_module("util")
 ;
 
-require(4.6)
+require(4.7)
+
+var _non_empty_array_of_number = fn(x) 
+"
+[util] function: _non_empty_array_of_number: returns NULL if argument is not a non-empty ARRAY of NUMBER, otherwise returns the argument.
+arguments: 1: <any>
+return value: ARRAY or NULL
+" 
+{
+    if (!is(x, "ARRAY")) {
+        return null
+    }
+    if (empty(x)) {
+        return null
+    }
+    if (!is_array_of(x, "NUMBER")) {
+        return null
+    }
+    return x
+}
 
 var array_copy = fn(a) 
 "
@@ -45,3 +64,82 @@ return value: HASH
     return {} + h
 }
 
+var mean = fn(x) 
+"
+[util] function: mean: returns the mean of an ARRAY.
+arguments: 1: ARRAY (of NUMBER)
+return value: NUMBER or NULL
+" 
+{
+    var x = _non_empty_array_of_number(x)
+    if (x == null) {
+        return x
+    }
+    return average(x)
+}
+
+var median = fn(x) 
+"
+[util] function: median: returns the median of an ARRAY.
+arguments: 1: ARRAY (of NUMBER)
+return value: NUMBER or NULL
+" 
+{
+    var x = _non_empty_array_of_number(x)
+    if (x == null) {
+        return x
+    }
+    var x = sort_number(x)
+    var n = len(x)
+    var m = integer(n/2)
+    if (n % 2 == 1) {
+        return x[m]
+    } else {
+        var r = x[m-1] + x[m]
+        return r/2
+    }
+}
+
+var mode = fn(x) 
+"
+[util] function: mode: returns the mode of an ARRAY.
+arguments: 1: ARRAY (of NUMBER)
+return value: ARRAY ([mode, frequency]) or NULL
+" 
+{
+    var x = _non_empty_array_of_number(x)
+    if (x == null) {
+        return x
+    }
+    var f = {}
+    each(x, fn(e, i) {
+        if (f[e] == null) {
+            set(f, e, 1)
+        } else {
+            set(f, e, f[e] + 1)
+        }
+    })
+    var m = [null, 0]
+    each(keys(f), fn(e, i) {
+        var v = f[e]
+        if (v > m[1]) {
+            set(m, 1, v)
+            set(m, 0, e)
+        }
+    })
+    return m
+}
+
+var range_ = fn(x) 
+"
+[util] function: range_: returns the range of an ARRAY.
+arguments: 1: ARRAY (of NUMBER)
+return value: NUMBER or NULL
+" 
+{
+    var x = _non_empty_array_of_number(x)
+    if (x == null) {
+        return x
+    }
+    return max(x) - min(x)
+}
