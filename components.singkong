@@ -34,6 +34,11 @@ each(range(0,8), fn(e, i) {
 	statusbar(e, "Status: " + e, i%2 == 0)
 })
 
+menubar([ 
+    ["File", 0, [ ["Quit", 0, true, fn() {frame_close()}] ]],
+    ["Help", 0, [ ["About", 0, true, fn() {message("Singkong")}] ]] 
+])
+
 closing("Are you sure you want to quit this application?", 
   "Please confirm")
 show()

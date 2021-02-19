@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 4.7 (2021-February-08 +07:00)
+Version: 4.8 (2021-February-20 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -31,22 +31,23 @@ Bundled JDBC Drivers (compatible with Java 5.0 or later):
  9. Database application development
 10. Web application development
 11. Simple HTTP client
-12. Calling Java method
-13. Embedding Singkong into another applications
-14. Deployment
-15. Differences with Monkey Programming Language
-16. Example: GUI: components
-17. Example: GUI: layout
-18. Example: GUI: Singkong information
-19. Example: GUI: event handlers
-20. Example: GUI: printing
-21. Example: GUI: simple text file editor
-22. Example: GUI: timer
-23. Example: Database: create table, insert, update, select, GUI
-24. Example: Web: variables, GET, POST, JSON
-25. Example: Java: custom dialog
-26. Example: Monkey programming language interpreter in Singkong
-27. Example: Working with Comma-Separated Values file
+12. Working with threads
+13. Calling Java method
+14. Embedding Singkong into another applications
+15. Deployment
+16. Differences with Monkey Programming Language
+17. Example: GUI: components
+18. Example: GUI: layout
+19. Example: GUI: Singkong information
+20. Example: GUI: event handlers
+21. Example: GUI: printing
+22. Example: GUI: simple text file editor
+23. Example: GUI: timer
+24. Example: Database: create table, insert, update, select, GUI
+25. Example: Web: variables, GET, POST, JSON
+26. Example: Java: custom dialog
+27. Example: Monkey programming language interpreter in Singkong
+28. Example: Working with Comma-Separated Values file
 
 -----------------------------------------------------------------------------
 
@@ -98,7 +99,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 4.7
+        Singkong 4.8
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -215,6 +216,7 @@ hash, print, println, puts, string, type, types, variables
     random, round, sort_number, words_en, words_id
   - system related functions: delay
   - Singkong related functions: require
+  - thread related functions: thread, thread_join
   - trigonometric functions (degrees): sin, cos, tan, asin, acos, atan
   - degrees radians conversion functions: to_degrees, to_radians
   - hyperbolic functions: sinh, cosh, tanh
@@ -293,6 +295,7 @@ hash, print, println, puts, string, type, types, variables
   - HTTP client related functions: http_response_ok
   - system related functions: arguments, inet_address, system
   - Singkong related functions: builtins, modules, singkong_interpreter
+  - thread related functions: threads
   - sorting: by length
   - rectangular array: array whose each element is an array, and all elements have the same length
   - rectangular array functions: is_rect_array, is_rect_array_of, rect_array_size, 
@@ -393,6 +396,7 @@ hash, print, println, puts, string, type, types, variables
             "[documentation string] test"
   - related functions: do, each, help, param
   - Singkong related functions: load, load_module, load_resource
+  - thread related functions: thread  
   - nested function is supported:
     code:
         var a = fn() {
@@ -469,10 +473,10 @@ hash, print, println, puts, string, type, types, variables
   - Please read: GUI application development
   - related functions: add, add_e, add_n, add_s, add_w, button_image, clear, closing, 
     component, component_type, components, config, event, event_frame,  
-    event_keyboard_frame, event_mouse, event_mouse_frame, frame, fonts, get, 
-    gui, hide, panel_add, panel_clear, panel_remove, printer, radio_group, 
+    event_keyboard_frame, event_mouse, event_mouse_frame, fonts, frame, frame_close, get, 
+    gui, hide, menubar, panel_add, panel_clear, panel_remove, printer, radio_group, 
     remove, remove_e, remove_n, remove_s, remove_w, reset, resizable, 
-    screen, show, size, start, start_timer, stop, stop_timer, tab_add, tab_clear, tab_remove, table_add,  
+    screen, show, size, start, start_timer, statusbar, stop, stop_timer, tab_add, tab_clear, tab_remove, table_add,  
     table_bottom, table_center, table_column, table_left, table_middle, table_print,   
     table_remove, table_right, table_scroll, table_top, timer, timer_running, title, wait
   - GUI input/output functions: confirm, directory, input, open, message, 
@@ -512,30 +516,31 @@ To get a list of built-in functions, please call builtins()
 "IS_UPDATE_AVAILABLE", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", "JOIN", 
 "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOAD_MODULE", 
 "LOAD_RESOURCE", "LOG", "LOG10", "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", 
-"MD5", "MD5_FILE", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", "MONTH", 
-"NEWLINE", "NUMBER", "NUMBER_GROUP", "NUMBER_SCALE", "OPEN", "ORD", "PANEL_ADD", 
-"PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_HASH", "PART", 
-"PARTS", "PASSWORD", "PLAY_SOUND", "POP", "PRINT", "PRINTER", "PRINTLN", 
-"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
-"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "RECT_ARRAY_SIZE", 
-"RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", 
-"RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", "REST", "REVERSE", 
-"RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
-"SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", "SHA512", 
-"SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", "SINGKONG_INTERPRETER", 
-"SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", 
-"SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", "START", "START_TIMER", 
-"STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", "STOP_TIMER", "STRING", 
-"SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
-"TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_LEFT", "TABLE_MIDDLE", 
-"TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_SCROLL", "TABLE_TOP", 
-"TAN", "TANH", "TEMP_FILE", "TIMER", "TIMER_RUNNING", "TITLE", "TO_DEGREES", 
+"MD5", "MD5_FILE", "MENUBAR", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", 
+"MONTH", "NEWLINE", "NUMBER", "NUMBER_GROUP", "NUMBER_SCALE", "OPEN", "ORD", 
+"PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
+"PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", "PRINT", 
+"PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", 
+"QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", 
+"RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", 
+"REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", 
+"REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", 
+"SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", 
+"SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
+"SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
+"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", 
+"START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", 
+"STOP_TIMER", "STRING", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", 
+"TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", 
+"TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", 
+"TABLE_SCROLL", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", 
+"THREAD_JOIN", "THREADS", "TIMER", "TIMER_RUNNING", "TITLE", "TO_DEGREES", 
 "TO_RADIANS", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", 
 "USER", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", 
 "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-264
+268
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -669,8 +674,8 @@ To keep it as simple as possible:
   To get frame properties (width, height, title, resizable), please use built-in function
   frame.
   To reset frame (remove all COMPONENTs, reset frame title and size to default
-  values, stop all timers, disable frame closing confirmation, reset status bar), 
-  please use built-in function reset. 
+  values, stop all timers, disable frame closing confirmation, reset status bar,
+  reset menu bar), please use built-in function reset. 
   To programmatically close frame, please use built-in function frame_close.
 - Every user interface component is a COMPONENT in Singkong.
 - To create a user interface component, please use built-in function component.
@@ -997,7 +1002,7 @@ To keep it as simple as possible:
   two arguments (at least): COMPONENT (label) and (FUNCTION or BUILTIN). 
   If FUNCTION or BUILTIN requires arguments, please also pass the arguments to 
   wait function. 
-  Note: Singkong is not thread safe
+  (please also read about: Working with threads)
         reset()
         var l1 = component("label", "please wait...")
         config(l1, "font", ["monospaced", 1, 20])
@@ -1058,6 +1063,117 @@ To keep it as simple as possible:
         each(range(0,8), fn(e, i) {
                 statusbar(e, "Status: " + e, i%2 == 0)
         })
+- Menu bar:
+  - To set menu bar, please use built-in function menubar.
+  - This function requires an ARRAY of: [STRING (menu), NUMBER (mnemonic index), 
+    ARRAY of [] (separator) or [STRING (item), NUMBER (mnemonic index), 
+    BOOLEAN (is enabled), FUNCTION]]
+  - Example: File (Exit):
+        var menu = [ 
+          ["File", 0, 
+            [ 
+              ["Exit", 1, true, fn(){}]
+            ]
+          ]
+        ]
+
+        reset()
+        menubar(menu)
+        show()
+  - Example: File (Exit (disabled)):
+        var menu = [ 
+          ["File", 0, 
+            [ 
+              ["Exit", 1, false, fn(){}]
+            ]
+          ]
+        ]
+
+        reset()
+        menubar(menu)
+        show()
+  - Example: File (Open, <separator>, Save (disabled)):
+        var menu = [ 
+          ["File", 0, 
+            [ 
+              ["Open", 0, true, fn(){}],
+              [],
+              ["Save", 0, false, fn(){}]
+            ]
+          ]
+        ]
+
+        reset()
+        menubar(menu)
+        show()
+  - Example: File (Open (with action), <separator>, Save (disabled)):
+        var menu = [ 
+          ["File", 0, 
+            [ 
+              ["Open", 0, true, fn(){open()}],
+              [],
+              ["Save", 0, false, fn(){}]
+            ]
+          ]
+        ]
+
+        reset()
+        menubar(menu)
+        show()
+  - Example: dynamically setting menu:
+        var file_open = fn() {
+          message("File Open")
+        }
+
+        var file_save = fn() {
+          message("File Save")
+        }
+
+        var help_about = fn() {
+          message("Help About")
+        }
+
+        var user_login = fn() {
+          message("User Login")
+        }
+
+        var a = [ 
+          ["File", 0, 
+            [ 
+              ["Open", 0, true, file_open],
+              [],
+              ["Save", 1, false, file_save]
+            ]
+          ],
+          ["Help", 0, 
+            [ 
+              ["About", 2, true, help_about]
+            ]
+          ]
+        ]
+
+        var b = [ 
+          ["User", 0, 
+            [ 
+              ["Login", 0, true, user_login]
+            ]
+          ]
+        ]
+
+        reset()
+        var btn_a = component("button", "A")
+        var btn_b = component("button", "B")
+        add_s([btn_a, btn_b])
+
+        event(btn_a, fn() {
+          menubar(a)
+        })
+
+        event(btn_b, fn() {
+          menubar(b)
+        })
+
+        show()
 
 
 -----------------------------------------------------------------------------
@@ -1280,7 +1396,106 @@ Singkong comes with simple HTTP client.
 
 -----------------------------------------------------------------------------
 
-12. Calling Java method
+12. Working with threads
+Singkong comes with simple multithreading support. 
+- To create and start a new thread, optionally with intrinsic lock, 
+  please use built-in function thread.
+- To get a list of threads, please use built-in function threads.
+  This function returns an ARRAY of [NUMBER (thread id), BOOLEAN (is alive),
+  STRING (state)].
+- To wait for a thread to finish, please use built-in function thread_join.
+- Example of single-threaded program:
+  (output: [100000])
+
+    var a = [0]
+
+    var f = fn() {
+            var i = 0
+            repeat {
+                    set(a, 0, a[0] + 1)
+                    var i = i + 1
+                    if (i >= 100000) {
+                            return i
+                    }
+            }
+    }
+
+    f()
+    println(a)
+
+- Multithreaded without intrinsic lock:
+  (output may differ for each run)
+
+    var a = [0]
+
+    var f = fn() {
+            var i = 0
+            repeat {
+                    set(a, 0, a[0] + 1)
+                    var i = i + 1
+                    if (i >= 100000) {
+                            return i
+                    }
+            }
+    }
+
+    var t1 = thread(f)
+    var t2 = thread(f)
+    thread_join(t1)
+    thread_join(t2)
+
+    println(a)
+
+- Multithreaded with intrinsic lock:
+  (output: [200000])
+
+    var a = [0]
+
+    var f = fn() {
+            var i = 0
+            repeat {
+                    set(a, 0, a[0] + 1)
+                    var i = i + 1
+                    if (i >= 100000) {
+                            return i
+                    }
+            }
+    }
+
+    var t1 = thread(f, a)
+    var t2 = thread(f, a)
+    thread_join(t1)
+    thread_join(t2)
+
+    println(a)
+
+- Simulating long running process in GUI
+    var r = [false]
+
+    var f = fn() {
+      delay(5000)
+      set(r, 0, true)
+    }
+
+    var c = fn() {
+      if (!r[0]) {
+        statusbar(0, string(@), true)
+        statusbar(1, "waiting", true)   
+      } else {
+        statusbar(1, "completed", true) 
+        stop()  
+      }
+    }
+
+    reset()
+    thread(f, r)
+    timer(1000, c)
+    show()
+
+
+-----------------------------------------------------------------------------
+
+13. Calling Java method
 It is possible to call static Java method and use the returned value, to 
 provide functionalities in Java Programming Language. 
 - To call static Java method, please use built-in function call. This function
@@ -1561,7 +1776,7 @@ provide functionalities in Java Programming Language.
 
 -----------------------------------------------------------------------------
 
-13. Embedding Singkong into another applications
+14. Embedding Singkong into another applications
 Java applications:
 - Class: com.noprianto.singkong.Singkong
 - Methods: 
@@ -1758,7 +1973,7 @@ ERROR: [line: 1] built-in function "info" is disabled
 
 -----------------------------------------------------------------------------
 
-14. Deployment
+15. Deployment
 To run applications developed using Singkong programming language, 
 target system must have Java Runtime Environment installed (Java 5.0 or later).
 
@@ -1829,7 +2044,7 @@ To bundle application file with Singkong interpreter:
 
 -----------------------------------------------------------------------------
 
-15. Differences with Monkey Programming Language
+16. Differences with Monkey Programming Language
 - Singkong is case-insensitive
 - Assignment is done using var statement (let is supported, for compatibility)
 - Identifier starts with a letter or an underscore and optionally followed by 
@@ -1859,7 +2074,7 @@ To bundle application file with Singkong interpreter:
 
 -----------------------------------------------------------------------------
 
-16. Example: GUI: components
+17. Example: GUI: components
 reset()
 var b = component("button", "Hello")
 var c = component("checkbox", "Singkong?")
@@ -1896,6 +2111,11 @@ each(range(0,8), fn(e, i) {
 	statusbar(e, "Status: " + e, i%2 == 0)
 })
 
+menubar([ 
+    ["File", 0, [ ["Quit", 0, true, fn() {frame_close()}] ]],
+    ["Help", 0, [ ["About", 0, true, fn() {message("Singkong")}] ]] 
+])
+
 closing("Are you sure you want to quit this application?", 
   "Please confirm")
 show()
@@ -1903,7 +2123,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-17. Example: GUI: layout
+18. Example: GUI: layout
 reset()
 var c = component("panel", "")
 var e = component("button", "E")
@@ -1933,7 +2153,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-18. Example: GUI: Singkong information
+19. Example: GUI: Singkong information
 reset()
 var t = component("table","KEY,VALUE,TYPE", true)
 var l = component("label", "Singkong Programming Language information")
@@ -1955,7 +2175,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-19. Example: GUI: event handlers
+20. Example: GUI: event handlers
 reset()
 var b = component("button", "Hello World (mouse event)")
 var c = component("checkbox", "Singkong?")
@@ -2053,7 +2273,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-20. Example: GUI: printing
+21. Example: GUI: printing
 reset()
 
 var header = component("text", "header")
@@ -2094,7 +2314,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-21. Example: GUI: simple text file editor
+22. Example: GUI: simple text file editor
 reset()
 var e = component("edit", "")
 var o = component("button", "open")
@@ -2128,7 +2348,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-22. Example: GUI: timer
+23. Example: GUI: timer
 reset()
 var l1 = component("label", string(@))
 var l2 = component("label", string(@))
@@ -2180,7 +2400,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-23. Example: Database: create table, insert, update, select, GUI
+24. Example: Database: create table, insert, update, select, GUI
 reset()
 var t = component("table", "A,B", true)
 add(t)
@@ -2208,7 +2428,7 @@ show()
 
 -----------------------------------------------------------------------------
 
-24. Example: Web: variables, GET, POST, JSON
+25. Example: Web: variables, GET, POST, JSON
 Note: the following examples require a HTTP server with CGI support. Please
 make sure that the CGI support has been enabled and configured. All of the 
 following CGI scripts are saved in a CGI-enabled directory and accessed from
@@ -2377,7 +2597,7 @@ Singkong program (HTTP client): login.singkong
 
 -----------------------------------------------------------------------------
 
-25. Example: Java: custom dialog
+26. Example: Java: custom dialog
 For simpler (but easier) custom dialog using only Singkong code, please use 
 built-in function panel_dialog.
 Please read: Calling Java method. 
@@ -2465,7 +2685,7 @@ relative to current working directory.
 
 -----------------------------------------------------------------------------
 
-26. Example: Monkey programming language interpreter in Singkong
+27. Example: Monkey programming language interpreter in Singkong
 
 Download monkey.singkong: https://nopri.github.io/monkey.singkong
 Download monkey.singkong runnable jar: https://nopri.github.io/monkeyinterpreter.jar
@@ -2474,7 +2694,7 @@ Download monkey.singkong runnable jar: https://nopri.github.io/monkeyinterpreter
 
 -----------------------------------------------------------------------------
 
-27. Example: Working with Comma-Separated Values file
+28. Example: Working with Comma-Separated Values file
 (since Singkong version 4.6)
 
 - test.csv in current working directory
@@ -2522,9 +2742,18 @@ Download monkey.singkong runnable jar: https://nopri.github.io/monkeyinterpreter
 - Embedded newline is supported:
     >  write("out.csv", csv_to_string_default([[1, "singkong" + newline() + "programming language"]]))
     true
+
     >  print(read("out.csv"))
-    1,singkong
-    programming language
+    1,"singkong
+    programming language"
+
+    >  var d = csv_from_string_default(read("out.csv"))
+    >  d
+    [["1", "singkong
+    programming language"]]
+
+    >  rect_array_size(d)
+    [1, 2]
 
 - Note: embedded double quote is not supported
 
