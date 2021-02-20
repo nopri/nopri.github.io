@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 4.8 (2021-February-20 +07:00)
+Version: 4.9 (2021-February-21 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -99,7 +99,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 4.8
+        Singkong 4.9
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -216,7 +216,7 @@ hash, print, println, puts, string, type, types, variables
     random, round, sort_number, words_en, words_id
   - system related functions: delay
   - Singkong related functions: require
-  - thread related functions: thread, thread_join
+  - thread related functions: thread, thread_alive, thread_join
   - trigonometric functions (degrees): sin, cos, tan, asin, acos, atan
   - degrees radians conversion functions: to_degrees, to_radians
   - hyperbolic functions: sinh, cosh, tanh
@@ -295,7 +295,6 @@ hash, print, println, puts, string, type, types, variables
   - HTTP client related functions: http_response_ok
   - system related functions: arguments, inet_address, system
   - Singkong related functions: builtins, modules, singkong_interpreter
-  - thread related functions: threads
   - sorting: by length
   - rectangular array: array whose each element is an array, and all elements have the same length
   - rectangular array functions: is_rect_array, is_rect_array_of, rect_array_size, 
@@ -534,7 +533,7 @@ To get a list of built-in functions, please call builtins()
 "TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", 
 "TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", 
 "TABLE_SCROLL", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", 
-"THREAD_JOIN", "THREADS", "TIMER", "TIMER_RUNNING", "TITLE", "TO_DEGREES", 
+"THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_DEGREES", 
 "TO_RADIANS", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", 
 "USER", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", 
 "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
@@ -591,6 +590,15 @@ Example:
 var name = "singkong"
 if (name == "singkong") {
   print(name)
+}
+
+Example (output: idle):
+var t = thread(fn() {delay(500)})
+thread_join(t)
+if (thread_alive(t) == true) {
+  println("busy")
+} else {
+  println("idle")
 }
 
 Note: HASH (key: condition, value: FUNCTION) may also be used 
@@ -1400,9 +1408,7 @@ Singkong comes with simple HTTP client.
 Singkong comes with simple multithreading support. 
 - To create and start a new thread, optionally with intrinsic lock, 
   please use built-in function thread.
-- To get a list of threads, please use built-in function threads.
-  This function returns an ARRAY of [NUMBER (thread id), BOOLEAN (is alive),
-  STRING (state)].
+- To test if a thread is alive, please use built-in function thread_alive.
 - To wait for a thread to finish, please use built-in function thread_join.
 - Example of single-threaded program:
   (output: [100000])
@@ -1470,26 +1476,27 @@ Singkong comes with simple multithreading support.
     println(a)
 
 - Simulating long running process in GUI
-    var r = [false]
-
     var f = fn() {
-      delay(5000)
-      set(r, 0, true)
+      delay(random(5000, 10000))
     }
 
+    var t = thread(f)
+
+    var s = number(@)
+
     var c = fn() {
-      if (!r[0]) {
-        statusbar(0, string(@), true)
-        statusbar(1, "waiting", true)   
+      if (thread_alive(t) == true) {
+        var m = number(@) - s
+        statusbar(0, m + " ms", true)
+        statusbar(1, "busy", true)   
       } else {
-        statusbar(1, "completed", true) 
+        statusbar(1, "idle", true) 
         stop()  
       }
     }
 
     reset()
-    thread(f, r)
-    timer(1000, c)
+    timer(random(100, 500), c)
     show()
 
 
