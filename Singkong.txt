@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 5.0 (2021-February-22 +07:00)
+Version: 5.1 (2021-March-04 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -99,7 +99,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 5.0
+        Singkong 5.1
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -1514,6 +1514,51 @@ Singkong comes with simple multithreading support.
     thread_join(t2)
 
     println(a)
+
+- Multithreaded with intrinsic lock (using null, true, or false as lock):
+  - null, true, or false (output: [200000]):
+
+        var a = [0]
+
+        var f = fn() {
+                var i = 0
+                repeat {
+                        set(a, 0, a[0] + 1)
+                        var i = i + 1
+                        if (i >= 100000) {
+                                return i
+                        }
+                }
+        }
+
+        var t1 = thread(f, null)
+        var t2 = thread(f, null)
+        thread_join(t1)
+        thread_join(t2)
+
+        println(a)
+
+  - warning: threads below are not using the same lock:
+
+        var a = [0]
+
+        var f = fn() {
+                var i = 0
+                repeat {
+                        set(a, 0, a[0] + 1)
+                        var i = i + 1
+                        if (i >= 100000) {
+                                return i
+                        }
+                }
+        }
+
+        var t1 = thread(f, "Singkong")
+        var t2 = thread(f, "Singkong")
+        thread_join(t1)
+        thread_join(t2)
+
+        println(a)
 
 - Simulating long running process in GUI
     var f = fn() {
