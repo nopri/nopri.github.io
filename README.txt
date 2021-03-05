@@ -146,6 +146,10 @@ Tantangan pengembangan dan pengelolaan software
 (Universitas Multimedia Nusantara, 2020-Feb-25)
 noprianto-tantangan_pengembangan_dan_pengelolaan_software.pdf
 
+Bahasa Pemrograman Singkong: Antara Passion dan Kolaborasi Riset
+(Bina Nusantara University, DCS Alumni Talk, 2021-Mar-06)
+noprianto-singkong-antara_passion_dan_kolaborasi_riset.pdf
+
 
 5. Unmaintained code
 ===================================
