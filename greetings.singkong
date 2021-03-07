@@ -1,0 +1,80 @@
+#greetings.singkong, https://nopri.github.io/greetings.singkong, (c) nopri.anto@icloud.com, 2021;
+
+var size_width = 900
+var size_height = 600
+var pad = 10
+var pads = 5 * pad
+var min_chars = 5
+var max_chars = 30
+var interval = 200
+var colors = ["red", "green", "blue", "yellow", "cyan", "gray", "black"]
+
+reset()
+size(size_width, size_height)
+title("greetings.singkong: Greetings and Messages")
+var a = component("text","")
+config(a, "border", "Greetings (" + min_chars + " - " + max_chars + " characters)")
+var b = component("edit", "")
+config(b, "border", "To (separated with new line)")
+var c = component("edit", "")
+config(c, "border", "Messages (separated with new line, will be randomized, min of 1 line)")
+var d = component("button", "Show")
+config(d, "active", 0)
+add_n(a)
+add([b, c])
+add_s(d)
+
+var data = [null]
+var counters = [null]
+var messages = []
+
+var hello = fn() {
+	var s = (size_width - pads) / len(data[0])
+	var pos = counters[0] * s
+	if ((pos < pad) | counters[0] < 1) {
+		stop()
+		clear()
+		var a = component("table", "To,Message", true)
+		config(a, "contents", messages)
+		add(a)
+	} else {
+  		var a = component("label", data[0])
+		config(a, "font", ["monospaced", 1, s])
+		config(a, "foreground", random(colors))
+		var p = component("panel", "")
+		panel_add(p, a, pos, 0, size_width - pad, size_height / 2)
+		add(p)
+		set(counters, 0, counters[0]-1)
+	}
+}
+
+event(d, fn() {
+	var aa = slice(trim(get(a, "contents")), 0, max_chars)
+	var bb = trim(get(b, "contents"))
+	var cc = trim(get(c, "contents"))
+        if (len(aa) < min_chars) {
+		var aa = ""
+	}
+	if (!empty(aa) & !empty(bb) & !empty(cc)) {
+        	clear()
+		set(data, 0, aa)
+		var bb = split(bb, lf())
+		var cc = split(cc, lf())
+		var messages = messages
+		each(bb, fn(e, i) {
+			var m = trim(e)
+			var n = trim(random(cc))
+			if (!empty(m) & !empty(n)) {
+				messages + [m, n] 
+			}
+		})
+		resizable(false)
+		set(counters, 0, len(aa) - 1)
+		var t = timer(interval, hello)
+	} else {
+		message("Please enter Greetings, To, and Messages", "Information")
+	}
+})
+
+closing("Are you sure you want to quit this application?", "Please Confirm")
+show()
