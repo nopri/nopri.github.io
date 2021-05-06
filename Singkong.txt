@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 5.1 (2021-March-04 +07:00)
+Version: 5.2 (2021-May-06 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -99,7 +99,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 5.1
+        Singkong 5.2
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -212,8 +212,8 @@ hash, print, println, puts, string, type, types, variables
   - precision: 10240, default scale: 4
   - to change the number scale, please use built-in function number_scale 
   - operators: + - * / == != %(remainder) ^(power) < <= > >=
-  - related functions: abs, array_number, chr, integer, number, number_group, 
-    random, round, sort_number, words_en, words_id
+  - related functions: abs, array_number, chr, integer, number, number_boolean,
+    number_group, random, round, sort_number, words_en, words_id
   - system related functions: delay
   - Singkong related functions: require
   - thread related functions: thread, thread_alive, thread_join
@@ -254,13 +254,18 @@ hash, print, println, puts, string, type, types, variables
 - BOOLEAN
   - true or false
   - operators: == != & |
-  - related functions: sort_boolean
+  - related functions: number_boolean, sort_boolean
   - sorting: by value
 - STRING
   - double-quoted
   - arbitrary length string
   - operators: +(concatenation) -(remove) ==(equals,case-sensitive) != *(repeat)
   - equals (case-insensitive): please use built-in function equals
+  - Using ==(equals,case-sensitive) operator:
+        >  "Singkong" == "singkong"
+        false
+        >  "Singkong" == "Singkong"
+        true  
   - index operator
   - modify STRING: please use built-in function set
   - related functions: array_string, base64_decode, base64_encode, call, center, 
@@ -283,12 +288,31 @@ hash, print, println, puts, string, type, types, variables
   - []
   - array of mixed data types
   - operators: +(add), -(remove) == !=
+  - Using == operator:
+        >  [] == []
+        true
+        >  [1,2] == [1,2]
+        true
+        >  [1,2] == [2,1]
+        true
+        >  [[1,2]] == [[2,1]]
+        true
+        >  [1,2] == [1,2,3]
+        false    
+  - equals (the same elements in the same order): please use built-in function 
+    array_equals
+        >  [1,2] == [2,1]
+        true
+        >  array_equals([1,2], [2,1])
+        false
+        >  array_equals([1,2], [1,2])
+        true
   - index operator
   - modify ARRAY: please use built-in function set
-  - related functions: array, array_number, array_string, average, call, count, 
-    each, empty, first, in, index, join, last, len, max, min, pop, push, 
-    random, range, rest, reverse, shuffle, slice, sort_array, sort_boolean, 
-    sort_date, sort_hash, sort_number, sort_string, sum
+  - related functions: array, array_equals, array_extend, array_number, 
+    array_string, average, call, count, each, empty, first, in, index, join, 
+    last, len, max, min, pop, push, random, range, rest, reverse, shuffle, slice, 
+    sort_array, sort_boolean, sort_date, sort_hash, sort_number, sort_string, sum
   - array check functions: is_array_of, is_array_of_component_of
   - file related functions: dir
   - CGI related functions: cgi_contents
@@ -299,6 +323,8 @@ hash, print, println, puts, string, type, types, variables
   - rectangular array: array whose each element is an array, and all elements have the same length
   - rectangular array functions: is_rect_array, is_rect_array_of, rect_array_size, 
     rect_array_size_of
+  - sort rectangular array of number based on index: 
+    please use function from util module: sort_rect_array_of_number_by_index
   - rectangular array example:
         >  var a = []
         >  var b = [[], []]
@@ -321,6 +347,11 @@ hash, print, println, puts, string, type, types, variables
         true
         >  rect_array_size_of(d, "NUMBER")
         [2, 3]
+        >  load_module("util")
+        >  sort_rect_array_of_number_by_index([[1,3], [3,2], [2,1]], 1)
+        [[2, 1], [3, 2], [1, 3]]
+        >  sort_rect_array_of_number_by_index([[1,3], [3,2], [2,1]], 0)
+        [[1, 3], [2, 1], [3, 2]]        
   - copy:
         var a = ["hello", "world"]
         var b = []
@@ -335,12 +366,34 @@ hash, print, println, puts, string, type, types, variables
         var b = array_copy(a)
         set(a, 1, "hello world")
         println(a, b)    
+  - set related functions: please use functions from util module:
+    - create_set_from_array
+    - is_same_set
+    - is_sub_set
+    - set_diff
+    - set_intersection
+    - set_union
 - HASH
   - {}
   - hash table/dictionary
   - any data type can be used as key
   - hash maintains insertion-order
   - operators: +(add dictionary), -(remove) == !=
+  - Using == operator:
+        >  {} == {}
+        true
+        >  {1:2} == {1:2}
+        true
+        >  {1:2} == {2:1}
+        false
+        >  {1.0:2} == {1:2}
+        true
+        >  {1:2, 3:4} == {3:4, 1:2}
+        true
+        >  {1:1+1, 3:2+2} == {3:4.0, 1.0:2.0}
+        true
+        >  {1:2, 3:4} == {1.0001:2, 3:4}
+        false
   - modify HASH: please use built-in function set
   - related functions: empty, keys, len, parse_hash, random, sort_hash, values
   - file related functions: properties_read, properties_write, stat
@@ -363,7 +416,7 @@ hash, print, println, puts, string, type, types, variables
   - @ @Y @YY @YYY @YYYY @YYYYM @YYYYMM @YYYYMMD @YYYYMMDD @YYYYMMDDh 
     @YYYYMMDDhh @YYYYMMDDhhm @YYYYMMDDhhmm @YYYYMMDDhhmms @YYYYMMDDhhmmss
   - related functions: date, datetime, day, diff, format_date, format_datetime,
-    format_diff, hour, minute, month, part, second, sort_date, year
+    format_diff, hour, is_leap_year, minute, month, part, second, sort_date, year
   - file related functions: stat
   - sorting: before/after
 - FUNCTION
@@ -496,50 +549,51 @@ hash, print, println, puts, string, type, types, variables
 5. Built-in functions and modules
 To get a list of built-in functions, please call builtins()
 ["_E", "_PI", "ABS", "ACOS", "ADD", "ADD_E", "ADD_N", "ADD_S", "ADD_W", 
-"APPEND", "ARGUMENTS", "ARRAY", "ARRAY_NUMBER", "ARRAY_STRING", "ASIN", "ATAN", 
-"AVERAGE", "BASE64_DECODE", "BASE64_ENCODE", "BEEP", "BUILTINS", "BUTTON_IMAGE", 
-"CALL", "CALL_INFO", "CBRT", "CENTER", "CGI_CONTENTS", "CGI_GET", "CGI_HEADER", 
-"CGI_POST", "CGI_POST_HASH", "CHR", "CLEAR", "CLIPBOARD_GET", "CLIPBOARD_SET", 
-"CLOSING", "COMPONENT", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", 
-"COPY", "COPY_RESOURCE", "COS", "COSH", "COUNT", "CR", "CRLF", "CWD", 
-"DATABASE", "DATABASE_CONNECTED", "DATE", "DATETIME", "DAY", "DELAY", "DELETE", 
-"DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", 
-"ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FRAME", "EVENT_KEYBOARD_FRAME", 
-"EVENT_MOUSE", "EVENT_MOUSE_FRAME", "EXIT", "EXP", "FIRST", "FONTS", 
-"FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "FRAME", "FRAME_CLOSE", "GET", 
-"GUI", "HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", 
-"HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", 
-"HTTP_RESPONSE_OK", "IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", 
-"INPUT", "INTEGER", "INTERACTIVE", "IS", "IS_ARRAY_OF", 
-"IS_ARRAY_OF_COMPONENT_OF", "IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", 
-"IS_UPDATE_AVAILABLE", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", "JOIN", 
-"KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOAD_MODULE", 
-"LOAD_RESOURCE", "LOG", "LOG10", "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", 
-"MD5", "MD5_FILE", "MENUBAR", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", 
-"MONTH", "NEWLINE", "NUMBER", "NUMBER_GROUP", "NUMBER_SCALE", "OPEN", "ORD", 
-"PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
-"PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", "PRINT", 
-"PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", 
-"QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", 
-"RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", 
-"REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", 
-"REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", 
-"SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", 
-"SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
-"SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
-"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", 
-"START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", 
-"STOP_TIMER", "STRING", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", 
-"TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", 
-"TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", 
-"TABLE_SCROLL", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", 
-"THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_DEGREES", 
-"TO_RADIANS", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", 
-"USER", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", 
-"X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
+"APPEND", "ARGUMENTS", "ARRAY", "ARRAY_EQUALS", "ARRAY_EXTEND", "ARRAY_NUMBER", 
+"ARRAY_STRING", "ASIN", "ATAN", "AVERAGE", "BASE64_DECODE", "BASE64_ENCODE", 
+"BEEP", "BUILTINS", "BUTTON_IMAGE", "CALL", "CALL_INFO", "CBRT", "CENTER", 
+"CGI_CONTENTS", "CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", "CHR", 
+"CLEAR", "CLIPBOARD_GET", "CLIPBOARD_SET", "CLOSING", "COMPONENT", 
+"COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY", "COPY_RESOURCE", 
+"COS", "COSH", "COUNT", "CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", 
+"DATE", "DATETIME", "DAY", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", 
+"DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", 
+"EVENT_FRAME", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", 
+"EXIT", "EXP", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
+"FORMAT_DIFF", "FRAME", "FRAME_CLOSE", "GET", "GUI", "HASH", "HELP", "HIDE", 
+"HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
+"HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", 
+"INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTERACTIVE", 
+"IS", "IS_ARRAY_OF", "IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", 
+"IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", "IS_UPDATE_AVAILABLE", "ISALPHA", 
+"ISDIGIT", "ISLOWER", "ISUPPER", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", 
+"LEN", "LF", "LOAD", "LOAD_MODULE", "LOAD_RESOURCE", "LOG", "LOG10", 
+"LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MD5_FILE", "MENUBAR", 
+"MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", "MONTH", "NEWLINE", "NUMBER", 
+"NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_SCALE", "OPEN", "ORD", "PANEL_ADD", 
+"PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_HASH", "PART", 
+"PARTS", "PASSWORD", "PLAY_SOUND", "POP", "PRINT", "PRINTER", "PRINTLN", 
+"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
+"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "RECT_ARRAY_SIZE", 
+"RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", 
+"RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", "REST", "REVERSE", 
+"RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
+"SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", "SHA512", 
+"SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", "SINGKONG_INTERPRETER", 
+"SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", 
+"SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", "START", "START_TIMER", 
+"STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", "STOP_TIMER", "STRING", 
+"SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
+"TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_LEFT", "TABLE_MIDDLE", 
+"TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_SCROLL", "TABLE_TOP", 
+"TAN", "TANH", "TEMP_FILE", "THREAD", "THREAD_ALIVE", "THREAD_JOIN", "TIMER", 
+"TIMER_RUNNING", "TITLE", "TO_DEGREES", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
+"UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", "VARIABLES", "WAIT", 
+"WORDS_EN", "WORDS_ID", "WRITE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", 
+"X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-268
+272
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -576,6 +630,16 @@ return value: ARRAY or NULL (error)
 >  var csv_from_string = "hello, world"
 >  csv_from_string
 "hello, world"
+
+Functions in module: csv: 
+["CSV_FROM_STRING", "CSV_FROM_STRING_DEFAULT", "CSV_FUNCTIONS", "CSV_TO_STRING", 
+"CSV_TO_STRING_DEFAULT"]
+
+Functions in module: util:
+["ARRAY_COPY", "ARRAY_DIFF", "CREATE_SET_FROM_ARRAY", "HASH_COPY", 
+"IS_SAME_SET", "IS_SUB_SET", "MEAN", "MEDIAN", "MODE", "RANGE_", "SET_DIFF", 
+"SET_INTERSECTION", "SET_UNION", "SORT_RECT_ARRAY_OF_NUMBER_BY_INDEX", 
+"_NON_EMPTY_ARRAY_OF_NUMBER"]
 
 
 -----------------------------------------------------------------------------
@@ -696,6 +760,28 @@ To keep it as simple as possible:
   This function also accepts optional argument BOOLEAN: if true, created 
   component will be read-only (default: false). However, this only applicable 
   when creating edit, password, table, or text. 
+  - Component name interpretation:
+    - barchart: (none)
+    - button: label
+    - checkbox: label
+    - combobox: items (comma-separated string)
+    - date: format
+    - edit: text
+    - image: file name
+    - label: label
+    - panel: tab title
+    - password: text
+    - progress: (none)
+    - radio: label
+    - tab: (none)
+    - table: column names (comma-separated string)
+    - text: text
+    - view: HTML code
+  - Popup menu and keyboard shortcut for: edit, text, view:
+    - opening popup menu using mouse: right click or control click
+      (depending on the operating system)
+    - Select All (A), Copy (C), Cut (X), Paste (V), Undo (Z), Redo (Y)
+      - Using Ctrl or Command key (depending on the operating system)
 - To get a list of supported component types, built-in function components can 
   be used. Currently, this function returns:
   ["barchart", "button", "checkbox", "combobox", "date", "edit", "image", 

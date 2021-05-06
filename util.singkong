@@ -13,7 +13,7 @@
     load_module("util")
 ;
 
-require(4.7)
+require(5.2)
 
 var _non_empty_array_of_number = fn(x) 
 "
@@ -143,3 +143,173 @@ return value: NUMBER or NULL
     }
     return max(x) - min(x)
 }
+
+var array_diff = fn(x, y) 
+"
+[util] function: array_diff: returns the difference of two ARRAYs.
+arguments: 2: ARRAY and ARRAY
+return value: ARRAY or NULL
+" 
+{
+    if (!is(x, "ARRAY") | !is(y, "ARRAY") ) {
+        return null
+    }
+    each(y, fn(e, i) {
+        var x = x - e
+    })
+    return x
+}
+
+var sort_rect_array_of_number_by_index = fn(x, index_) 
+"
+[util] function: sort_rect_array_of_number_by_index: sorts (in-place) a rectangular ARRAY of NUMBER, based on index.
+arguments: 2: ARRAY (rectangular ARRAY of NUMBER) and NUMBER (index)
+return value: ARRAY or NULL
+" 
+{
+    var size_ = rect_array_size_of(x, "NUMBER")
+    if (size_ == null) {
+        return null
+    }
+    if (!is(index_, "NUMBER")) {
+        return null
+    }
+    if (index_ >= size_[1] | index_ < 0) {
+        return null
+    }
+    var j = 1
+    repeat {
+        if (j >= len(x)) {
+            return null
+        }
+        var key = x[j]
+        var i = j - 1
+        repeat {
+            if (i < 0) {
+                return null
+            }
+            if (x[i][index_] <= key[index_]) {
+                return null
+            }
+            set(x, i+1, x[i])
+            var i = i - 1
+        }
+        set(x, i+1, key)
+        var j = j + 1
+    }
+
+    return x
+}
+
+var create_set_from_array = fn(x) 
+"
+[util] function: create_set_from_array: creates a set (ARRAY) from ARRAY.
+arguments: 1: ARRAY
+return value: ARRAY or NULL
+" 
+{
+    if (!is(x, "ARRAY")) {
+        return null
+    }
+    var r = []
+    each(x, fn(e, i) {
+        if (!in(r, e)) {
+            var r = r + e
+        }
+    })
+    return r
+}
+
+var is_same_set = fn(x, y) 
+"
+[util] function: is_same_set: returns whether two sets are the same.
+arguments: 2: ARRAY and ARRAY
+return value: BOOLEAN or NULL
+" 
+{
+    var xx = create_set_from_array(x)
+    var yy = create_set_from_array(y)
+    if (xx == null | yy == null) {
+        return null
+    }
+    return xx == yy
+}
+
+var is_sub_set = fn(x, y) 
+"
+[util] function: is_sub_set: returns whether a set is a subset of another set.
+arguments: 2: ARRAY and ARRAY
+return value: BOOLEAN or NULL
+" 
+{
+    var xx = create_set_from_array(x)
+    var yy = create_set_from_array(y)
+    if (xx == null | yy == null) {
+        return null
+    }
+    var r = [true]
+    var c = 0
+    repeat {
+        if (c > len(xx) - 1) {
+            return false
+        }
+        if (!in(yy, xx[c])) {
+            set(r, 0, false)
+            return false
+        }
+        var c = c + 1
+    }
+    return r[0]
+}
+
+var set_intersection = fn(x, y) 
+"
+[util] function: set_intersection: returns the intersection of two sets.
+arguments: 2: ARRAY and ARRAY
+return value: ARRAY or NULL
+" 
+{
+    var xx = create_set_from_array(x)
+    var yy = create_set_from_array(y)
+    if (xx == null | yy == null) {
+        return null
+    }
+    var r = []
+    each(xx, fn(e, i) {
+        if (in(yy, e)) {
+            var r = r + e
+        }
+    })
+    each(yy, fn(e, i) {
+        if (in(xx, e)) {
+            var r = r + e
+        }
+    })
+    return create_set_from_array(r)
+}
+
+var set_union = fn(x, y) 
+"
+[util] function: set_union: returns the union of two sets.
+arguments: 2: ARRAY and ARRAY
+return value: ARRAY or NULL
+" 
+{
+    var xx = create_set_from_array(x)
+    var yy = create_set_from_array(y)
+    if (xx == null | yy == null) {
+        return null
+    }
+    return create_set_from_array(array_extend(xx, yy))
+}
+
+var set_diff = fn(x, y) 
+"
+[util] function: set_diff: returns the difference of two sets.
+arguments: 2: ARRAY and ARRAY
+return value: ARRAY or NULL
+" 
+{
+    return create_set_from_array(array_diff(x, y))
+}
+
