@@ -1,0 +1,89 @@
+#
+Data Science from Scratch
+Second Edition
+(First Principles with Python)
+By: Joel Grus (O'Reilly)
+Copyright 2019 Joel Grus
+ISBN: 978-1-492-04113-9
+
+Translated to Singkong Programming Language
+(c) Noprianto <nopri.anto@icloud.com>
+Free to use and/or redistribute
+https://nopri.github.io/singkong.html
+;
+
+load_module("util")
+
+var sep = "-" * 60 
+var nl = newline()
+
+#page 3-5;
+println("Page 3 - 5", sep)
+var users = [
+    {"id": 0, "name": "Hero"},
+    {"id": 1, "name": "Dunn"},
+    {"id": 2, "name": "Sue"},
+    {"id": 3, "name": "Chi"},
+    {"id": 4, "name": "Thor"},
+    {"id": 5, "name": "Clive"},
+    {"id": 6, "name": "Hicks"},
+    {"id": 7, "name": "Devin"},
+    {"id": 8, "name": "Kate"},
+    {"id": 9, "name": "Klein"}
+]
+
+var friendship_pairs = [
+    [0, 1],
+    [0, 2],
+    [1, 2],
+    [1, 3],
+    [2, 3],
+    [3, 4],
+    [4, 5],
+    [5, 6],
+    [5, 7],
+    [6, 8],
+    [7, 8],
+    [8, 9]
+]
+
+var friendships = {}
+each(users, fn(e, i) {
+    set(friendships, e["id"], [])
+})
+each(friendship_pairs, fn(e, i) {
+    set(friendships, e[0], friendships[e[0]] + e[1])
+    set(friendships, e[1], friendships[e[1]] + e[0])
+})
+print("Friendships: ", friendships, nl)
+
+var number_of_friends = fn(u) {
+    var user_id = u["id"]
+    var friend_ids = friendships[user_id]
+    return len(friend_ids)
+}
+var temp = []
+each(users, fn(e, i) {
+    var temp = temp + number_of_friends(e)
+})
+var total_connections = sum(temp)
+print("Total connections: ", total_connections, nl)
+
+var num_users = len(users)
+var avg_connections = total_connections / num_users
+print("Average connections: ", avg_connections, nl)
+
+var num_friends_by_id = []
+each(users, fn(e, i) {
+    var num_friends_by_id = num_friends_by_id + [e["id"], number_of_friends(e)]
+})
+print("Number of friends by id (not sorted): ", num_friends_by_id, nl)
+
+sort_rect_array_of_number_by_index(num_friends_by_id, 1)
+print("Number of friends by id (sorted asc): ", num_friends_by_id, nl)
+reverse(num_friends_by_id)
+print("Number of friends by id (sorted desc): ", num_friends_by_id, nl)
+println("Note: [user_id, num_friends] order differs from the illustrated output 
+  in the book, but the array is still sorted, based on num_friends")
+
+
