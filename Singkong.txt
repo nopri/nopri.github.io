@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 5.2 (2021-May-06 +07:00)
+Version: 5.3 (2021-May-18 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -99,7 +99,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 5.2
+        Singkong 5.3
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -288,6 +288,13 @@ hash, print, println, puts, string, type, types, variables
   - []
   - array of mixed data types
   - operators: +(add), -(remove) == !=
+  - add and extend:
+        >  [1,2] + 3
+        [1, 2, 3]
+        >  [1,2] + [3]
+        [1, 2, [3]]
+        >  array_extend([1,2], [3])
+        [1, 2, 3]
   - Using == operator:
         >  [] == []
         true
@@ -525,10 +532,12 @@ hash, print, println, puts, string, type, types, variables
   - Please read: GUI application development
   - related functions: add, add_e, add_n, add_s, add_w, button_image, clear, closing, 
     component, component_type, components, config, event, event_frame,  
-    event_keyboard_frame, event_mouse, event_mouse_frame, fonts, frame, frame_close, get, 
+    event_keyboard_frame, event_mouse, event_mouse_frame, fonts, frame, 
+    frame_close, get, grid_add, grid_clear, grid_remove,
     gui, hide, menubar, panel_add, panel_clear, panel_remove, printer, radio_group, 
     remove, remove_e, remove_n, remove_s, remove_w, reset, resizable, 
-    screen, show, size, start, start_timer, statusbar, stop, stop_timer, tab_add, tab_clear, tab_remove, table_add,  
+    screen, show, size, start, start_timer, statusbar, stop, stop_timer, 
+    tab_add, tab_clear, tab_remove, table_add,  
     table_bottom, table_center, table_column, table_left, table_middle, table_print,   
     table_remove, table_right, table_scroll, table_top, timer, timer_running, title, wait
   - GUI input/output functions: confirm, directory, input, open, message, 
@@ -560,40 +569,40 @@ To get a list of built-in functions, please call builtins()
 "DISABLED", "DO", "EACH", "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", 
 "EVENT_FRAME", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", 
 "EXIT", "EXP", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
-"FORMAT_DIFF", "FRAME", "FRAME_CLOSE", "GET", "GUI", "HASH", "HELP", "HIDE", 
-"HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
-"HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", 
-"INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTERACTIVE", 
-"IS", "IS_ARRAY_OF", "IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", 
-"IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", "IS_UPDATE_AVAILABLE", "ISALPHA", 
-"ISDIGIT", "ISLOWER", "ISUPPER", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", 
-"LEN", "LF", "LOAD", "LOAD_MODULE", "LOAD_RESOURCE", "LOG", "LOG10", 
-"LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MD5_FILE", "MENUBAR", 
-"MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", "MONTH", "NEWLINE", "NUMBER", 
-"NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_SCALE", "OPEN", "ORD", "PANEL_ADD", 
-"PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_HASH", "PART", 
-"PARTS", "PASSWORD", "PLAY_SOUND", "POP", "PRINT", "PRINTER", "PRINTLN", 
-"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
-"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "RECT_ARRAY_SIZE", 
-"RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", 
-"RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", "REST", "REVERSE", 
-"RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
-"SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", "SHA512", 
-"SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", "SINGKONG_INTERPRETER", 
-"SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", 
-"SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", "START", "START_TIMER", 
-"STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", "STOP_TIMER", "STRING", 
-"SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
-"TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_LEFT", "TABLE_MIDDLE", 
-"TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_SCROLL", "TABLE_TOP", 
-"TAN", "TANH", "TEMP_FILE", "THREAD", "THREAD_ALIVE", "THREAD_JOIN", "TIMER", 
-"TIMER_RUNNING", "TITLE", "TO_DEGREES", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
-"UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", "VARIABLES", "WAIT", 
-"WORDS_EN", "WORDS_ID", "WRITE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", 
-"X_EDIT_PRINT", "YEAR"]
+"FORMAT_DIFF", "FRAME", "FRAME_CLOSE", "GET", "GRID_ADD", "GRID_CLEAR", 
+"GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", 
+"HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", 
+"HTTP_RESPONSE_OK", "IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", 
+"INPUT", "INTEGER", "INTERACTIVE", "IS", "IS_ARRAY_OF", 
+"IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", "IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", 
+"IS_UPDATE_AVAILABLE", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", "JOIN", 
+"KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOAD_MODULE", 
+"LOAD_RESOURCE", "LOG", "LOG10", "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", 
+"MD5", "MD5_FILE", "MENUBAR", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", 
+"MONTH", "NEWLINE", "NUMBER", "NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_SCALE", 
+"OPEN", "ORD", "PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", 
+"PARAM", "PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", 
+"PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", 
+"PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", 
+"READ", "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", 
+"REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", 
+"RESIZABLE", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", 
+"SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", 
+"SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
+"SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
+"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", 
+"START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", 
+"STOP_TIMER", "STRING", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", 
+"TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", 
+"TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", 
+"TABLE_SCROLL", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", 
+"THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_DEGREES", 
+"TO_RADIANS", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", 
+"USER", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", 
+"X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-272
+275
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -738,7 +747,7 @@ To keep it as simple as possible:
   can be created (using Singkong code). 
   To show common dialogs, please use related built-in functions (confirm, 
   directory, input, open, message, password, save, login_dialog).
-  To create custom panel dialogs, please use built-in function panel_dialog.
+  To create custom panel or grid dialogs, please use built-in function panel_dialog.
   To create more advanced dialogs, please use Java method.
   To set frame title, please use built-in function title.
   To set frame size, please use built-in function size (this might not work on 
@@ -767,6 +776,7 @@ To keep it as simple as possible:
     - combobox: items (comma-separated string)
     - date: format
     - edit: text
+    - grid: tab title
     - image: file name
     - label: label
     - panel: tab title
@@ -784,9 +794,9 @@ To keep it as simple as possible:
       - Using Ctrl or Command key (depending on the operating system)
 - To get a list of supported component types, built-in function components can 
   be used. Currently, this function returns:
-  ["barchart", "button", "checkbox", "combobox", "date", "edit", "image", 
-  "label", "panel", "password", "progress", "radio", "tab", "table", "text", 
-  "view"]
+    ["barchart", "button", "checkbox", "combobox", "date", "edit", "grid", 
+    "image", "label", "panel", "password", "progress", "radio", "tab", "table", 
+    "text", "view"]
 - To get type of a COMPONENT, please use built-in function component_type. This
   function returns component type as STRING (one of values returned by 
   components function, as above). 
@@ -795,47 +805,107 @@ To keep it as simple as possible:
   COMPONENT or an ARRAY of COMPONENT to specific region 
   (center, east, north, south, west) of frame. Existing components in that 
   region will be removed, prior to addition).
+        reset()
+        var b1 = component("button", "Button 1")
+        var b2 = component("button", "Button 2")
+        var b3 = component("button", "Button 3")
+	add([b1, b2])
+	add_s(b3)
+	show()
 - To remove COMPONENTs from specific region (center, east, north, south, west) 
   of frame, please use one of the following built-in functions: remove, 
   remove_e, remove_n, remove_s, remove_w. To remove all COMPONENTs from frame, 
   please use built-in function clear. 
-- To enable or disable frame closing confirmation, please use built-in function
-  closing.
 - To use absolute positioning, please use panel COMPONENT, then add the panel
-  to frame:
+  to frame, panel, or grid:
   - To add a COMPONENT to a panel, please use built-in function panel_add.
+    Please note that COMPONENT will not be resized when the container is resized.
+        reset()
+        var p = component("panel", "")
+        var b1 = component("button", "Button 1")
+        var b2 = component("button", "Button 2")
+        panel_add(p, b1, 10, 10, 200, 50)
+        panel_add(p, b2, 10, 70, 200, 30)
+	add(p)
+	show()
   - To remove a COMPONENT from a panel, please use built-in function panel_remove.
   - To remove all COMPONENTs from a panel, please use built-in function panel_clear.
-  - To set whether frame is resizable, please use built-in function resizable.
-- To use tabbed pane, please use tab COMPONENT, then add the tab to frame or a panel:
-  - To add a panel to a tab, please use built-in function tab_add.
-  - To remove a panel from a tab, please use built-in function tab_remove.
-  - To remove all panels from a tab, please use built-in function tab_clear.
+- To use grid based layout, please use grid COMPONENT, then add the grid
+  to frame, panel, or grid:
+  - To add a COMPONENT to a grid, please use built-in function grid_add.
+    Please note that COMPONENT will be resized when the container is resized, 
+    based on the constraints.
+        reset()
+        var g = component("grid", "")
+        var b1 = component("button", "Button 1")
+        var b2 = component("button", "Button 2")
+        var b3 = component("button", "Button 3")
+        var b4 = component("button", "Button 4")
+        var b5 = component("button", "Button 5")
+        grid_add(g, b1, 0, 0, 1, 1, 0.5, 1.0, 3, 0, 5, 5, 5, 5)
+        grid_add(g, b2, 1, 0, 1, 1, 0.5, 1.0, 3, 0, 5, 5, 5, 5)
+        grid_add(g, b3, 0, 1, 2, 1, 1.0, 0.5, 3, 0, 5, 5, 5, 5)
+        grid_add(g, b4, 0, 2, 1, 1, 0.5, 0.5, 0, 1, 5, 5, 5, 5)
+        grid_add(g, b5, 1, 2, 1, 1, 0.5, 0.5, 0, 2, 5, 5, 5, 5)
+        add(g)
+        show()
+  - To remove a COMPONENT from a grid, please use built-in function grid_remove.
+  - To remove all COMPONENTs from a grid, please use built-in function grid_clear
+- To enable or disable frame closing confirmation, please use built-in function
+  closing.
+- To set whether frame is resizable, please use built-in function resizable.
+- To use tabbed pane, please use tab COMPONENT, then add the tab to frame, a panel, or a grid:
+  - To add a panel or a grid to a tab, please use built-in function tab_add.
+  - To remove a panel or a grid from a tab, please use built-in function tab_remove.
+  - To remove all panels or grids from a tab, please use built-in function tab_clear.
+        reset()
         var e = component("edit", "")
         var c = component("checkbox", "Singkong?")
-        var p = component("panel", "Hello")
+        var p = component("panel", "Panel")
         panel_add(p, e, 10, 10, 200, 50)
         panel_add(p, c, 10, 70, 100, 30)
 
+        var g = component("grid", "Grid")
+        var b1 = component("button", "Button 1")
+        var b2 = component("button", "Button 2")
+        grid_add(g, b1, 0, 0, 1, 1, 0.5, 1.0, 3, 0, 5, 5, 5, 5)
+        grid_add(g, b2, 1, 0, 1, 1, 0.5, 1.0, 3, 0, 5, 5, 5, 5)
+
         var t = component("tab", "")
         tab_add(t, p)
-        tab_add(t, component("panel", "World"))
+        tab_add(t, g)
 
         add(t)
         show()
-- To create custom panel dialog, please use built-in function panel_dialog:
-    var e = component("edit", "")
-    var c = component("checkbox", "Singkong?")
-    var p = component("panel", "")
-    panel_add(p, e, 10, 10, 200, 50)
-    panel_add(p, c, 10, 70, 100, 30)
-    var r = panel_dialog(p, "Form", 300, 200)
-    if (r == "OK") {
-      message(get(e, "contents"))
-      message(get(c, "active"))
-    } else {
-      message("Cancel")
-    }  
+- To create custom panel or grid dialog, please use built-in function panel_dialog:
+  - using panel:
+        reset()
+        var e = component("edit", "")
+        var c = component("checkbox", "Singkong?")
+        var p = component("panel", "")
+        panel_add(p, e, 10, 10, 200, 50)
+        panel_add(p, c, 10, 70, 100, 30)
+        var r = panel_dialog(p, "Form", 300, 200)
+        if (r == "OK") {
+          message(get(e, "contents"))
+          message(get(c, "active"))
+        } else {
+          message("Cancel")
+        }  
+  - using grid:
+        reset()
+        var e = component("edit", "")
+        var c = component("checkbox", "Singkong?")
+        var g = component("grid", "")
+        grid_add(g, e, 0, 0, 1, 1, 1, 1, 3, 0, 5, 5, 5, 5)
+        grid_add(g, c, 0, 1, 1, 1, 0, 0, 3, 0, 5, 5, 5, 5)
+        var r = panel_dialog(g, "Form", 300, 200)
+        if (r == "OK") {
+          message(get(e, "contents"))
+          message(get(c, "active"))
+        } else {
+          message("Cancel")
+        }  
 - To configure a COMPONENT, please use built-in function config. This function
   accepts three arguments: COMPONENT, STRING (key), and <any type> (value). 
   If optional fourth argument (BOOLEAN) is true (default: false) and 
@@ -2265,14 +2335,17 @@ var p = component("password", "test")
 var g = component("progress", "")
 var r = component("radio", "Radio Button")
 var a = component("tab", "")
-var n = component("panel", "Table")
-var t = component("table", "A,B,C,D,E")
+var panel = component("panel", "Panel")
+var t1 = component("table", "A,B,C,D,E")
+var grid = component("grid", "Grid")
+var t2 = component("table", "A,B,C,D,E")
 var x = component("text", "Singkong")
 var v = component("view", "<b>Singkong</b><br>Programming")
 
-panel_add(n, t, 10, 10, 250, 400)
-tab_add(a, n)
-tab_add(a, component("panel", "Tab"))
+panel_add(panel, t1, 10, 10, 250, 400)
+tab_add(a, panel)
+grid_add(grid, t2, 0, 0, 1, 1, 1, 1, 3, 0, 5, 5, 5, 5)
+tab_add(a, grid)
 
 var z = component("barchart", "")
 config(z, "foreground", "red")
