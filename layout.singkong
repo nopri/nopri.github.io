@@ -1,5 +1,6 @@
 reset()
 var c = component("panel", "")
+var g = component("grid", "")
 var e = component("button", "E")
 var n = component("button", "N")
 var w = component("button", "W")
@@ -9,17 +10,29 @@ var s2 = component("button", "S 2")
 var s3 = component("button", "S 3")
 var s = [s1, s2, s3]
 
-add(c)
+add([c, g])
 add_e(e)
 add_n(n)
 add_s(s)
 add_w(w)
 
 # panel (absolute positioning);
-var items = range(0, 5)
+var items = range(0, 4)
 each(items, fn(i, counter) {
-  var x = (20 + 100) * counter
-  panel_add(c, component("button", string(i+1)), x, 50, 100, 100)
+  var y = (20 + 80) * counter
+  panel_add(c, component("button", string(i+1)), 50, y, 80, 80)
 })
+
+# grid (grid layout);
+var b1 = component("button", "Button 1")
+var b2 = component("button", "Button 2")
+var b3 = component("button", "Button 3")
+var b4 = component("button", "Button 4")
+var b5 = component("button", "Button 5")
+grid_add(g, b1, 0, 0, 1, 1, 0.5, 1.0, 3, 0, 5, 5, 5, 5)
+grid_add(g, b2, 1, 0, 1, 1, 0.5, 1.0, 3, 0, 5, 5, 5, 5)
+grid_add(g, b3, 0, 1, 2, 1, 1.0, 0.5, 3, 0, 5, 5, 5, 5)
+grid_add(g, b4, 0, 2, 1, 1, 0.5, 0.5, 0, 1, 5, 5, 5, 5)
+grid_add(g, b5, 1, 2, 1, 1, 0.5, 0.5, 0, 2, 5, 5, 5, 5)
 
 show()

@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 5.3 (2021-May-18 +07:00)
+Version: 5.4 (2021-June-10 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -99,7 +99,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 5.3
+        Singkong 5.4
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -321,7 +321,7 @@ hash, print, println, puts, string, type, types, variables
     last, len, max, min, pop, push, random, range, rest, reverse, shuffle, slice, 
     sort_array, sort_boolean, sort_date, sort_hash, sort_number, sort_string, sum
   - array check functions: is_array_of, is_array_of_component_of
-  - file related functions: dir
+  - file related functions: dir, read_byte, write_byte
   - CGI related functions: cgi_contents
   - HTTP client related functions: http_response_ok
   - system related functions: arguments, inet_address, system
@@ -359,6 +359,49 @@ hash, print, println, puts, string, type, types, variables
         [[2, 1], [3, 2], [1, 3]]
         >  sort_rect_array_of_number_by_index([[1,3], [3,2], [2,1]], 0)
         [[1, 3], [2, 1], [3, 2]]        
+  - rectangular array and matrix: please use functions from rect_array_util module:
+        add_rect_array_of
+        add_rect_array_of_number
+        cross_product_3d_rect_array_column_of
+        cross_product_3d_rect_array_column_of_number
+        cross_product_3d_rect_array_row_of
+        cross_product_3d_rect_array_row_of_number
+        determinant_rect_array_of
+        determinant_rect_array_of_number
+        inverse_rect_array_of
+        inverse_rect_array_of_number
+        is_constant_rect_array_of
+        is_constant_rect_array_of_number
+        is_diagonal_rect_array_of
+        is_diagonal_rect_array_of_number
+        is_identity_rect_array_of_number
+        is_lower_triangular_rect_array_of
+        is_lower_triangular_rect_array_of_number
+        is_rect_array_column_of
+        is_rect_array_column_of_number
+        is_rect_array_row_of
+        is_rect_array_row_of_number
+        is_square_rect_array_of
+        is_square_rect_array_of_number
+        is_symmetric_rect_array_of
+        is_symmetric_rect_array_of_number
+        is_upper_triangular_rect_array_of
+        is_upper_triangular_rect_array_of_number
+        is_zero_rect_array_of
+        is_zero_rect_array_of_number
+        minor_rect_array_of
+        minor_rect_array_of_number
+        mul_rect_array_of
+        mul_rect_array_of_number
+        mul_scalar_rect_array_of
+        mul_scalar_rect_array_of_number
+        rect_array_not_row_col
+        sub_rect_array_of
+        sub_rect_array_of_number
+        trace_rect_array_of
+        trace_rect_array_of_number
+        transpose_rect_array_of
+        transpose_rect_array_of_number
   - copy:
         var a = ["hello", "world"]
         var b = []
@@ -584,25 +627,26 @@ To get a list of built-in functions, please call builtins()
 "PARAM", "PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", 
 "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", 
 "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", 
-"READ", "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", 
-"REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", 
-"RESIZABLE", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", 
-"SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", 
-"SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
-"SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
-"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", 
-"START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", 
-"STOP_TIMER", "STRING", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", 
+"READ", "READ_BYTE", "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", 
+"REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", 
+"RESET", "RESIZABLE", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", 
+"SECOND", "SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", 
+"SHA384", "SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", 
+"SINGKONG", "SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", 
+"SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", 
+"SQRT", "START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", 
+"STOP", "STOP_TIMER", "STRING", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", 
 "TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", 
 "TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", 
 "TABLE_SCROLL", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", 
 "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_DEGREES", 
 "TO_RADIANS", "TRIM", "TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", 
 "USER", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", 
-"X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
+"WRITE_BYTE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", 
+"YEAR"]
 
 >  len(builtins())
-275
+277
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -619,11 +663,12 @@ return value: <any type>
 
 
 To get a list of built-in modules, please call modules()
-["csv", "util"]
+["csv", "rect_array_util", "util"]
 
 To load a built-in module, please use built-in function load_module, 
 for example:
 >  load_module("csv")
+>  load_module("rect_array_util")
 >  load_module("util")
 
 Note: reusing function name from built-in modules as identifier is allowed:
@@ -649,6 +694,29 @@ Functions in module: util:
 "IS_SAME_SET", "IS_SUB_SET", "MEAN", "MEDIAN", "MODE", "RANGE_", "SET_DIFF", 
 "SET_INTERSECTION", "SET_UNION", "SORT_RECT_ARRAY_OF_NUMBER_BY_INDEX", 
 "_NON_EMPTY_ARRAY_OF_NUMBER"]
+
+Functions in module: rect_array_util:
+["ADD_RECT_ARRAY_OF", "ADD_RECT_ARRAY_OF_NUMBER", 
+"CROSS_PRODUCT_3D_RECT_ARRAY_COLUMN_OF", 
+"CROSS_PRODUCT_3D_RECT_ARRAY_COLUMN_OF_NUMBER", 
+"CROSS_PRODUCT_3D_RECT_ARRAY_ROW_OF", 
+"CROSS_PRODUCT_3D_RECT_ARRAY_ROW_OF_NUMBER", "DETERMINANT_RECT_ARRAY_OF", 
+"DETERMINANT_RECT_ARRAY_OF_NUMBER", "INVERSE_RECT_ARRAY_OF", 
+"INVERSE_RECT_ARRAY_OF_NUMBER", "IS_CONSTANT_RECT_ARRAY_OF", 
+"IS_CONSTANT_RECT_ARRAY_OF_NUMBER", "IS_DIAGONAL_RECT_ARRAY_OF", 
+"IS_DIAGONAL_RECT_ARRAY_OF_NUMBER", "IS_IDENTITY_RECT_ARRAY_OF_NUMBER", 
+"IS_LOWER_TRIANGULAR_RECT_ARRAY_OF", "IS_LOWER_TRIANGULAR_RECT_ARRAY_OF_NUMBER", 
+"IS_RECT_ARRAY_COLUMN_OF", "IS_RECT_ARRAY_COLUMN_OF_NUMBER", 
+"IS_RECT_ARRAY_ROW_OF", "IS_RECT_ARRAY_ROW_OF_NUMBER", 
+"IS_SQUARE_RECT_ARRAY_OF", "IS_SQUARE_RECT_ARRAY_OF_NUMBER", 
+"IS_SYMMETRIC_RECT_ARRAY_OF", "IS_SYMMETRIC_RECT_ARRAY_OF_NUMBER", 
+"IS_UPPER_TRIANGULAR_RECT_ARRAY_OF", "IS_UPPER_TRIANGULAR_RECT_ARRAY_OF_NUMBER", 
+"IS_ZERO_RECT_ARRAY_OF", "IS_ZERO_RECT_ARRAY_OF_NUMBER", "MINOR_RECT_ARRAY_OF", 
+"MINOR_RECT_ARRAY_OF_NUMBER", "MUL_RECT_ARRAY_OF", "MUL_RECT_ARRAY_OF_NUMBER", 
+"MUL_SCALAR_RECT_ARRAY_OF", "MUL_SCALAR_RECT_ARRAY_OF_NUMBER", 
+"RECT_ARRAY_NOT_ROW_COL", "SUB_RECT_ARRAY_OF", "SUB_RECT_ARRAY_OF_NUMBER", 
+"TRACE_RECT_ARRAY_OF", "TRACE_RECT_ARRAY_OF_NUMBER", "TRANSPOSE_RECT_ARRAY_OF", 
+"TRANSPOSE_RECT_ARRAY_OF_NUMBER"]
 
 
 -----------------------------------------------------------------------------
@@ -2377,6 +2445,7 @@ show()
 18. Example: GUI: layout
 reset()
 var c = component("panel", "")
+var g = component("grid", "")
 var e = component("button", "E")
 var n = component("button", "N")
 var w = component("button", "W")
@@ -2386,18 +2455,30 @@ var s2 = component("button", "S 2")
 var s3 = component("button", "S 3")
 var s = [s1, s2, s3]
 
-add(c)
+add([c, g])
 add_e(e)
 add_n(n)
 add_s(s)
 add_w(w)
 
 # panel (absolute positioning);
-var items = range(0, 5)
+var items = range(0, 4)
 each(items, fn(i, counter) {
-  var x = (20 + 100) * counter
-  panel_add(c, component("button", string(i+1)), x, 50, 100, 100)
+  var y = (20 + 80) * counter
+  panel_add(c, component("button", string(i+1)), 50, y, 80, 80)
 })
+
+# grid (grid layout);
+var b1 = component("button", "Button 1")
+var b2 = component("button", "Button 2")
+var b3 = component("button", "Button 3")
+var b4 = component("button", "Button 4")
+var b5 = component("button", "Button 5")
+grid_add(g, b1, 0, 0, 1, 1, 0.5, 1.0, 3, 0, 5, 5, 5, 5)
+grid_add(g, b2, 1, 0, 1, 1, 0.5, 1.0, 3, 0, 5, 5, 5, 5)
+grid_add(g, b3, 0, 1, 2, 1, 1.0, 0.5, 3, 0, 5, 5, 5, 5)
+grid_add(g, b4, 0, 2, 1, 1, 0.5, 0.5, 0, 1, 5, 5, 5, 5)
+grid_add(g, b5, 1, 2, 1, 1, 0.5, 0.5, 0, 2, 5, 5, 5, 5)
 
 show()
 

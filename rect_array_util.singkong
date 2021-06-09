@@ -1,0 +1,867 @@
+#
+    Rectangular Array Util
+    rect_array_util.singkong
+
+    Part of Singkong Programming Language Interpreter
+    (c) Noprianto <nopri.anto@icloud.com>
+
+    More information: https://nopri.github.io/singkong.html
+    Download Singkong: https://nopri.github.io/Singkong.jar
+    (License: Free to use or redistribute, no warranty)
+
+    To use this module:
+    load_module("rect_array_util")
+;
+
+require(5.4)
+
+var is_square_rect_array_of = fn(a, t) 
+"
+[rect_array_util] function: is_square_rect_array_of: returns whether a Rectangular ARRAY is a square Rectangular ARRAY of particular type.
+arguments: 2: ARRAY and STRING
+return value: BOOLEAN or NULL
+" 
+{
+    var s = rect_array_size_of(a, t) 
+    if (s == null) {
+        return null
+    } 
+
+    return s[0] == s[1]
+} 
+
+var is_square_rect_array_of_number = fn(a) 
+"
+[rect_array_util] function: is_square_rect_array_of_number: returns whether a Rectangular ARRAY is a square Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: BOOLEAN or NULL
+" 
+{
+    return is_square_rect_array_of(a, "NUMBER")
+}
+
+var is_diagonal_rect_array_of = fn(a, t) 
+"
+[rect_array_util] function: is_diagonal_rect_array_of: returns whether a Rectangular ARRAY is a diagonal square Rectangular ARRAY of particular type.
+arguments: 2: ARRAY and STRING
+return value: BOOLEAN or NULL
+"
+{
+    var s = is_square_rect_array_of(a, t)
+    if (!s == true) {
+        return null
+    } 
+    var r = [true, true]
+    var i = 0
+    repeat {
+        var j = 0
+        repeat {
+            if ( ((i != j) & (a[i][j] != 0)) | ((i == j) & (a[i][j] == 0))) {
+                set(r, 0, false)
+                set(r, 1, false)
+                return false
+            }
+            var j = j + 1
+            if (j > len(a[i]) - 1) {
+                return false
+            }
+        }
+        var i = i + 1
+        if (i > len(a) - 1) {
+            return false
+        }
+        if (r[1] == false) {
+            return false
+        }
+    }
+    return r[0]
+}
+
+var is_diagonal_rect_array_of_number = fn(a) 
+"
+[rect_array_util] function: is_diagonal_rect_array_of_number: returns whether a Rectangular ARRAY is a diagonal square Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: BOOLEAN or NULL
+"
+{
+    return is_diagonal_rect_array_of(a, "NUMBER")
+}
+
+var is_constant_rect_array_of = fn(a, t, c) 
+"
+[rect_array_util] function: is_constant_rect_array_of: returns whether a Rectangular ARRAY is a constant square Rectangular ARRAY of particular type.
+arguments: 3: ARRAY, STRING, and <any>
+return value: BOOLEAN or NULL
+"
+{
+    var s = is_square_rect_array_of(a, t)
+    if (!s == true) {
+        return null
+    } 
+    if (!is(c, t) ) {
+        return null
+    }
+    var r = [true, true]
+    var i = 0
+    repeat {
+        var j = 0
+        repeat {
+            if ( ((i != j) & (a[i][j] != 0)) | ((i == j) & (a[i][j] != c))) {
+                set(r, 0, false)
+                set(r, 1, false)
+                return false
+            }
+            var j = j + 1
+            if (j > len(a[i]) - 1) {
+                return false
+            }
+        }
+        var i = i + 1
+        if (i > len(a) - 1) {
+            return false
+        }
+        if (r[1] == false) {
+            return false
+        }
+    }
+    return r[0]
+}
+
+var is_constant_rect_array_of_number = fn(a, c) 
+"
+[rect_array_util] function: is_constant_rect_array_of_number: returns whether a Rectangular ARRAY is a constant square Rectangular ARRAY of NUMBER.
+arguments: 2: ARRAY and NUMBER
+return value: BOOLEAN or NULL
+"
+{
+    return is_constant_rect_array_of(a, "NUMBER", c)
+}
+
+var is_identity_rect_array_of_number = fn(a) 
+"
+[rect_array_util] function: is_identity_rect_array_of_number: returns whether a Rectangular ARRAY is an identity square Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: BOOLEAN or NULL
+"
+{
+    return is_constant_rect_array_of(a, "NUMBER", 1)
+}
+
+var is_upper_triangular_rect_array_of = fn(a, t) 
+"
+[rect_array_util] function: is_upper_triangular_rect_array_of: returns whether a Rectangular ARRAY is an upper triangular square Rectangular ARRAY of particular type.
+arguments: 2: ARRAY and STRING
+return value: BOOLEAN or NULL
+"
+{
+    var s = is_square_rect_array_of(a, t)
+    if (!s == true) {
+        return null
+    } 
+    var r = [true, true]
+    var i = 0
+    repeat {
+        var j = 0
+        repeat {
+            if ( ((i > j) & (a[i][j] != 0)) | ((i <= j) & (a[i][j] == 0))) {
+                set(r, 0, false)
+                set(r, 1, false)
+                return false
+            }
+            var j = j + 1
+            if (j > len(a[i]) - 1) {
+                return false
+            }
+        }
+        var i = i + 1
+        if (i > len(a) - 1) {
+            return false
+        }
+        if (r[1] == false) {
+            return false
+        }
+    }
+    return r[0]
+}
+
+var is_upper_triangular_rect_array_of_number = fn(a) 
+"
+[rect_array_util] function: is_upper_triangular_rect_array_of_number: returns whether a Rectangular ARRAY is an upper triangular square Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: BOOLEAN or NULL
+"
+{
+    return is_upper_triangular_rect_array_of(a, "NUMBER")
+}
+
+var is_lower_triangular_rect_array_of = fn(a, t) 
+"
+[rect_array_util] function: is_lower_triangular_rect_array_of: returns whether a Rectangular ARRAY is a lower triangular square Rectangular ARRAY of particular type.
+arguments: 2: ARRAY and STRING
+return value: BOOLEAN or NULL
+"
+{
+    var s = is_square_rect_array_of(a, t)
+    if (!s == true) {
+        return null
+    } 
+    var r = [true, true]
+    var i = 0
+    repeat {
+        var j = 0
+        repeat {
+            if ( ((i < j) & (a[i][j] != 0)) | ((i >= j) & (a[i][j] == 0))) {
+                set(r, 0, false)
+                set(r, 1, false)
+                return false
+            }
+            var j = j + 1
+            if (j > len(a[i]) - 1) {
+                return false
+            }
+        }
+        var i = i + 1
+        if (i > len(a) - 1) {
+            return false
+        }
+        if (r[1] == false) {
+            return false
+        }
+    }
+    return r[0]
+}
+
+var is_lower_triangular_rect_array_of_number = fn(a) 
+"
+[rect_array_util] function: is_lower_triangular_rect_array_of_number: returns whether a Rectangular ARRAY is a lower triangular square Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: BOOLEAN or NULL
+"
+{
+    return is_lower_triangular_rect_array_of(a, "NUMBER")
+}
+
+var is_zero_rect_array_of = fn(a, t) 
+"
+[rect_array_util] function: is_zero_rect_array_of: returns whether a Rectangular ARRAY is a zero Rectangular ARRAY of particular type.
+arguments: 2: ARRAY and STRING
+return value: BOOLEAN or NULL
+"
+{
+    var s = is_rect_array_of(a, t)
+    if (!s == true) {
+        return null
+    } 	
+    var r = [true, true]
+    var i = 0
+    repeat {
+        var j = 0
+        repeat {
+            if (a[i][j] != 0) {
+                set(r, 0, false)
+                set(r, 1, false)
+                return false
+            }
+            var j = j + 1
+            if (j > len(a[i]) - 1) {
+                return false
+            }
+        }
+        var i = i + 1
+        if (i > len(a) - 1) {
+            return false
+        }
+        if (r[1] == false) {
+            return false
+        }
+    }
+    return r[0]	
+}
+
+var is_zero_rect_array_of_number = fn(a) 
+"
+[rect_array_util] function: is_zero_rect_array_of_number: returns whether a Rectangular ARRAY is a zero Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: BOOLEAN or NULL
+"
+{
+    return is_zero_rect_array_of(a, "NUMBER")
+}
+
+var is_symmetric_rect_array_of = fn(a, t) 
+"
+[rect_array_util] function: is_symmetric_rect_array_of: returns whether a Rectangular ARRAY is a symmetric square Rectangular ARRAY of particular type.
+arguments: 2: ARRAY and STRING
+return value: BOOLEAN or NULL
+"
+{
+    var s = is_square_rect_array_of(a, t)
+    if (!s == true) {
+        return null
+    } 
+    var r = [true, true]
+    var i = 0
+    repeat {
+        var j = 0
+        repeat {
+            if ( a[i][j] != a[j][i]) {
+                set(r, 0, false)
+                set(r, 1, false)
+                return false
+            }
+            var j = j + 1
+            if (j > len(a[i]) - 1) {
+                return false
+            }
+        }
+        var i = i + 1
+        if (i > len(a) - 1) {
+            return false
+        }
+        if (r[1] == false) {
+            return false
+        }
+    }
+    return r[0]
+}
+
+var is_symmetric_rect_array_of_number = fn(a) 
+"
+[rect_array_util] function: is_symmetric_rect_array_of_number: returns whether a Rectangular ARRAY is a symmetric square Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: BOOLEAN or NULL
+"
+{
+    return is_symmetric_rect_array_of(a, "NUMBER")
+}
+
+var add_rect_array_of = fn(a, b, t) 
+"
+[rect_array_util] function: add_rect_array_of: adds two Rectangular ARRAYs of particular type.
+arguments: 3: ARRAY, ARRAY, and STRING
+return value: ARRAY or NULL
+"
+{
+    var sa = rect_array_size_of(a, t) 
+    var sb = rect_array_size_of(b, t) 
+    if (sa == null | sb == null) {
+        return null
+    } 
+    if (!array_equals(sa, sb)) {
+        return null
+    }
+    var r = []
+    each(a, fn(e, i) {
+        var temp = []
+        var a = a
+        var b = b
+        each(e, fn(ee, ii) {
+            var temp = temp + (a[i][ii] + b[i][ii])
+        })
+        var r = r + temp
+    })
+    return r	
+}
+
+var add_rect_array_of_number = fn(a, b) 
+"
+[rect_array_util] function: add_rect_array_of_number: adds two Rectangular ARRAYs of NUMBER.
+arguments: 2: ARRAY and ARRAY
+return value: ARRAY or NULL
+"
+{
+    return add_rect_array_of(a, b, "NUMBER")
+}
+
+var sub_rect_array_of = fn(a, b, t) 
+"
+[rect_array_util] function: sub_rect_array_of: subtracts Rectangular ARRAY from another Rectangular ARRAY of particular type.
+arguments: 3: ARRAY, ARRAY, and STRING
+return value: ARRAY or NULL
+"
+{
+    var sa = rect_array_size_of(a, t) 
+    var sb = rect_array_size_of(b, t) 
+    if (sa == null | sb == null) {
+        return null
+    } 
+    if (!array_equals(sa, sb)) {
+        return null
+    }
+    var r = []
+    each(a, fn(e, i) {
+        var temp = []
+        var a = a
+        var b = b
+        each(e, fn(ee, ii) {
+            var temp = temp + (a[i][ii] - b[i][ii])
+        })
+        var r = r + temp
+    })
+    return r	
+}
+
+var sub_rect_array_of_number = fn(a, b) 
+"
+[rect_array_util] function: sub_rect_array_of_number: subtracts Rectangular ARRAY from another Rectangular ARRAY of NUMBER.
+arguments: 2: ARRAY and ARRAY
+return value: ARRAY or NULL
+"
+{
+    return sub_rect_array_of(a, b, "NUMBER")
+}
+
+var mul_rect_array_of = fn(a, b, t) 
+"
+[rect_array_util] function: mul_rect_array_of: multiplies Rectangular ARRAY by another Rectangular ARRAY of particular type.
+arguments: 3: ARRAY, ARRAY, and STRING
+return value: ARRAY or NULL
+"
+{
+    var sa = rect_array_size_of(a, t) 
+    var sb = rect_array_size_of(b, t) 
+    if (sa == null | sb == null) {
+        return null
+    } 
+    if (sa[1] != sb[0]) {
+        return null
+    }
+    var r = []
+    each(range(0, sa[0]), fn(x, y) {
+        var a = a
+        var b = b
+        var temp = []
+        each(a, fn(e, i) {
+            var a = a
+            var b = b
+            var x = x
+            var c = []
+            each(e, fn(ee, ii) {
+                var c = c + (a[x][ii] * b[ii][i])
+            })
+            var sc = sum(c)
+            var temp = temp + sc
+        })
+        var r = r + temp
+    })
+    return r	
+}
+
+var mul_rect_array_of_number = fn(a, b) 
+"
+[rect_array_util] function: mul_rect_array_of_number: multiplies Rectangular ARRAY by another Rectangular ARRAY of NUMBER.
+arguments: 2: ARRAY and ARRAY
+return value: ARRAY or NULL
+"
+{
+    return mul_rect_array_of(a, b, "NUMBER")
+}
+
+var mul_scalar_rect_array_of = fn(a, b, t) 
+"
+[rect_array_util] function: mul_scalar_rect_array_of: multiplies (scalar) a value by a Rectangular ARRAY of particular type.
+arguments: 3: <any>, ARRAY, and STRING
+return value: ARRAY or NULL
+"
+{
+    if (!is(a, t)) {
+        return null
+    }
+    var sb = rect_array_size_of(b, t) 
+    if (sb == null) {
+        return null
+    } 
+    var r = []
+    each(b, fn(e, i) {
+        var temp = []
+        var a = a
+        var b = b
+        each(e, fn(ee, ii) {
+            var temp = temp + (a * b[i][ii])
+        })
+        var r = r + temp
+    })
+    return r
+}
+
+var mul_scalar_rect_array_of_number = fn(a, b) 
+"
+[rect_array_util] function: mul_scalar_rect_array_of_number: multiplies (scalar) a value by a Rectangular ARRAY of NUMBER.
+arguments: 2: NUMBER and ARRAY
+return value: ARRAY or NULL
+"
+{
+    return mul_scalar_rect_array_of(a, b, "NUMBER")
+}
+
+var trace_rect_array_of = fn(a, t) 
+"
+[rect_array_util] function: trace_rect_array_of: returns trace of a square Rectangular ARRAY of particular type.
+arguments: 2: ARRAY and STRING
+return value: <any> or NULL
+"
+{
+    var s = is_square_rect_array_of(a, t)
+    if (!s == true) {
+        return null
+    } 
+    var r = [0]
+    each(a, fn(e, i) {
+        var r = r
+        each(e, fn(ee, ii) {
+            if (i == ii) {
+                set(r, 0, r[0] + ee)
+            }
+        })
+    })
+    return r[0]
+}
+
+var trace_rect_array_of_number = fn(a) 
+"
+[rect_array_util] function: trace_rect_array_of_number: returns trace of a square Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: NUMBER or NULL
+"
+{
+    return trace_rect_array_of(a, "NUMBER")
+}
+
+var transpose_rect_array_of = fn(a, t) 
+"
+[rect_array_util] function: transpose_rect_array_of: transposes a Rectangular ARRAY of particular type.
+arguments: 2: ARRAY and STRING
+return value: ARRAY or NULL
+"
+{
+    var s = rect_array_size_of(a, t)
+    if (s == null) {
+        return null
+    } 
+    var r = []
+    each(range(0, s[1]), fn(e, i) {
+        var a = a
+        var temp = []
+        each(range(0, s[0]), fn(ee, ii) {
+            var temp = temp + a[ii][i]
+        })
+        var r = r + temp
+    })
+    return r
+}
+
+var transpose_rect_array_of_number = fn(a) 
+"
+[rect_array_util] function: transpose_rect_array_of_number: transposes a Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: ARRAY or NULL
+"
+{
+    return transpose_rect_array_of(a, "NUMBER")
+}
+
+var is_rect_array_column_of = fn(a, t) 
+"
+[rect_array_util] function: is_rect_array_column_of: returns whether a Rectangular ARRAY is a column Rectangular ARRAY of particular type.
+arguments: 2: ARRAY and STRING
+return value: BOOLEAN or NULL
+"
+{
+    var s = rect_array_size_of(a, t)
+    if (s == null) {
+        return null
+    }
+    return s[1] == 1
+}
+
+var is_rect_array_row_of = fn(a, t) 
+"
+[rect_array_util] function: is_rect_array_row_of: returns whether a Rectangular ARRAY is a row Rectangular ARRAY of particular type.
+arguments: 2: ARRAY and STRING
+return value: BOOLEAN or NULL
+"
+{
+    var s = rect_array_size_of(a, t)
+    if (s == null) {
+        return null
+    }
+    return s[0] == 1
+}
+
+var is_rect_array_column_of_number = fn(a) 
+"
+[rect_array_util] function: is_rect_array_column_of_number: returns whether a Rectangular ARRAY is a column Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: BOOLEAN or NULL
+"
+{
+    return is_rect_array_column_of(a, "NUMBER")
+}
+
+var is_rect_array_row_of_number = fn(a) 
+"
+[rect_array_util] function: is_rect_array_row_of_number: returns whether a Rectangular ARRAY is a row Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: BOOLEAN or NULL
+"
+{
+    return is_rect_array_row_of(a, "NUMBER")
+}
+
+var cross_product_3d_rect_array_row_of = fn(a, b, t) 
+"
+[rect_array_util] function: cross_product_3d_rect_array_row_of: returns cross product (3D) of two row Rectangular ARRAYs of particular type.
+arguments: 3: ARRAY, ARRAY, and STRING
+return value: ARRAY or NULL
+"
+{
+    var sa = is_rect_array_row_of(a, t)
+    var sb = is_rect_array_row_of(b, t)
+    if (!sa == true | !sb == true) {
+        return null
+    }
+    var sa = rect_array_size_of(a, t)
+    var sb = rect_array_size_of(b, t)
+    if (!array_equals(sa, sb)) {
+        return null
+    }
+    if (sa[1] != 3) {
+        return null
+    }
+    var a = a[0]
+    var b = b[0]
+    return [ 
+        [
+            a[1] * b[2] - a[2] * b[1], 
+            a[2] * b[0] - a[0] * b[2], 
+            a[0] * b[1] - a[1] * b[0]
+        ]
+    ]
+
+}
+
+var cross_product_3d_rect_array_row_of_number = fn(a, b) 
+"
+[rect_array_util] function: cross_product_3d_rect_array_row_of_number: returns cross product (3D) of two row Rectangular ARRAYs of NUMBER.
+arguments: 2: ARRAY and ARRAY
+return value: ARRAY or NULL
+"
+{
+    return cross_product_3d_rect_array_row_of(a, b, "NUMBER")
+}
+
+var cross_product_3d_rect_array_column_of = fn(a, b, t) 
+"
+[rect_array_util] function: cross_product_3d_rect_array_column_of: returns cross product (3D) of two column Rectangular ARRAYs of particular type.
+arguments: 3: ARRAY, ARRAY, and STRING
+return value: ARRAY or NULL
+"
+{
+    var sa = is_rect_array_column_of(a, t)
+    var sb = is_rect_array_column_of(b, t)
+    if (!sa == true | !sb == true) {
+        return null
+    }
+    var sa = rect_array_size_of(a, t)
+    var sb = rect_array_size_of(b, t)
+    if (!array_equals(sa, sb)) {
+        return null
+    }
+    if (sa[0] != 3) {
+        return null
+    }
+    return [ 
+        [a[1][0] * b[2][0] - a[2][0] * b[1][0]], 
+        [a[2][0] * b[0][0] - a[0][0] * b[2][0]], 
+        [a[0][0] * b[1][0] - a[1][0] * b[0][0]]
+    ]
+
+}
+
+var cross_product_3d_rect_array_column_of_number = fn(a, b) 
+"
+[rect_array_util] function: cross_product_3d_rect_array_column_of_number: returns cross product (3D) of two column Rectangular ARRAYs of NUMBER.
+arguments: 2: ARRAY and ARRAY
+return value: ARRAY or NULL
+"
+{
+    return cross_product_3d_rect_array_column_of(a, b, "NUMBER")
+}
+
+var rect_array_not_row_col = fn(a, row, col) 
+"
+[rect_array_util] function: rect_array_not_row_col: returns a Rectangular ARRAY from another Rectangular ARRAY (values not in row and column).
+arguments: 3: ARRAY, NUMBER, and NUMBER
+return value: ARRAY or NULL
+"
+{
+    var sa = rect_array_size(a) 
+    if (sa == null) {
+        return null
+    } 
+    var r = []
+    each(a, fn(e, i) {
+        if (i != row) {
+            var col = col
+            var temp = []
+            each(e, fn(ee, ii) {
+                if (ii != col) {
+                    var temp = temp + ee
+                }
+            })
+            var r = r + temp
+        }
+    })
+    return r
+}
+
+var determinant_rect_array_of = fn(a, t) 
+"
+[rect_array_util] function: determinant_rect_array_of: returns the determinant of a square Rectangular ARRAY of particular type.
+arguments: 2: ARRAY and STRING
+return value: <any> or NULL
+"
+{
+    var s = is_square_rect_array_of(a, t)
+    if (!s == true) {
+        return null
+    } 
+    var s = rect_array_size_of(a, t)
+    if (s == null) {
+        return null
+    }
+    var s = s[0]
+    if (s <= 2) {
+        if (s == 1) {
+            return a[0][0]
+        } else {
+            return (a[0][0] * a[1][1]) - (a[0][1] * a[1][0]) 
+        }
+    } else {
+        var temp = []
+        var rect_array_not_row_col = rect_array_not_row_col
+        var determinant_rect_array_of = determinant_rect_array_of
+        each(a[0], fn(e, i) {
+            var m = rect_array_not_row_col(a, 0, i)
+            if (m != null) {
+                var d = e * determinant_rect_array_of(m, t)
+                var temp = temp + d
+            }
+        })
+        each(temp, fn(e, i) {
+            if (i % 2 == 1) {
+                set(temp, i, temp[i] * -1)
+            }
+        })
+        return sum(temp)
+    }
+}
+
+var determinant_rect_array_of_number = fn(a) 
+"
+[rect_array_util] function: determinant_rect_array_of_number: returns the determinant of a square Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: NUMBER or NULL
+"
+{
+    return determinant_rect_array_of(a, "NUMBER")
+}
+
+var minor_rect_array_of = fn(a, t) 
+"
+[rect_array_util] function: minor_rect_array_of: returns the minor of a square Rectangular ARRAY of particular type.
+arguments: 2: ARRAY and STRING
+return value: ARRAY or NULL
+"
+{
+    var s = is_square_rect_array_of(a, t)
+    if (!s == true) {
+        return null
+    } 
+    var s = rect_array_size_of(a, t)
+    if (s == null) {
+        return null
+    }
+    var r = []
+    if (s[0] <= 1) {
+        return r
+    }
+    var rect_array_not_row_col = rect_array_not_row_col
+    var determinant_rect_array_of = determinant_rect_array_of
+    each(a, fn(e, i) {
+        var a = a
+        var t = t
+        var temp = []
+        var rect_array_not_row_col = rect_array_not_row_col
+        var determinant_rect_array_of = determinant_rect_array_of
+        each(e, fn(ee, ii) {
+            var m = rect_array_not_row_col(a, i, ii)
+            var d = determinant_rect_array_of(m, t)
+            var temp = temp + d
+        })
+        var r = r + temp
+    })
+    return r
+}
+
+var minor_rect_array_of_number = fn(a) 
+"
+[rect_array_util] function: minor_rect_array_of_number: returns the minor of a square Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: ARRAY or NULL
+"
+{
+    return minor_rect_array_of(a, "NUMBER")
+}
+
+var inverse_rect_array_of = fn(a, t) 
+"
+[rect_array_util] function: inverse_rect_array_of: returns the inverse of a square Rectangular ARRAY of particular type.
+arguments: 2: ARRAY and STRING
+return value: ARRAY, BOOLEAN (false, if determinant=0) or NULL
+"
+{
+    var s = is_square_rect_array_of(a, t)
+    if (!s == true) {
+        return null
+    } 
+    var s = rect_array_size_of(a, t)
+    if (s == null) {
+        return null
+    }
+    var d = determinant_rect_array_of(a, t)
+    if (d == null | d == 0) {
+        return false
+    }
+    var m = minor_rect_array_of(a, t)
+    each(m, fn(e, i) {
+        var m = m
+        var x = 1
+        if (i % 2 == 1) {
+            var x = -1
+        }
+        each(e, fn(ee, ii) {
+            var y = 1
+            if (ii % 2 == 1) {
+                var y = -1
+            }
+            var y = y * x
+            set(m[i], ii, m[i][ii] * y)
+        })
+    })
+    var n = transpose_rect_array_of(m, t)
+    var r = mul_scalar_rect_array_of(1/d, n, t)
+    return r
+}
+
+var inverse_rect_array_of_number = fn(a) 
+"
+[rect_array_util] function: inverse_rect_array_of_number: returns the inverse of a square Rectangular ARRAY of NUMBER.
+arguments: 1: ARRAY
+return value: ARRAY, BOOLEAN (false, if determinant=0) or NULL
+"
+{
+    return inverse_rect_array_of(a, "NUMBER")
+}
+
+
