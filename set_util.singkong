@@ -1,0 +1,293 @@
+#
+    Set Util
+    set_util.singkong
+
+    Part of Singkong Programming Language Interpreter
+    (c) Noprianto <nopri.anto@icloud.com>
+
+    More information: https://nopri.github.io/singkong.html
+    Download Singkong: https://nopri.github.io/Singkong.jar
+    (License: Free to use or redistribute, no warranty)
+
+    To use this module:
+    load_module("set_util")
+;
+
+require(5.5)
+
+load_module("util")
+
+var create_set_from_array = fn(x) 
+"
+[util] function: create_set_from_array: creates a set (ARRAY) from ARRAY.
+arguments: 1: ARRAY
+return value: ARRAY or NULL
+" 
+{
+    if (!is(x, "ARRAY")) {
+        return null
+    }
+    var r = []
+    each(x, fn(e, i) {
+        if (!in(r, e)) {
+            var r = r + e
+        }
+    })
+    return r
+}
+
+var create_relation_from_array = fn(x) 
+"
+[util] function: create_relation_from_array: creates a relation (ARRAY) from ARRAY.
+arguments: 1: ARRAY
+return value: ARRAY or NULL
+" 
+{
+    if (!is(x, "ARRAY")) {
+        return null
+    }
+    var r = []
+    each(x, fn(e, i) {
+        if (is(e, "ARRAY")) {
+            if (len(e) == 2) {
+                var r = r + e
+            }
+        }
+    })
+    if (len(r) != len(x)) {
+        return null
+    }
+    return r
+}
+
+var is_relation = fn(x) 
+"
+[util] function: is_relation: returns whether an ARRAY is a relation.
+arguments: 1: ARRAY
+return value: BOOLEAN or NULL
+" 
+{
+    if (!is(x, "ARRAY")) {
+        return null
+    }
+    return len(x) == 2
+}
+
+var is_same_set = fn(x, y) 
+"
+[util] function: is_same_set: returns whether two sets are the same.
+arguments: 2: ARRAY and ARRAY
+return value: BOOLEAN or NULL
+" 
+{
+    var xx = create_set_from_array(x)
+    var yy = create_set_from_array(y)
+    if (xx == null | yy == null) {
+        return null
+    }
+    return array_equals(xx, yy)
+}
+
+var is_sub_set = fn(x, y) 
+"
+[util] function: is_sub_set: returns whether a set is a subset of another set.
+arguments: 2: ARRAY and ARRAY
+return value: BOOLEAN or NULL
+" 
+{
+    var xx = create_set_from_array(x)
+    var yy = create_set_from_array(y)
+    if (xx == null | yy == null) {
+        return null
+    }
+    var r = [true]
+    var c = 0
+    repeat {
+        if (c > len(xx) - 1) {
+            return false
+        }
+        if (!in(yy, xx[c])) {
+            set(r, 0, false)
+            return false
+        }
+        var c = c + 1
+    }
+    return r[0]
+}
+
+var set_intersection = fn(x, y) 
+"
+[util] function: set_intersection: returns the intersection of two sets.
+arguments: 2: ARRAY and ARRAY
+return value: ARRAY or NULL
+" 
+{
+    var xx = create_set_from_array(x)
+    var yy = create_set_from_array(y)
+    if (xx == null | yy == null) {
+        return null
+    }
+    var r = []
+    each(xx, fn(e, i) {
+        if (in(yy, e)) {
+            var r = r + e
+        }
+    })
+    each(yy, fn(e, i) {
+        if (in(xx, e)) {
+            var r = r + e
+        }
+    })
+    return create_set_from_array(r)
+}
+
+var set_union = fn(x, y) 
+"
+[util] function: set_union: returns the union of two sets.
+arguments: 2: ARRAY and ARRAY
+return value: ARRAY or NULL
+" 
+{
+    var xx = create_set_from_array(x)
+    var yy = create_set_from_array(y)
+    if (xx == null | yy == null) {
+        return null
+    }
+    return create_set_from_array(array_extend(xx, yy))
+}
+
+var set_diff = fn(x, y) 
+"
+[util] function: set_diff: returns the difference of two sets.
+arguments: 2: ARRAY and ARRAY
+return value: ARRAY or NULL
+" 
+{
+    return create_set_from_array(array_diff(x, y))
+}
+
+var set_product = fn(a, b) 
+"
+[util] function: set_product: returns the product of two sets.
+arguments: 2: ARRAY and ARRAY
+return value: ARRAY or NULL
+" 
+{
+    var aa = create_set_from_array(a)
+    var bb = create_set_from_array(b)
+    if (aa == null | bb == null) { 
+        return null 
+    }
+    var r = []
+    each(aa, fn(e, i) {
+        var r = r
+        each(bb, fn(ee, ii) {
+            var r = r + [e, ee]
+        })
+    })
+    return r
+}
+
+var is_relation_set = fn(a, b, c) 
+"
+[util] function: is_relation_set: returns whether a relation is a relation from a specified set to the other set.
+arguments: 3: ARRAY, ARRAY, and ARRAY
+return value: BOOLEAN or NULL
+" 
+{
+    var p = set_product(a, b)
+    var cc = create_relation_from_array(c)
+    if (p == null | cc == null) { 
+        return null 
+    }
+    var r = [true, true]
+    var i = 0
+    repeat {
+        if (i > len(cc) - 1) {
+            return false
+        } 
+        if (!in(p, cc[i])) {
+            set(r, 0, false)
+            set(r, 1, false)
+            return false
+        }    
+        var i = i + 1
+        if (r[1] == false) {
+            return false
+        }
+    }
+    return r[0]    
+}
+
+var is_reflexive_relation_set = fn(a, c) 
+"
+[util] function: is_reflexive_relation_set: returns whether a relation is a reflexive relation on a specified set.
+arguments: 2: ARRAY and ARRAY
+return value: BOOLEAN or NULL
+" 
+{
+    var p = create_set_from_array(a)
+    var cc = create_relation_from_array(c)
+    if (p == null | cc == null) { 
+        return null 
+    }
+    var r = [true, true]
+    var i = 0
+    var temp = []
+    repeat {
+        if (i > len(cc) - 1) {
+            return false
+        } 
+        if (cc[i][0] == cc[i][1]) {
+            var temp = temp + cc[i]
+        }
+        var i = i + 1
+        if (r[1] == false) {
+            return false
+        }
+    }
+    if (r[0] == false) {
+        return r[0] 
+    }
+    var temp = array_extend_all(temp)
+    return is_same_set(p, temp)   
+}
+
+var is_symmetric_relation_set = fn(a, c) 
+"
+[util] function: is_symmetric_relation_set: returns whether a relation is a symmetric relation on a specified set.
+arguments: 2: ARRAY and ARRAY
+return value: BOOLEAN or NULL
+" 
+{
+    var p = create_set_from_array(a)
+    var cc = create_relation_from_array(c)
+    if (p == null | cc == null) { 
+        return null 
+    }
+    var r = [true, true]
+    var i = 0
+    var temp = []
+    repeat {
+        if (i > len(cc) - 1) {
+            return false
+        } 
+        if (!(in(p, cc[i][0])) | !(in(p, cc[i][1]))) {
+            set(r, 0, false)
+            set(r, 1, false)
+            return false
+        }
+        if (!in(cc, reverse(array_copy(cc[i])))) {
+            set(r, 0, false)
+            set(r, 1, false)
+            return false
+        }
+        var i = i + 1
+        if (r[1] == false) {
+            return false
+        }
+    }
+    return r[0] 
+}
+
+

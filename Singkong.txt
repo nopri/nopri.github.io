@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 5.5 (2021-June-20 +07:00)
+Version: 5.6 (2021-June-22 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -99,7 +99,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 5.5
+        Singkong 5.6
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -296,6 +296,8 @@ hash, print, println, puts, string, type, types, variables
         [1, 2, [3]]
         >  array_extend([1,2], [3])
         [1, 2, 3]
+        >  array_extend_all([[1,2], [3,4], 5])
+        [1, 2, 3, 4, 5]
   - Using == operator:
         >  [] == []
         true
@@ -426,18 +428,22 @@ hash, print, println, puts, string, type, types, variables
         var b = array_copy(a)
         set(a, 1, "hello world")
         println(a, b)    
-  - set related functions: please use functions from util module:
-    - create_set_from_array
-    - is_reflexive_relation_set
-    - is_relation_set
-    - is_same_set
-    - is_sub_set
-    - is_symmetric_relation_set
-    - set_diff
-    - set_intersection
-    - set_product
-    - set_product_filtered
-    - set_union
+  - diff (using array_diff function from util module):
+        >  array_diff([1,2,3,4,5], [1,3,5])
+        [2, 4]
+  - set related functions: please use functions from set_util module:
+        create_relation_from_array
+        create_set_from_array
+        is_reflexive_relation_set
+        is_relation
+        is_relation_set
+        is_same_set
+        is_sub_set
+        is_symmetric_relation_set
+        set_diff
+        set_intersection
+        set_product
+        set_union
 - HASH
   - {}
   - hash table/dictionary
@@ -681,12 +687,14 @@ return value: <any type>
 
 
 To get a list of built-in modules, please call modules()
-["csv", "rect_array_util", "util"]
+>  modules()
+["csv", "rect_array_util", "set_util", "util"]
 
 To load a built-in module, please use built-in function load_module, 
 for example:
 >  load_module("csv")
 >  load_module("rect_array_util")
+>  load_module("set_util")
 >  load_module("util")
 
 Note: reusing function name from built-in modules as identifier is allowed:
@@ -706,13 +714,6 @@ return value: ARRAY or NULL (error)
 Functions in module: csv: 
 ["CSV_FROM_STRING", "CSV_FROM_STRING_DEFAULT", "CSV_FUNCTIONS", "CSV_TO_STRING", 
 "CSV_TO_STRING_DEFAULT"]
-
-Functions in module: util:
-["ARRAY_COPY", "ARRAY_DIFF", "CREATE_SET_FROM_ARRAY", "HASH_COPY", 
-"IS_REFLEXIVE_RELATION_SET", "IS_RELATION_SET", "IS_SAME_SET", "IS_SUB_SET", 
-"IS_SYMMETRIC_RELATION_SET", "MEAN", "MEDIAN", "MODE", "RANGE_", "SET_DIFF", 
-"SET_INTERSECTION", "SET_PRODUCT", "SET_PRODUCT_FILTERED", "SET_UNION", 
-"SORT_RECT_ARRAY_OF_NUMBER_BY_INDEX", "_NON_EMPTY_ARRAY_OF_NUMBER"]
 
 Functions in module: rect_array_util:
 ["ADD_RECT_ARRAY_OF", "ADD_RECT_ARRAY_OF_NUMBER", 
@@ -736,6 +737,16 @@ Functions in module: rect_array_util:
 "RECT_ARRAY_NOT_ROW_COL", "SUB_RECT_ARRAY_OF", "SUB_RECT_ARRAY_OF_NUMBER", 
 "TRACE_RECT_ARRAY_OF", "TRACE_RECT_ARRAY_OF_NUMBER", "TRANSPOSE_RECT_ARRAY_OF", 
 "TRANSPOSE_RECT_ARRAY_OF_NUMBER"]
+
+Functions in module: set_util:
+["CREATE_RELATION_FROM_ARRAY", "CREATE_SET_FROM_ARRAY", 
+"IS_REFLEXIVE_RELATION_SET", "IS_RELATION", "IS_RELATION_SET", "IS_SAME_SET", 
+"IS_SUB_SET", "IS_SYMMETRIC_RELATION_SET", "SET_DIFF", "SET_INTERSECTION", 
+"SET_PRODUCT", "SET_UNION"]
+
+Functions in module: util:
+["ARRAY_COPY", "ARRAY_DIFF", "HASH_COPY", "MEAN", "MEDIAN", "MODE", "RANGE_", 
+"SORT_RECT_ARRAY_OF_NUMBER_BY_INDEX", "_NON_EMPTY_ARRAY_OF_NUMBER"]
 
 
 -----------------------------------------------------------------------------
