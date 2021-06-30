@@ -13,7 +13,7 @@
     load_module("set_util")
 ;
 
-require(5.5)
+require(5.7)
 
 load_module("util")
 
@@ -57,7 +57,7 @@ return value: ARRAY or NULL
     if (len(r) != len(x)) {
         return null
     }
-    return r
+    return create_set_from_array(r)
 }
 
 var is_relation = fn(x) 
@@ -290,4 +290,412 @@ return value: BOOLEAN or NULL
     return r[0] 
 }
 
+var is_antisymmetric_relation_set = fn(a, c) 
+"
+[util] function: is_antisymmetric_relation_set: returns whether a relation is an antisymmetric relation on a specified set.
+arguments: 2: ARRAY and ARRAY
+return value: BOOLEAN or NULL
+" 
+{
+    var p = create_set_from_array(a)
+    var cc = create_relation_from_array(c)
+    if (p == null | cc == null) { 
+        return null 
+    }
+    var r = [true, true]
+    var i = 0
+    var temp = []
+    repeat {
+        if (i > len(cc) - 1) {
+            return false
+        } 
+        if (!(in(p, cc[i][0])) | !(in(p, cc[i][1]))) {
+            set(r, 0, false)
+            set(r, 1, false)
+            return false
+        }
 
+        if (in(cc, reverse(array_copy(cc[i])))) {
+            if (cc[i][0] != cc[i][1]) {
+                set(r, 0, false)
+                set(r, 1, false)
+                return false
+            }
+        }
+
+        var i = i + 1
+        if (r[1] == false) {
+            return false
+        }
+    }
+    return r[0] 
+}
+
+var get_relation_part = fn(a, x, index_) 
+"
+[util] function: get_relation_part: returns parts of relation, based on index.
+arguments: 3: ARRAY, <any>, and NUMBER (0, 1)
+return value: ARRAY or NULL
+" 
+
+{
+    var aa = create_relation_from_array(a)
+    if (aa == null) {
+        return null
+    }
+    if (!in([0, 1], index_)) {
+        return null
+    }
+    var r = []
+    each(aa, fn(e, i) {
+        if (e[index_] == x) {
+            var r = r + e
+        }
+    })
+    return r
+}
+
+var is_transitive_relation_set = fn(a, c) 
+"
+[util] function: is_transitive_relation_set: returns whether a relation is a transitive relation on a specified set.
+arguments: 2: ARRAY and ARRAY
+return value: BOOLEAN or NULL
+" 
+{
+    var p = create_set_from_array(a)
+    var cc = create_relation_from_array(c)
+    if (p == null | cc == null) { 
+        return null 
+    }
+    var r = [true, true]
+    var i = 0
+    var temp = []
+    repeat {
+        if (i > len(cc) - 1) {
+            return false
+        } 
+        if (!(in(p, cc[i][0])) | !(in(p, cc[i][1]))) {
+            set(r, 0, false)
+            set(r, 1, false)
+            return false
+        }
+        
+        var bc = get_relation_part(cc, cc[i][1], 0)
+        each(bc, fn(e, i) {
+            var ac = [cc[i][0], e[1]]
+            if (!in(cc, ac)) {
+                set(r, 0, false)
+                set(r, 1, false)
+                return false
+            }
+        })
+
+        var i = i + 1
+        if (r[1] == false) {
+            return false
+        }
+    }
+    return r[0] 
+}
+
+var set_power = fn(a) 
+"
+[util] function: set_power: returns the power set of a specified set.
+arguments: 1: ARRAY
+return value: ARRAY or NULL
+" 
+{
+    var aa = create_set_from_array(a)
+    if (aa == null) { 
+        return null 
+    }
+    var l = len(aa)
+    var c = 2 ^ l
+    var r = []
+    each(range(0, c), fn(e, i) {
+        var b = right(to_bin(e), l, "0")
+        var temp = []
+        var aa = aa
+        each(array(b), fn(ee, ii) {
+            if (ee == "1") {
+                var temp = temp + aa[ii]
+            }
+        })
+        var r = r + temp
+    })
+    return r
+}
+
+var is_function_set = fn(a, b, c, partial) 
+"
+[util] function: is_function_set: returns whether a function is a function from a specified set to the other set.
+arguments: 4: ARRAY, ARRAY, ARRAY, and BOOLEAN (partial function: true or false)
+return value: BOOLEAN or NULL
+" 
+{
+    if (!is(partial, "BOOLEAN")) {
+        return null 
+    }
+    var aa = create_set_from_array(a)
+    var bb = create_set_from_array(b)
+    var cc = create_relation_from_array(c)
+    if (aa == null | bb == null | cc == null) { 
+        return null 
+    }
+    var r = [true, true]
+    var x = []
+    var y = []
+    var i = 0
+    repeat {
+        if (i > len(cc) - 1) {
+            return false
+        }
+         
+        if (!(in(aa, cc[i][0])) | !(in(bb, cc[i][1]))) {
+            set(r, 0, false)
+            set(r, 1, false)
+            return false
+        }
+
+        if (!in(x, cc[i][0])) {
+            var x = x + cc[i][0]
+            var y = y + cc[i]
+        } else {
+            if (!in(y, cc[i])) {
+                set(r, 0, false)
+                set(r, 1, false)
+                return false
+            }
+        }
+
+        var i = i + 1
+        if (r[1] == false) {
+            return false
+        }
+    }
+    if (partial == false) {
+        if (!array_equals(aa, x)) {
+            return false
+        }
+    }
+    return r[0]    
+}
+
+var is_injective_function_set = fn(a, b, c, partial) 
+"
+[util] function: is_injective_function_set: returns whether a function is an injective function from a specified set to the other set.
+arguments: 4: ARRAY, ARRAY, ARRAY, and BOOLEAN (partial function: true or false)
+return value: BOOLEAN or NULL
+" 
+{
+    if (!is(partial, "BOOLEAN")) {
+        return null 
+    }
+    var aa = create_set_from_array(a)
+    var bb = create_set_from_array(b)
+    var cc = create_relation_from_array(c)
+    if (aa == null | bb == null | cc == null) { 
+        return null 
+    }
+    var r = [true, true]
+    var x = []
+    var y = []
+    var z = []
+    var i = 0
+    repeat {
+        if (i > len(cc) - 1) {
+            return false
+        }
+         
+        if (!(in(aa, cc[i][0])) | !(in(bb, cc[i][1]))) {
+            set(r, 0, false)
+            set(r, 1, false)
+            return false
+        }
+
+        if (!in(x, cc[i][0])) {
+            var x = x + cc[i][0]
+            var y = y + cc[i]
+        } else {
+            if (!in(y, cc[i])) {
+                set(r, 0, false)
+                set(r, 1, false)
+                return false
+            }
+        }
+
+        if (!in(z, cc[i][1])) {
+            var z = z + cc[i][1]
+        } else {
+            set(r, 0, false)
+            set(r, 1, false)
+            return false        
+        }
+        
+        var i = i + 1
+        if (r[1] == false) {
+            return false
+        }
+    }
+    if (partial == false) {
+        if (!array_equals(aa, x)) {
+            return false
+        }
+    }
+    return r[0]    
+}
+
+var is_surjective_function_set = fn(a, b, c, partial) 
+"
+[util] function: is_surjective_function_set: returns whether a function is a surjective function from a specified set to the other set.
+arguments: 4: ARRAY, ARRAY, ARRAY, and BOOLEAN (partial function: true or false)
+return value: BOOLEAN or NULL
+" 
+{
+    if (!is(partial, "BOOLEAN")) {
+        return null 
+    }
+    var aa = create_set_from_array(a)
+    var bb = create_set_from_array(b)
+    var cc = create_relation_from_array(c)
+    if (aa == null | bb == null | cc == null) { 
+        return null 
+    }
+    var r = [true, true]
+    var x = []
+    var y = []
+    var z = []
+    var i = 0
+    repeat {
+        if (i > len(cc) - 1) {
+            return false
+        }
+         
+        if (!(in(aa, cc[i][0])) | !(in(bb, cc[i][1]))) {
+            set(r, 0, false)
+            set(r, 1, false)
+            return false
+        }
+
+        if (!in(x, cc[i][0])) {
+            var x = x + cc[i][0]
+            var y = y + cc[i]
+        } else {
+            if (!in(y, cc[i])) {
+                set(r, 0, false)
+                set(r, 1, false)
+                return false
+            }
+        }
+
+        if (!in(z, cc[i][1])) {
+            var z = z + cc[i][1]
+        }
+        
+        var i = i + 1
+        if (r[1] == false) {
+            return false
+        }
+    }
+
+    if (!array_equals(bb, z)) {
+        return false
+    }
+
+    if (partial == false) {
+        if (!array_equals(aa, x)) {
+            return false
+        }
+    }
+    return r[0]    
+}
+
+var is_bijective_function_set = fn(a, b, c, partial) 
+"
+[util] function: is_bijective_function_set: returns whether a function is a bijective function from a specified set to the other set.
+arguments: 4: ARRAY, ARRAY, ARRAY, and BOOLEAN (partial function: true or false)
+return value: BOOLEAN or NULL
+" 
+{
+    if (!is(partial, "BOOLEAN")) {
+        return null 
+    }
+    var aa = create_set_from_array(a)
+    var bb = create_set_from_array(b)
+    var cc = create_relation_from_array(c)
+    if (aa == null | bb == null | cc == null) { 
+        return null 
+    }
+    var r = [true, true]
+    var x = []
+    var y = []
+    var z = []
+    var i = 0
+    repeat {
+        if (i > len(cc) - 1) {
+            return false
+        }
+         
+        if (!(in(aa, cc[i][0])) | !(in(bb, cc[i][1]))) {
+            set(r, 0, false)
+            set(r, 1, false)
+            return false
+        }
+
+        if (!in(x, cc[i][0])) {
+            var x = x + cc[i][0]
+            var y = y + cc[i]
+        } else {
+            if (!in(y, cc[i])) {
+                set(r, 0, false)
+                set(r, 1, false)
+                return false
+            }
+        }
+
+        if (!in(z, cc[i][1])) {
+            var z = z + cc[i][1]
+        } else {
+            set(r, 0, false)
+            set(r, 1, false)
+            return false        
+        }
+        
+        var i = i + 1
+        if (r[1] == false) {
+            return false
+        }
+    }
+
+    if (!array_equals(bb, z)) {
+        return false
+    }
+
+    if (partial == false) {
+        if (!array_equals(aa, x)) {
+            return false
+        }
+    }
+    return r[0]    
+}
+
+var inverse_bijective_function_set = fn(a, b, c, partial) 
+"
+[util] function: inverse_bijective_function_set: returns inverse of a bijective function from a specified set to the other set.
+arguments: 4: ARRAY, ARRAY, ARRAY, and BOOLEAN (partial function: true or false)
+return value: ARRAY or NULL
+" 
+{
+    if (!is_bijective_function_set(a, b, c, partial) == true) {
+        return null
+    }
+    
+    var r = []
+    var cc = create_relation_from_array(c)
+    each(cc, fn(e, i) {
+        var t = [e[1], e[0]]
+        var r = r + t
+    })
+    
+    return r 
+}

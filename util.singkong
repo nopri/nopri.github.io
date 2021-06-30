@@ -13,7 +13,7 @@
     load_module("util")
 ;
 
-require(5.5)
+require(5.7)
 
 var _non_empty_array_of_number = fn(x) 
 "
@@ -201,3 +201,221 @@ return value: ARRAY or NULL
     return x
 }
 
+var variance_ = fn(x, sample) 
+"
+[util] function: variance_: returns the variance of an ARRAY.
+arguments: 2: ARRAY (of NUMBER) and BOOLEAN (is sample)
+return value: NUMBER or NULL
+" 
+{
+    var m = mean(x)
+    if (m == null) {
+        return m
+    }
+    
+    if (!is(sample, "BOOLEAN")) {
+        return null
+    }
+
+    var s = []
+    each(x, fn(e, i) {
+        var s = s + ((e - m) ^ 2)
+    })
+    
+    var n = len(x)
+    if (sample == true) {
+        var n = n - 1
+    }
+    
+    return sum(s) / n
+}
+
+var variance = fn(x) 
+"
+[util] function: variance: returns the variance of an ARRAY.
+arguments: 1: ARRAY (of NUMBER)
+return value: NUMBER or NULL
+" 
+{
+    return variance_(x, false)
+}
+
+var variance_sample = fn(x) 
+"
+[util] function: variance: returns the variance (sample) of an ARRAY.
+arguments: 1: ARRAY (of NUMBER)
+return value: NUMBER or NULL
+" 
+{
+    return variance_(x, true)
+}
+
+var standard_deviation_ = fn(x, sample) 
+"
+[util] function: standard_deviation: returns the standard deviation of an ARRAY.
+arguments: 2: ARRAY (of NUMBER) and BOOLEAN (is sample)
+return value: NUMBER or NULL
+" 
+{
+    var s = variance_(x, sample)
+    if (s == null) {
+        return s
+    }
+    
+    return sqrt(s)
+}
+
+var standard_deviation = fn(x) 
+"
+[util] function: standard_deviation: returns the standard deviation of an ARRAY.
+arguments: 1: ARRAY (of NUMBER)
+return value: NUMBER or NULL
+" 
+{
+    return standard_deviation_(x, false)
+}
+
+var standard_deviation_sample = fn(x) 
+"
+[util] function: standard_deviation: returns the standard deviation (sample) of an ARRAY.
+arguments: 1: ARRAY (of NUMBER)
+return value: NUMBER or NULL
+" 
+{
+    return standard_deviation_(x, true)
+}
+
+var factorial = fn(x) 
+"
+[util] function: factorial: returns factorial of a NUMBER (integer >= 0).
+arguments: 1: NUMBER
+return value: NUMBER or NULL
+" 
+{
+    if (!is(x, "NUMBER")) {
+        return null
+    }
+    var x = integer(x)
+    if (x < 0) {
+        return null
+    }
+    
+    if (x == 0) {
+        return 1
+    }
+    
+    var r = [1]
+    each(range(2, x+1), fn(e, i) {
+        set(r, 0, r[0] * e)
+    })
+    
+    return r[0]
+}
+
+var binomial_coefficient = fn(n, k) 
+"
+[util] function: binomial_coefficient: returns binomial coefficient.
+arguments: 2: NUMBER (total, integer >= 0) and NUMBER (choice, integer >= 0, <= total)
+return value: NUMBER or NULL
+" 
+{
+    if (!is(n, "NUMBER") | !is(k, "NUMBER")) {
+        return null
+    }
+
+    var n = integer(n)
+    var k = integer(k)
+
+    if (n < 0 | k < 0 | k > n) {
+        return null
+    }
+
+    var c = factorial(n) / (factorial(k) * factorial(n-k))
+    return c
+}
+
+var binomial_distribution = fn(n, k, p) 
+"
+[util] function: binomial_distribution: returns probability (binomial).
+arguments: 3: NUMBER (total), NUMBER (choice), and NUMBER (probability)
+return value: NUMBER or NULL
+" 
+{
+    if (!is(n, "NUMBER") | !is(k, "NUMBER") | !is(p, "NUMBER")) {
+        return null
+    }
+    if (p < 0 | p > 1) {
+        return null
+    }
+    
+    var c = binomial_coefficient(n, k)
+    if (c == null) {
+        return null
+    }
+    
+    var f = (p^k) * ((1-p) ^ (n-k))
+    return c*f
+}
+
+var geometric_distribution_success = fn(x, p) 
+"
+[util] function: geometric_distribution_success: returns probability (geometric, success).
+arguments: 2: NUMBER (trial, integer > 0) and NUMBER (probability, success)
+return value: NUMBER or NULL
+" 
+{
+    if (!is(x, "NUMBER") | !is(p, "NUMBER")) {
+        return null
+    }
+    if (p < 0 | p > 1) {
+        return null
+    }
+    var x = integer(x)
+    if (x < 1) {
+        return null
+    }
+    
+    var r = ((1-p) ^ (x-1)) * p
+    return r
+}
+
+var geometric_distribution_failure = fn(x, p) 
+"
+[util] function: geometric_distribution_failure: returns probability (geometric, failure).
+arguments: 2: NUMBER (trial, integer >= 0) and NUMBER (probability, failure)
+return value: NUMBER or NULL
+" 
+{
+    if (!is(x, "NUMBER") | !is(p, "NUMBER")) {
+        return null
+    }
+    if (p < 0 | p > 1) {
+        return null
+    }
+    var x = integer(x)
+    if (x < 0) {
+        return null
+    }
+    
+    var r = ((1-p) ^ x) * p
+    return r
+}
+
+var poisson_distribution = fn(k, e) 
+"
+[util] function: poisson_distribution: returns probability (Poisson).
+arguments: 2: NUMBER (occurence, integer >= 0) and NUMBER (event, >= 0)
+return value: NUMBER or NULL
+" 
+{
+    if (!is(k, "NUMBER") | !is(e, "NUMBER")) {
+        return null
+    }
+    var k = integer(k)
+    if (k < 0 | e < 0) {
+        return null
+    }
+    
+    var r = ((e ^ k) * (_e() ^ -e)) / factorial(k)
+    return r
+}
