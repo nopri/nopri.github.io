@@ -5,7 +5,7 @@
     (c) Noprianto <nopri.anto@icloud.com>, 2020-2021
     Website: nopri.github.io
     License: MIT
-    Version: 0.5
+    Version: 0.6
     
     Requires Singkong version 4.8 or later
     Download Monkey.singkong: https://nopri.github.io/monkey.singkong
@@ -44,7 +44,7 @@
 
 require(4.8)
 
-var MONKEY_VERSION = "0.5"
+var MONKEY_VERSION = "0.6"
 var MONKEY_TITLE = "Monkey.singkong " + MONKEY_VERSION
 var MONKEY_MESSAGE = "Press ENTER to quit"
 
@@ -1641,14 +1641,19 @@ var MONKEY_EVALUATOR = {
     
     "eval_program": fn(x, program, env_) {
         var r = [monkey_object_create("", "")]
+        var MONKEY_OBJECT_TYPES = MONKEY_OBJECT_TYPES
         each(program["statements"], fn(e, i) {
             var ret = x["eval"](x, e, env_)
             set(r, 0, ret)
-            if (ret["object_type"] == MONKEY_OBJECT_TYPES["RETURN_VALUE_OBJ"]) {
-                return ret["value"]
+            if (ret != null) {
+                if (ret["object_type"] == MONKEY_OBJECT_TYPES["RETURN_VALUE_OBJ"]) {
+                    return ret["value"]
+                }
             }
-            if (ret["object_type"] == MONKEY_OBJECT_TYPES["ERROR_OBJ"]) {
-                return ret
+            if (ret != null) {
+                if (ret["object_type"] == MONKEY_OBJECT_TYPES["ERROR_OBJ"]) {
+                    return ret
+                }
             }
         })
         return r[0]
@@ -1656,6 +1661,7 @@ var MONKEY_EVALUATOR = {
     
     "eval_block_statement": fn(x, block, env_) {
         var r = [monkey_object_create("", "")]
+        var MONKEY_OBJECT_TYPES = MONKEY_OBJECT_TYPES
         each(block["statements"], fn(e, i) {
             var ret = x["eval"](x, e, env_)
             set(r, 0, ret)

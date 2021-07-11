@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 5.7 (2021-July-01 +07:00)
+Version: 5.8 (2021-July-11 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -99,7 +99,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 5.7
+        Singkong 5.8
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -1122,32 +1122,7 @@ To keep it as simple as possible:
   Registered FUNCTION will be called whenever the default event for specified
   COMPONENT should be handled. 
   Please note that specified FUNCTION must not require any arguments.
-  Known limitations in event handler:
-  - To output text in event handler, please use GUI related built-in functions 
-    (for example, please use message instead of println).
-        reset()
-        var hello = "Hello World"
-        var b = component("button", "Button")
-        add(b)
-        event(b, fn() {
-                # println has no effect here;
-                println(hello)
-                message(hello)
-        })
-        show()
-  - If there is any error in event handler, no error messages will be printed.
-        reset()
-        var hello = "Hello World"
-        var b = component("button", "Button")
-        add(b)
-        event(b, fn() {
-                message(hello)
-                # error;
-                error
-                # stop here;
-                message(hello)
-        })
-        show()
+  Note:
   - Please also read about nested function in Singkong documentation (FUNCTION).
     code:
         var hello = "Hello World"
