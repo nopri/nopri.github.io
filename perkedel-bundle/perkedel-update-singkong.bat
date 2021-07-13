@@ -1,5 +1,5 @@
 @echo off
 
-jre\bin\java.exe -jar Singkong.jar perkedel\update.singkong
+jre\bin\java.exe -DSINGKONG=0 -jar Singkong.jar perkedel\update.singkong
 
 pause

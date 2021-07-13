@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 5.8 (2021-July-11 +07:00)
+Version: 5.9 (2021-July-14 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -99,7 +99,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 5.8
+        Singkong 5.9
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -278,7 +278,7 @@ hash, print, println, puts, string, type, types, variables
   - index operator
   - modify STRING: please use built-in function set
   - related functions: array_string, base64_decode, base64_encode, call, center, 
-    count, cr, crlf, dir, empty, endswith, equals, eval, in, index, isalpha,
+    count, cr, crlf, dir, empty, endswith, equals, eval, in, index, isalnum, isalpha,
     isdigit, islower, isupper, join, left, len, 
     lf, lower, matches, md5, md5_file, newline, ord, quote, random_string, replace, right, 
     set, sha1, sha1_file, sha256, sha256_file, sha384, sha384_file, sha512, sha512_file, 
@@ -289,8 +289,8 @@ hash, print, println, puts, string, type, types, variables
     rename, temp_file, write 
   - HTTP client related functions: http_delete, http_get, http_get_file, 
     http_head, http_post, http_post_override, http_put, url_decode, url_encode 
-  - system related functions: cwd, inet_address_local, separator, user
-  - Singkong related functions: load, load_module, load_resource
+  - system related functions: cwd, inet_address_local, separator, user, userhome
+  - Singkong related functions: load, load_file_or_resource, load_module, load_resource
   - extended: x_base64_decode_file, x_base64_encode_file
   - sorting: lexicographically
 - ARRAY
@@ -626,8 +626,10 @@ hash, print, println, puts, string, type, types, variables
     remove, remove_e, remove_n, remove_s, remove_w, reset, resizable, 
     screen, show, size, start, start_timer, statusbar, stop, stop_timer, 
     tab_add, tab_clear, tab_remove, table_add,  
-    table_bottom, table_center, table_column, table_left, table_middle, table_print,   
-    table_remove, table_right, table_scroll, table_top, timer, timer_running, title, wait
+    table_bottom, table_center, table_column, table_column_count, 
+    table_column_name, table_get_value, table_left, table_middle, table_print,   
+    table_remove, table_right, table_row_count, table_scroll, table_set_value, 
+    table_top, timer, timer_running, title, wait
   - GUI input/output functions: confirm, directory, input, open, message, 
     password, save
     (if GUI is not available: simpler text-based version)
@@ -664,37 +666,40 @@ To get a list of built-in functions, please call builtins()
 "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", 
 "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTERACTIVE", 
 "IS", "IS_ARRAY_OF", "IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", 
-"IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", "IS_UPDATE_AVAILABLE", "ISALPHA", 
-"ISDIGIT", "ISLOWER", "ISUPPER", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", 
-"LEN", "LF", "LOAD", "LOAD_MODULE", "LOAD_RESOURCE", "LOG", "LOG10", 
-"LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MD5_FILE", "MENUBAR", 
-"MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", "MONTH", "NEWLINE", "NUMBER", 
-"NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_NOT", "NUMBER_OR", 
-"NUMBER_SCALE", "NUMBER_TO_BYTE", "NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", 
-"ORD", "PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
-"PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", "PRINT", 
-"PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", 
-"QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", 
-"READ_BYTE", "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", 
-"REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", 
-"RESIZABLE", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", 
-"SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", 
-"SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
+"IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", "IS_UPDATE_AVAILABLE", "ISALNUM", 
+"ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", "JOIN", "KEYS", "KEYWORDS", "LAST", 
+"LEFT", "LEN", "LF", "LOAD", "LOAD_FILE_OR_RESOURCE", "LOAD_MODULE", 
+"LOAD_RESOURCE", "LOG", "LOG10", "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", 
+"MD5", "MD5_FILE", "MENUBAR", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", 
+"MONTH", "NEWLINE", "NUMBER", "NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", 
+"NUMBER_NOT", "NUMBER_OR", "NUMBER_SCALE", "NUMBER_TO_BYTE", 
+"NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", "ORD", "PANEL_ADD", "PANEL_CLEAR", 
+"PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_HASH", "PART", "PARTS", 
+"PASSWORD", "PLAY_SOUND", "POP", "PRINT", "PRINTER", "PRINTLN", 
+"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
+"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "READ_BYTE", 
+"RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", 
+"REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", 
+"REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", "SEPARATOR", 
+"SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", 
+"SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
 "SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
 "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", 
 "START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", 
-"STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", "SUM", 
-"SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", 
-"TABLE_CENTER", "TABLE_COLUMN", "TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", 
-"TABLE_REMOVE", "TABLE_RIGHT", "TABLE_SCROLL", "TABLE_TOP", "TAN", "TANH", 
-"TEMP_FILE", "THREAD", "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", 
-"TITLE", "TO_BIN", "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", 
-"TYPE", "TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "VALUES", 
-"VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", 
-"X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
+"STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", 
+"SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
+"TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", 
+"TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", "TABLE_MIDDLE", 
+"TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", "TABLE_SCROLL", 
+"TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", 
+"THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", 
+"TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
+"UPPER", "URL_DECODE", "URL_ENCODE", "USER", "USERHOME", "VALUES", "VARIABLES", 
+"WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", "X_BASE64_DECODE_FILE", 
+"X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-293
+301
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -1489,7 +1494,7 @@ To keep it as simple as possible:
 9. Database application development
 Singkong supports simple database application development (SQL relational 
 database management system). 
-- Every connection to a database system is a DATABASE in Singkong.
+- Every valid connection to a database system is a DATABASE in Singkong.
 - To connect to a database system, please use built-in function database. This
   function accepts four arguments:
   - STRING: database driver, Java class found in class path
@@ -1566,13 +1571,15 @@ database management system).
   - STRING -> Java: String
   Unsupported Singkong data types in query: STRING representation
   Database CLOB -> Singkong STRING, or STRING representation (if error)
+  Database Date or Timestamp -> Singkong DATE
+  Database Integer, Bigint, or Decimal -> Singkong NUMBER
 - To run an ARRAY of SQL queries, please use built-in function query. This
   function accepts two arguments: DATABASE and ARRAY of ARRAY. Each element 
   in the specified ARRAY must be an ARRAY of two elements: STRING (SQL command
   and ARRAY of arguments). SQL queries are run in transaction, which will
   be committed if no errors occurred. 
   If optional third argument (BOOLEAN) is true (default: false), include column 
-  labels in the result.
+  labels and types in the result.
     >  var d = database("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:test;create=true", "", "")
     >  var q = [ ["create table test(a integer, b integer)", []] ]
     >  var r = query(d, q)
@@ -1592,11 +1599,11 @@ database management system).
     [[[1, 1], [2, 2]]]
     >  var r = query(d, q, true)
     >  r
-    [[["A", "B"], [1, 1], [2, 2]]]
+    [[[["A", "INTEGER"], ["B", "INTEGER"]], [1, 1], [2, 2]]]
     >  var q = [ ["select * from test", []], ["insert into test(a, b) values(?, ?)", [3, 3]] ]
     >  var r = query(d, q, true)
     >  r
-    [[["A", "B"], [1, 1], [2, 2]], 1]
+    [[[["A", "INTEGER"], ["B", "INTEGER"]], [1, 1], [2, 2]], 1]
 - Singkong.jar comes with simple GUI database tool:
   - Table list (double-click to run SQL SELECT command)
   - Query tool (run SQL query)
@@ -1615,7 +1622,8 @@ database management system).
     - Please run another Singkong interpreter
         >  var d = database("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:test;create=true", "", "")
         >  d
-        DATABASE (null)
+        >  type(d)
+        "NULL"
 
 
 -----------------------------------------------------------------------------
@@ -2392,6 +2400,9 @@ To bundle application file with Singkong interpreter:
   - To copy a resource to a file, please use built-in function copy_resource
   - To evaluate/run Singkong code saved as resource, 
     please use built-in function load_resource
+  - To evaluate/run Singkong code (file in current working directory or 
+    (if failed), /resource/<value> in interpreter file), please use 
+    built-in function load_file_or_resource
   
 
 -----------------------------------------------------------------------------
