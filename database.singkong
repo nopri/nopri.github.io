@@ -3,7 +3,7 @@ var t = component("table", "A,B", true)
 add(t)
 
 var d = database("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:test;create=true", "", "")
-if (database_connected(d)) {
+if (d != null) {
     var q = [ ["create table test(a integer, b varchar(64))", []] ]
     var r = query(d, q)
     
