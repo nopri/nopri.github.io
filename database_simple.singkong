@@ -1,0 +1,21 @@
+load_module("db_util")
+
+reset()
+var t = component("table", "A,B", true)
+add(t)
+
+var d = db_connect_embed("test")
+if (d != null) {
+    db_create_table_embed(d, "test", [["a", "integer."], ["b", "varchar."]])
+    
+    db_insert(d, "test", {"a": random(0,100), "b": "hello"})    
+    db_update(d, "test", {"b = ": "hello"}, {"b": "Hello World"})    
+
+    var r = db_select_all(d, "test")
+    if (!empty(r)) {
+        config(t, "contents", r[0])
+    }
+}
+
+show()
+

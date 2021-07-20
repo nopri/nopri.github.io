@@ -1,0 +1,532 @@
+#
+    Database Util
+    db_util.singkong
+
+    Part of Singkong Programming Language Interpreter
+    (c) Noprianto <nopri.anto@icloud.com>
+
+    More information: https://nopri.github.io/singkong.html
+    Download Singkong: https://nopri.github.io/Singkong.jar
+    (License: Free to use or redistribute, no warranty)
+
+    To use this module:
+    load_module("db_util")
+;
+
+require(6.0)
+
+var db_driver = fn(a) 
+"
+[db_util] function: db_driver: returns built-in database driver from name.
+arguments: 1: STRING (name)
+return value: ARRAY or NULL
+"
+{
+    var d_postgresql = {
+        "id": "serial", 
+        "varchar": "varchar", 
+        "varchar.": "varchar default ''", 
+        "text": "text", 
+        "text.": "text default ''", 
+        "decimal": "decimal(19,4)", 
+        "decimal.": "decimal(19,4) default 0", 
+        "integer": "integer", 
+        "integer.": "integer default 0", 
+        "boolean": "boolean", 
+        "boolean.": "boolean default false", 
+        "date": "date",
+        "date.": "date default current_date",
+        "timestamp": "timestamp",
+        "timestamp.": "timestamp default current_timestamp"
+    }
+    var d_derby = {
+        "id": "integer not null generated always as identity (start with 1, increment by 1)", 
+        "varchar": "varchar (32672)", 
+        "varchar.": "varchar (32672) default ''", 
+        "text": "clob", 
+        "text.": "clob default ''", 
+        "decimal": "decimal(19,4)", 
+        "decimal.": "decimal(19,4) default 0", 
+        "integer": "integer", 
+        "integer.": "integer default 0", 
+        "boolean": "boolean", 
+        "boolean.": "boolean default false", 
+        "date": "date",
+        "date.": "date default current_date",
+        "timestamp": "timestamp",
+        "timestamp.": "timestamp default current_timestamp"
+    }
+    var d = {
+        "postgresql": ["org.postgresql.Driver", "jdbc:postgresql:", d_postgresql],
+        "pgsql": ["org.postgresql.Driver", "jdbc:postgresql:", d_postgresql],
+        "postgres": ["org.postgresql.Driver", "jdbc:postgresql:", d_postgresql],
+        "derby": ["org.apache.derby.jdbc.ClientDriver", "jdbc:derby:", d_derby],
+        "embedded": ["org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:", d_derby],
+    }
+    return d[string(a)]
+}
+
+var create_field_from_array = fn(x) 
+"
+[db_util] function: create_field_from_array: creates table field name and type from ARRAY.
+arguments: 1: ARRAY
+return value: ARRAY or NULL
+" 
+{
+    if (!is(x, "ARRAY")) {
+        return null
+    }
+    var r = []
+    each(x, fn(e, i) {
+        if (is(e, "ARRAY")) {
+            if (len(e) == 2 & is_array_of(e, "STRING")) {
+                var r = r + e
+            }
+        }
+    })
+    if (len(r) != len(x)) {
+        return null
+    }
+    return r
+}
+
+var db_connect = fn(a, b, c, d) 
+"
+[db_util] function: db_connect: returns connected database.
+arguments: 4: STRING (name), STRING (database URL, prepended with jdbc:<database>:), STRING (user), and STRING (password)
+return value: DATABASE or NULL (not connected)
+"
+{
+    var v = db_driver(lower(string(a)))
+    if (v == null) {
+        return null
+    }
+    return database(v[0], v[1] + string(b), string(c), string(d))
+}
+
+var db_connect_embed_ = fn(a, b) 
+"
+[db_util] function: db_connect_embed_: returns connected embedded database.
+arguments: 2: STRING (name) and BOOLEAN (create, if not exists)
+return value: DATABASE or NULL (not connected)
+"
+{
+    var u = string(a)
+    if (b == true) {
+        var u = u + ";create=true"
+    }
+    return db_connect("embedded", u, "", "")
+}
+
+var db_connect_embed = fn(a) 
+"
+[db_util] function: db_connect_embed: returns connected embedded database (create, if not exists).
+arguments: 1: STRING (name)
+return value: DATABASE or NULL (not connected)
+"
+{
+    return db_connect_embed_(a, true)
+}
+
+var db_connect_embed_user = fn(a) 
+"
+[db_util] function: db_connect_embed_user: returns connected embedded database (in home directory; create, if not exists).
+arguments: 1: STRING (name)
+return value: DATABASE or NULL (not connected)
+"
+{
+    var h = userhome()
+    if (h == null) {
+        return h
+    }
+    return db_connect_embed_(h + separator() + a, true)
+}
+
+var db_create_table = fn(a, b, c, d) 
+"
+[db_util] function: db_create_table: creates a database table.
+arguments: 4: DATABASE, STRING (database name), STRING (table name), and ARRAY (of ARRAY (of STRING: name, type))
+return value: ARRAY or NULL (error)
+"
+{
+    if ((!is(a, "DATABASE")) | (!is(b, "STRING")) | (!is(c, "STRING")) | (!is(d, "ARRAY"))) {
+        return null
+    }
+    var c = trim(c)
+    if (empty(c)) {
+        return null
+    }
+    var fields = create_field_from_array(d)
+    if (fields == null) {
+        return null
+    }
+    var v = db_driver(lower(b))
+    if (v == null) {
+        return null
+    }
+    var f = v[2]
+    var cols = []
+    each(fields, fn(e, i) {
+        var t = f[lower(e[1])]
+        if (t != null) {
+            var col = e[0] + " " + t
+            var cols = cols + col
+        }
+    })
+    var cols = join(",", cols)
+    var cmd = "create table " + c + " (" + cols + ")"
+    return [query(a, [[cmd, []]]), cmd]
+}
+
+var db_create_table_derby = fn(a, b, c) 
+"
+[db_util] function: db_create_table_derby: creates a database table (Derby).
+arguments: 3: DATABASE, STRING (table name), and ARRAY (of ARRAY (of STRING: name, type))
+return value: ARRAY or NULL (error)
+"
+{
+    return db_create_table(a, "derby", b, c)
+}
+
+var db_create_table_embed = fn(a, b, c) 
+"
+[db_util] function: db_create_table_embed: creates a database table (Derby, Embedded).
+arguments: 3: DATABASE, STRING (table name), and ARRAY (of ARRAY (of STRING: name, type))
+return value: ARRAY or NULL (error)
+"
+{
+    return db_create_table(a, "derby", b, c)
+}
+
+var db_create_table_postgresql = fn(a, b, c) 
+"
+[db_util] function: db_create_table_postgresql: creates a database table (PostgreSQL).
+arguments: 3: DATABASE, STRING (table name), and ARRAY (of ARRAY (of STRING: name, type))
+return value: ARRAY or NULL (error)
+"
+{
+    return db_create_table(a, "postgresql", b, c)
+}
+
+var db_query_simple = fn(a, b) 
+"
+[db_util] function: db_query_simple: runs single, simple SQL query.
+arguments: 2: DATABASE and STRING (SQL command)
+return value: ARRAY or NULL (error)
+"
+{
+    if ((!is(a, "DATABASE")) |  (!is(b, "STRING"))) {
+        return null
+    }
+    return query(a, [[b, []]])
+}
+
+var db_query_single = fn(a, b, c) 
+"
+[db_util] function: db_query_single: runs single SQL query (with argument). 
+arguments: 3: DATABASE, STRING (SQL command), and ARRAY (of argument (BOOLEAN, DATE, NULL, NUMBER, STRING))
+return value: ARRAY or NULL (error)
+"
+{
+    if ((!is(a, "DATABASE")) |  (!is(b, "STRING")) |  (!is(c, "ARRAY"))) {
+        return null
+    }
+    return query(a, [[b, c]])
+}
+
+var db_select = fn(a, b, c, d, e) 
+"
+[db_util] function: db_select: runs SQL select query from specified table. 
+arguments: 5: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: value), and STRING (additional clauses: order by, offset, fetch / limit, etc)
+return value: ARRAY or NULL (error)
+"
+{
+    if ((!is(a, "DATABASE")) |  (!is(b, "STRING")) |  (!is(c, "ARRAY")) |  (!is(d, "HASH")) |  (!is(e, "STRING"))) {
+        return null
+    }
+    var b = trim(b)
+    if (empty(b)) {
+        return null
+    }
+    var cols = "*"
+    if (!empty(c)) {
+        var cols = join(",", c)
+    }
+    var kk = ""
+    var vv = []
+    var key = keys(d)
+    var k = []
+    each(key, fn(e, i) {
+        var k = k + (e + " ? ")
+    })
+    if (!empty(k)) {
+        var kk = " where " + join(" and ", k)
+        var vv = values(d)
+    }
+    var cmd = "select " + cols + " from " + b + kk + " " + e
+    return query(a, [[cmd, vv]])
+}
+
+var db_select_all = fn(a, b) 
+"
+[db_util] function: db_select_all: runs SQL select query from specified table (all columns, all rows). 
+arguments: 2: DATABASE and STRING (table name)
+return value: ARRAY or NULL (error)
+"
+{
+    return db_select(a, b, [], {}, "")
+}
+
+var db_select_derby = fn(a, b, c, d, e, f, g) 
+"
+[db_util] function: db_select_derby: runs SQL select query from specified table (Derby). 
+arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: value), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
+return value: ARRAY or NULL (error)
+"
+{
+    var ee = ""
+    if (is(e, "ARRAY")) {
+        if (!empty(e)) {
+            var ee = " order by " + join(",", e)
+        }
+    }
+    var ff = ""
+    if (is(f, "NUMBER")) {        
+        var f = integer(f)
+        if (f >= 0) {
+            var ff = " offset " + f + " rows " 
+        }
+    }
+    var gg = ""
+    if (is(g, "NUMBER")) { 
+        var g = integer(g)
+        if (g >= 1) {       
+            var gg = " fetch first " + g + " rows only "
+        }
+    }    
+    return db_select(a, b, c, d, ee + ff + gg)
+}
+
+var db_select_embed = fn(a, b, c, d, e, f, g) 
+"
+[db_util] function: db_select_embed: runs SQL select query from specified table (Derby, Embedded). 
+arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: value), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
+return value: ARRAY or NULL (error)
+"
+{
+    return db_select_derby(a, b, c, d, e, f, g)
+}
+
+var db_select_postgresql = fn(a, b, c, d, e, f, g) 
+"
+[db_util] function: db_select_postgresql: runs SQL select query from specified table (PostgreSQL). 
+arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: value), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
+return value: ARRAY or NULL (error)
+"
+{
+    var ee = ""
+    if (is(e, "ARRAY")) {
+        if (!empty(e)) {
+            var ee = " order by " + join(",", e)
+        }
+    }
+    var ff = ""
+    if (is(f, "NUMBER")) {        
+        var f = integer(f)
+        if (f >= 0) {
+            var ff = " offset " + f + " rows " 
+        }
+    }
+    var gg = ""
+    if (is(g, "NUMBER")) { 
+        var g = integer(g)
+        if (g >= 1) {       
+            var gg = " limit " + g 
+        }
+    }    
+    return db_select(a, b, c, d, ee + ff + gg)
+}
+
+var db_insert = fn(a, b, c) 
+"
+[db_util] function: db_insert: runs SQL insert query into specified table. 
+arguments: 3: DATABASE, STRING (table name), and HASH (data, key: column, value: value)
+return value: ARRAY or NULL (error)
+"
+{
+    if ((!is(a, "DATABASE")) |  (!is(b, "STRING")) |  (!is(c, "HASH")) ) {
+        return null
+    }
+    var b = trim(b)
+    if (empty(b)) {
+        return null
+    }
+    var k = keys(c)
+    if (empty(k)) {
+        return null
+    }
+    var cols = "(" + join(",", k) + ")"
+    var p = []
+    var v = []
+    each(k, fn(e, i) {
+        var p = p + "?"
+        var v = v + c[e]
+    })
+    var vals = "(" + join(",", p) + ")"
+    var cmd = "insert into " + b + " " + cols + " values " + vals;
+    return query(a, [[cmd, v]])
+}
+
+var db_update = fn(a, b, c, d) 
+"
+[db_util] function: db_update: runs SQL update query on specified table. 
+arguments: 4: DATABASE, STRING (table name), HASH (where clause, key: expression, value: value), and HASH (new value, key: column, value: value)
+return value: ARRAY or NULL (error)
+"
+{
+    if ((!is(a, "DATABASE")) |  (!is(b, "STRING")) |  (!is(c, "HASH")) |  (!is(d, "HASH"))) {
+        return null
+    }
+    var b = trim(b)
+    if (empty(b)) {
+        return null
+    }
+    if (empty(d)) {
+        return null
+    }
+    var w = []
+    var ww = []
+    var www = ""
+    var k = keys(c)
+    if (!empty(k)) {
+        each(k, fn(e, i) {
+            var w = w + (e + " ? ")
+            var ww = ww + c[e]
+        })
+        var www = " where " + join(" and ", w)
+    }
+    var n = []
+    var nn = []
+    var v = keys(d)
+    if (!empty(v)) {
+        each(v, fn(e, i) {
+            var n = n + (e + "=?")
+            var nn = nn + d[e]
+        })
+    }
+    var nnn = join(",", n)
+    var cmd = "update " + b + " set " + nnn + www
+    var vv = array_extend_all([nn, ww])
+    return query(a, [[cmd, vv]])
+}
+
+var db_delete = fn(a, b, c) 
+"
+[db_util] function: db_delete: runs SQL delete query from specified table. 
+arguments: 4: DATABASE, STRING (table name), and HASH (where clause, key: expression, value: value)
+return value: ARRAY or NULL (error)
+"
+{
+    if ((!is(a, "DATABASE")) |  (!is(b, "STRING")) |  (!is(c, "HASH")) ) {
+        return null
+    }
+    var b = trim(b)
+    if (empty(b)) {
+        return null
+    }
+    var w = []
+    var ww = []
+    var www = ""
+    var k = keys(c)
+    if (!empty(k)) {
+        each(k, fn(e, i) {
+            var w = w + (e + " ? ")
+            var ww = ww + c[e]
+        })
+        var www = " where " + join(" and ", w)
+    }
+    var cmd = "delete from " + b + www
+    return query(a, [[cmd, ww]])
+}
+
+var query_result = fn(r) 
+"
+[db_util] function: query_get: returns query result from ARRAY. 
+arguments: 1: ARRAY (query result)
+return value: ARRAY or NULL
+"
+{
+    if (!is(r, "ARRAY")) {
+        return null
+    }
+    if (empty(r)) {
+        return null
+    }
+    var r = r[0]
+    if (!is(r, "ARRAY")) {
+        return null
+    }
+    if (empty(r)) {
+        return null
+    }
+    return r
+}
+
+var db_last = fn(a, b) 
+"
+[db_util] function: db_last: returns last insert id. 
+arguments: 2: DATABASE and STRING (SQL command)
+return value: NUMBER or NULL (error)
+"
+{
+    if ((!is(a, "DATABASE")) |  (!is(b, "STRING"))) {
+        return null
+    }
+    var b = trim(b)
+    if (empty(b)) {
+        return null
+    }
+    var r = query(a, [[b, []]])
+    var r = query_result(r)
+    if (is(r, "ARRAY")) {
+        if (!empty(r)) {
+            var r = r[0]
+            if (is(r, "ARRAY")) {
+                if (!empty(r)) {
+                    return r[0]
+                }
+            }
+        }
+    }
+    return null
+}
+
+var db_last_derby = fn(a) 
+"
+[db_util] function: db_last_derby: calls IDENTITY_VAL_LOCAL function and returns the result (Derby). 
+arguments: 1: DATABASE
+return value: NUMBER or NULL (error)
+"
+{
+    return db_last(a, "values IDENTITY_VAL_LOCAL()")
+}
+
+var db_last_embed = fn(a) 
+"
+[db_util] function: db_last_embed: calls IDENTITY_VAL_LOCAL function and returns the result (Derby, Embedded). 
+arguments: 1: DATABASE
+return value: NUMBER or NULL (error)
+"
+{
+    return db_last_derby(a)
+}
+
+var db_last_postgresql = fn(a) 
+"
+[db_util] function: db_last_derby: calls LASTVAL function and returns the result (PostgreSQL). 
+arguments: 1: DATABASE
+return value: NUMBER or NULL (error)
+"
+{
+    return db_last(a, "select LASTVAL()")
+}

@@ -13,7 +13,7 @@
     load_module("util")
 ;
 
-require(5.7)
+require(6.1)
 
 var _non_empty_array_of_number = fn(x) 
 "
@@ -404,7 +404,7 @@ return value: NUMBER or NULL
 var poisson_distribution = fn(k, e) 
 "
 [util] function: poisson_distribution: returns probability (Poisson).
-arguments: 2: NUMBER (occurence, integer >= 0) and NUMBER (event, >= 0)
+arguments: 2: NUMBER (occurrence, integer >= 0) and NUMBER (event, >= 0)
 return value: NUMBER or NULL
 " 
 {
