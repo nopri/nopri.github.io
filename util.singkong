@@ -13,7 +13,7 @@
     load_module("util")
 ;
 
-require(6.1)
+require(6.2)
 
 var _non_empty_array_of_number = fn(x) 
 "
@@ -419,3 +419,74 @@ return value: NUMBER or NULL
     var r = ((e ^ k) * (_e() ^ -e)) / factorial(k)
     return r
 }
+
+var simple_string_encrypt = fn(a, b) 
+"
+[util] function: simple_string_encrypt: encrypts a STRING.
+arguments: 2: STRING (string) and STRING (key)
+return value: STRING or NULL
+"
+{
+    if ((!is(a, "STRING")) | (!is(b, "STRING")))  {
+        return null
+    }
+    if (empty(a) | empty(b)) {
+        return null
+    }
+    var r = []
+    var x = len(b)
+    each(array(a), fn(e, i) {
+        var k = b[i % x]
+        var z = number_xor(ord(e), ord(k))
+        var r = r + chr(z)
+    })
+    return join("", r)
+}
+
+var simple_string_decrypt = fn(a, b) 
+"
+[util] function: simple_string_decrypt: decrypts a STRING.
+arguments: 2: STRING (string) and STRING (key)
+return value: STRING or NULL
+"
+{
+    return simple_string_encrypt(a, b)
+}
+
+var simple_file_encrypt = fn(a, b, c) 
+"
+[util] function: simple_file_encrypt: encrypts a file.
+arguments: 3: STRING (path, input file), STRING (key), and STRING (path, output file)
+return value: BOOLEAN or NULL
+"
+{
+    if ((!is(a, "STRING")) | (!is(b, "STRING")) | (!is(c, "STRING")))  {
+        return null
+    }
+    if (empty(a) | empty(b) | empty(c)) {
+        return null
+    }
+    var f = read_byte(a)
+    if (f == null) {
+        return null
+    }
+    var r = []
+    var x = len(b)
+    each(f, fn(e, i) {
+        var k = b[i % x]
+        var z = number_xor(e, ord(k))
+        var r = r + z
+    })
+    return write_byte(c, r)
+}
+
+var simple_file_decrypt = fn(a, b, c) 
+"
+[util] function: simple_file_decrypt: decrypts a file.
+arguments: 3: STRING (path, input file), STRING (key), and STRING (path, output file)
+return value: BOOLEAN or NULL
+"
+{
+    return simple_file_encrypt(a, b, c)
+}
+

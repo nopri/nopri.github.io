@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 6.1 (2021-July-20 +07:00)
+Version: 6.2 (2021-July-21 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -99,7 +99,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 6.1
+        Singkong 6.2
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -293,6 +293,25 @@ hash, print, println, puts, string, type, types, variables
   - Singkong related functions: load, load_file_or_resource, load_module, load_resource
   - extended: x_base64_decode_file, x_base64_encode_file
   - sorting: lexicographically
+  - simple string or file encryption/decryption: 
+    please use functions from util module:
+    - string:
+        load_module("util")
+        var a = "Hello World"
+        var b = "Singkong"
+        var c = simple_string_encrypt(a, b)
+        var d = simple_string_decrypt(c, b)
+        println(a, b, a == d)
+    - file:
+        load_module("util")
+        var a = "input.txt"
+        var b = "Singkong"
+        var c = "input.data"
+        var d = "output.txt"
+        write(a, "Hello World")
+        var e = simple_file_encrypt(a, b, c)
+        var f = simple_file_decrypt(c, b, d)
+        println(e, f, md5_file(a) == md5_file(d))
 - ARRAY
   - []
   - array of mixed data types
@@ -620,7 +639,7 @@ hash, print, println, puts, string, type, types, variables
     remove, remove_e, remove_n, remove_s, remove_w, reset, resizable, 
     screen, show, size, start, start_timer, statusbar, stop, stop_timer, 
     tab_add, tab_clear, tab_remove, table_add,  
-    table_bottom, table_center, table_column, table_column_count, 
+    table_bottom, table_center, table_column, table_column_count, table_column_info,
     table_column_name, table_get_value, table_left, table_middle, table_print,   
     table_remove, table_right, table_row_count, table_scroll, table_set_value, 
     table_top, timer, timer_running, title, wait
@@ -632,6 +651,11 @@ hash, print, println, puts, string, type, types, variables
   - Sound: beep, play_sound
   - array of component check: is_array_of_component_of
   - extended: x_edit_print
+  - user interface related functions: please use functions from ui_util module:
+        table_add_fill
+        table_add_row_fill
+        table_fill
+        table_to_text
 - DATABASE
   - Please read: Database application development
   - related functions: database, database_connected, query
@@ -710,17 +734,17 @@ To get a list of built-in functions, please call builtins()
 "STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", 
 "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
 "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", 
-"TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", "TABLE_MIDDLE", 
-"TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", "TABLE_SCROLL", 
-"TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", 
-"THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", 
-"TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
-"UPPER", "URL_DECODE", "URL_ENCODE", "USER", "USERHOME", "VALUES", "VARIABLES", 
-"WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", "X_BASE64_DECODE_FILE", 
-"X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
+"TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", 
+"TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", 
+"TABLE_SCROLL", "TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", 
+"THREAD", "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", 
+"TO_BIN", "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", 
+"TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "USERHOME", "VALUES", 
+"VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", 
+"X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-303
+304
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -738,7 +762,7 @@ return value: <any type>
 
 To get a list of built-in modules, please call modules()
 >  modules()
-["csv", "db_util", "rect_array_util", "set_util", "util"]
+["csv", "db_util", "rect_array_util", "set_util", "ui_util", "util"]
 
 To load a built-in module, please use built-in function load_module, 
 for example:
@@ -746,6 +770,7 @@ for example:
 >  load_module("db_util")
 >  load_module("rect_array_util")
 >  load_module("set_util")
+>  load_module("ui_util")
 >  load_module("util")
 
 Note: reusing function name from built-in modules as identifier is allowed:
@@ -807,13 +832,17 @@ Functions in module: set_util:
 "IS_TRANSITIVE_RELATION_SET", "SET_DIFF", "SET_INTERSECTION", "SET_POWER", 
 "SET_PRODUCT", "SET_UNION"]
 
+Functions in module: ui_util:
+["TABLE_ADD_FILL", "TABLE_ADD_ROW_FILL", "TABLE_FILL", "TABLE_TO_TEXT"]
+
 Functions in module: util:
 ["ARRAY_COPY", "ARRAY_DIFF", "BINOMIAL_COEFFICIENT", "BINOMIAL_DISTRIBUTION", 
 "FACTORIAL", "GEOMETRIC_DISTRIBUTION_FAILURE", "GEOMETRIC_DISTRIBUTION_SUCCESS", 
 "HASH_COPY", "MEAN", "MEDIAN", "MODE", "POISSON_DISTRIBUTION", "RANGE_", 
-"SORT_RECT_ARRAY_OF_NUMBER_BY_INDEX", "STANDARD_DEVIATION", 
-"STANDARD_DEVIATION_", "STANDARD_DEVIATION_SAMPLE", "VARIANCE", "VARIANCE_", 
-"VARIANCE_SAMPLE", "_NON_EMPTY_ARRAY_OF_NUMBER"]
+"SIMPLE_FILE_DECRYPT", "SIMPLE_FILE_ENCRYPT", "SIMPLE_STRING_DECRYPT", 
+"SIMPLE_STRING_ENCRYPT", "SORT_RECT_ARRAY_OF_NUMBER_BY_INDEX", 
+"STANDARD_DEVIATION", "STANDARD_DEVIATION_", "STANDARD_DEVIATION_SAMPLE", 
+"VARIANCE", "VARIANCE_", "VARIANCE_SAMPLE", "_NON_EMPTY_ARRAY_OF_NUMBER"]
 
 
 -----------------------------------------------------------------------------
@@ -1518,6 +1547,33 @@ To keep it as simple as possible:
         })
 
         show()
+- Using ui_util module:
+  - table fill and table to text:
+    - code:
+            load_module("ui_util")
+            reset()
+            var t = component("table", "A,B,C")
+            table_left(t, 0)
+            table_center(t, 1)
+            table_right(t, 2)
+            var e = component("edit", "")
+            config(e, "font", ["monospaced", 0, 10])
+            table_add_fill(t, 0)
+            var tt = table_to_text(t, [10, 20, 30])
+            config(e, "contents", tt)
+            add([t, e])
+            println(tt)
+            show()
+    - output:
+            ================================================================
+            |    A     |         B          |              C               |
+            ================================================================
+            |0         |         0          |                             0|
+            ----------------------------------------------------------------
+            |0         |         0          |                             0|
+            ----------------------------------------------------------------
+            |0         |         0          |                             0|
+            ================================================================
 
 
 -----------------------------------------------------------------------------
@@ -1857,7 +1913,7 @@ database management system).
             PostgreSQL:
                 >  db_update(d_pgsql, "test_table", {}, {"d": 12.34})
                 [2]
-    G. Update (where)
+    H. Update (where)
             Derby:
                 >  db_update(d_derby, "test_table", {"e > ": 10000, "a < ": 2}, {"d": 12.345})
                 [1]
@@ -1867,7 +1923,7 @@ database management system).
             PostgreSQL:
                 >  db_update(d_pgsql, "test_table", {"e > ": 10000, "a < ": 2}, {"d": 12.345})
                 [1]
-    H. Delete (where)
+    I. Delete (where)
             Derby:
                 >  db_delete(d_derby, "test_table", {"a > ": 1})
                 [1]
@@ -1877,7 +1933,7 @@ database management system).
             PostgreSQL:
                 >  db_delete(d_pgsql, "test_table", {"a > ": 1})
                 [1]
-    I. Simple query (without argument)
+    J. Simple query (without argument)
             Derby:
                 >  db_query_simple(d_derby, "select * from test_table")
                 [[[1, "Test", "", 12.3450, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:57:35]]]
@@ -1887,7 +1943,7 @@ database management system).
             PostgreSQL:
                 >  db_query_simple(d_pgsql, "select * from test_table")
                 [[[1, "Test", "", 12.3450, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:58:46]]]
-    J. Single query (with argument)
+    K. Single query (with argument)
             Derby:
                 >  db_query_single(d_derby, "select a, b from test_table where a > ?", [0])
                 [[[1, "Test"]]]
@@ -1897,7 +1953,7 @@ database management system).
             PostgreSQL:
                 >  db_query_single(d_pgsql, "select a, b from test_table where a > ?", [0])
                 [[[1, "Test"]]]
-    K. Delete (all)
+    L. Delete (all)
             Derby:
                 >  db_delete(d_derby, "test_table", {})
                 [1]

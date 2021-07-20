@@ -1,0 +1,146 @@
+#
+    User Interface Util
+    ui_util.singkong
+
+    Part of Singkong Programming Language Interpreter
+    (c) Noprianto <nopri.anto@icloud.com>
+
+    More information: https://nopri.github.io/singkong.html
+    Download Singkong: https://nopri.github.io/Singkong.jar
+    (License: Free to use or redistribute, no warranty)
+
+    To use this module:
+    load_module("ui_util")
+;
+
+require(6.2)
+
+var table_to_text = fn(a, b) 
+"
+[ui_util] function: table_to_text: returns text representation of a table (COMPONENT).
+arguments: 2: COMPONENT (table) and ARRAY (of NUMBER (integer), column width)
+return value: STRING or NULL
+"
+{
+    if ((!is(a, "COMPONENT")) | (!is_array_and_of(b, "NUMBER"))) {
+        return null
+    }
+    if (component_type(a) != "table") {
+        return null
+    }
+    if (len(b) != table_column_count(t)) {
+        return null
+    }
+    var c = []
+    each(b, fn(e, i) {
+        var c = c + integer(e)
+    })
+    var columns = table_column_info(t)
+    if (columns == null) {
+        return null
+    }
+    var headers = []
+    each(columns, fn(e, i) {
+        var w = c[i]
+        var s = e[0]
+        var h = slice(s, 0, w)
+        var h = center(h, w, " ")
+        var headers = headers + h
+    })
+    var rows = []
+    var contents = get(a, "contents")
+    each(contents, fn(e, i) {
+        var temp = []
+        each(e, fn(ee, ii) {
+            var w = c[ii]
+            var h = slice(ee, 0, w)
+            var n = columns[ii][1]
+            var f = {
+                0: left,
+                1: center,
+                2: right
+            }
+            var t = f[n](h, w, " ")
+            var temp = temp + t
+        }) 
+        var row = "|" + join("|", temp) + "|"
+        var rows = rows + row
+    })    
+    var header = "|" + join("|", headers) + "|"
+    var s1 = newline() + "=" * len(header) + newline()
+    var s2 = newline() + "-" * len(header) + newline()
+    return s1 + header + s1 + join(s2, rows) + s1
+}
+
+var table_fill = fn(a, b) 
+"
+[ui_util] function: table_fill: fills a table (COMPONENT).
+arguments: 2: COMPONENT (table) and <any>
+return value: NUMBER or NULL
+"
+{
+    if ((!is(a, "COMPONENT"))) {
+        return null
+    }
+    if (component_type(a) != "table") {
+        return null
+    }
+    var b = string(b)
+    var r = [0]
+    var cols = table_column_count(a)
+    var rows = table_row_count(a)
+    each(range(0, rows), fn(e, i) {
+        each(range(0, cols), fn(ee, ii) {
+            table_set_value(a, b, e, ee)
+            set(r, 0, r[0]+1)
+        })
+    })
+    return r[0]
+}
+
+var table_add_row_fill = fn(a, b, c) 
+"
+[ui_util] function: table_add_row_fill: adds rows and fills a table (COMPONENT).
+arguments: 3: COMPONENT (table), NUMBER (rows), and <any>
+return value: NUMBER or NULL
+"
+{
+    if ((!is(a, "COMPONENT")) | (!is(b, "NUMBER")) ) {
+        return null
+    }
+    if (component_type(a) != "table") {
+        return null
+    }
+    if (b < 1) {
+        return null
+    }
+    var c = string(c)
+    var cols = table_column_count(a)
+    var row = []
+    var rows = []
+    each(range(0, cols), fn(e, i) {
+        var row = row + c
+    })
+    each(range(0, b), fn(e, i) {
+        var rows = rows + row
+    })
+    table_add(a, rows)
+    return cols * b
+}
+
+var table_add_fill = fn(a, b) 
+"
+[ui_util] function: table_add_fill: adds rows (= column count) and fills a table (COMPONENT).
+arguments: 2: COMPONENT (table) and <any>
+return value: NUMBER or NULL
+"
+{
+    if ((!is(a, "COMPONENT"))) {
+        return null
+    }
+    if (component_type(a) != "table") {
+        return null
+    }
+    return table_add_row_fill(a, table_column_count(a), b)
+}
+
