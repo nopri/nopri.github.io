@@ -1,0 +1,76 @@
+load_module("db_util")
+
+var d = db_connect_embed("database_test")
+if (d == null) {
+    message("Cannot connect to database", "Error")
+    exit()
+}
+db_create_table_embed(d, "products", [["id", "id"], ["name", "varchar."], ["price", "decimal."]])
+
+var reload = fn() {
+    config(t, "contents", [])
+    var r = query_result(db_select_all(d, "products"))
+    var rr = []
+    if (r != null) {
+        each(r, fn(e, i) {
+            var rr = rr + [e[0], e[1], number_group(e[2], ",", ".")]
+        })    
+    }
+    config(t, "contents", rr)
+}
+
+reset()
+var g = component("grid", "")
+var t = component("table", "ID, NAME, PRICE")
+table_right(t, 0)
+table_right(t, 2)
+var b_new = component("button", "New")
+var b_del = component("button", "Delete")
+grid_add(g, t, 0, 0, 3, 1, 1.0, 1.0, 3, 0, 5, 5, 5, 5)
+grid_add(g, b_new, 0, 1, 1, 1, 0.5, 0.0, 3, 0, 5, 5, 5, 5)
+grid_add(g, b_del, 1, 1, 1, 1, 0.5, 0.0, 3, 0, 5, 5, 5, 5)
+
+var g_detail = component("grid", "")
+config(g_detail, "border", "Detail")
+var l_name = component("label", "Name")
+var t_name = component("text", "")
+var l_price = component("label", "Price")
+var t_price = component("text", "")
+var b_save = component("button", "Save")
+grid_add(g_detail, l_name, 0, 0, 1, 1, 0.0, 0.5, 0, 1, 5, 5, 5, 5)
+grid_add(g_detail, t_name, 1, 0, 1, 1, 1.0, 0.5, 1, 1, 5, 5, 5, 5)
+grid_add(g_detail, l_price, 2, 0, 1, 1, 0.0, 0.5, 0, 1, 5, 5, 5, 5)
+grid_add(g_detail, t_price, 3, 0, 1, 1, 0.1, 0.5, 1, 1, 5, 5, 5, 5)
+grid_add(g_detail, b_save, 4, 0, 1, 1, 0.0, 0.5, 1, 1, 5, 5, 5, 5)
+
+grid_add(g, g_detail, 0, 2, 3, 1, 1.0, 0.0, 3, 0, 5, 5, 5, 5)
+add(g)
+
+event(b_new, fn() {
+    config(t_name, "contents", "")
+    config(t_price, "contents", "")
+    config(t_name, "focus", true)
+})
+
+event(b_save, fn() {
+    var n = trim(get(t_name, "contents"))
+    var p = get(t_price, "contents")
+    var pp = number(p)
+    var fp = number_group(pp, ",", ".")
+    if (empty(n)) {
+        message("Please fill in product name", "Error")
+    } else {
+        var w = fp + newline() + words_en(p) + newline() + words_id(p)
+        var x = n + newline() + w
+        var conf = confirm("Are you sure you want to add: " + x , "Please Confirm")
+        if (conf == "OK") {
+            var res = db_insert(d, "products", {"name": n, "price": pp})
+            reload()
+        }
+    }
+})
+
+reload()
+title("Products")
+closing("Are you sure you want to quit this application?", "Please confirm")
+show()

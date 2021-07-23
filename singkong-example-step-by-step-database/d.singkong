@@ -1,0 +1,19 @@
+load_module("db_util")
+
+var d = db_connect_embed("database_test")
+if (d == null) {
+    message("Cannot connect to database", "Error")
+    exit()
+}
+db_create_table_embed(d, "products", [["id", "id"], ["name", "varchar."], ["price", "decimal."]])
+
+reset()
+var t = component("table", "ID, NAME, PRICE")
+table_right(t, 0)
+table_right(t, 2)
+
+add(t)
+
+title("Products")
+closing("Are you sure you want to quit this application?", "Please confirm")
+show()

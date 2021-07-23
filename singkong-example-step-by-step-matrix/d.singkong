@@ -1,0 +1,30 @@
+load_module("ui_util")
+load_module("rect_array_util")
+
+var functions = [["Square", is_square_rect_array_of_number],
+    ["Diagonal", is_diagonal_rect_array_of_number],
+    ["Identity", is_identity_rect_array_of_number],
+    ["Upper Triangular", is_upper_triangular_rect_array_of_number],
+    ["Lower Triangular", is_lower_triangular_rect_array_of_number],
+    ["Zero", is_zero_rect_array_of_number],
+    ["Symmetric", is_symmetric_rect_array_of_number],
+    ["Add (itself)", add_rect_array_of_number, null],
+    ["Subtract (itself)", sub_rect_array_of_number, null],
+    ["Multiply (itself)", mul_rect_array_of_number, null],
+    ["Trace", trace_rect_array_of_number],
+    ["Transpose", transpose_rect_array_of_number],
+    ["Determinant", determinant_rect_array_of_number],
+    ["Inverse", inverse_rect_array_of_number]]
+
+reset()
+var t = component("table", "A,B,C,D,E,F,G,H,I,J")
+var r = component("table", "Property, Value")
+each(functions, fn(e, i) {
+    table_add(r, [[e[0]]])
+})
+table_add_fill(t, "")
+add([t, r])
+
+title("Matrix")
+closing("Are you sure you want to quit this application?", "Please confirm")
+show()

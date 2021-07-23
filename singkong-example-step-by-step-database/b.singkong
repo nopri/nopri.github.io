@@ -1,0 +1,10 @@
+reset()
+var t = component("table", "ID, NAME, PRICE")
+table_right(t, 0)
+table_right(t, 2)
+
+add(t)
+
+title("Products")
+closing("Are you sure you want to quit this application?", "Please confirm")
+show()
