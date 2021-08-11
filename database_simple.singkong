@@ -9,7 +9,7 @@ if (d != null) {
     db_create_table_embed(d, "test", [["a", "integer."], ["b", "varchar."]])
     
     db_insert(d, "test", {"a": random(0,100), "b": "hello"})    
-    db_update(d, "test", {"b = ": "hello"}, {"b": "Hello World"})    
+    db_update(d, "test", {"b = ": ["hello", ""]}, {"b": "Hello World"})    
 
     var r = db_select_all(d, "test")
     if (!empty(r)) {

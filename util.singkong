@@ -13,7 +13,7 @@
     load_module("util")
 ;
 
-require(6.2)
+require(6.3)
 
 var _non_empty_array_of_number = fn(x) 
 "
@@ -488,5 +488,45 @@ return value: BOOLEAN or NULL
 "
 {
     return simple_file_encrypt(a, b, c)
+}
+
+var number_group_c_p = fn(a) 
+"
+[util] function: number_group_c_p: returns STRING representation of NUMBER, grouped by separator characters (grouping/thousands separator: comma and decimal sign: period). 
+arguments: 1: NUMBER
+return value: STRING (empty=error)
+"
+{
+    return number_group(a, ",", ".")
+}
+
+var number_group_p_c = fn(a) 
+"
+[util] function: number_group_p_c: returns STRING representation of NUMBER, grouped by separator characters (grouping/thousands separator: period and decimal sign: comma). 
+arguments: 1: NUMBER
+return value: STRING (empty=error)
+"
+{
+    return number_group(a, ".", ",")
+}
+
+var number_group_s_p = fn(a) 
+"
+[util] function: number_group_s_p: returns STRING representation of NUMBER, grouped by separator characters (grouping/thousands separator: space and decimal sign: period). 
+arguments: 1: NUMBER
+return value: STRING (empty=error)
+"
+{
+    return number_group(a, " ", ".")
+}
+
+var number_group_s_c = fn(a) 
+"
+[util] function: number_group_s_c: returns STRING representation of NUMBER, grouped by separator characters (grouping/thousands separator: space and decimal sign: comma). 
+arguments: 1: NUMBER
+return value: STRING (empty=error)
+"
+{
+    return number_group(a, " ", ",")
 }
 

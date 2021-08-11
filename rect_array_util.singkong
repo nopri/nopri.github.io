@@ -13,7 +13,7 @@
     load_module("rect_array_util")
 ;
 
-require(5.4)
+require(6.3)
 
 var is_square_rect_array_of = fn(a, t) 
 "
@@ -832,6 +832,9 @@ return value: ARRAY, BOOLEAN (false, if determinant=0) or NULL
     var d = determinant_rect_array_of(a, t)
     if (d == null | d == 0) {
         return false
+    }
+    if (s[0] == 1) {
+        return [[1/a[0][0]]]
     }
     var m = minor_rect_array_of(a, t)
     each(m, fn(e, i) {

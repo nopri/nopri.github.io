@@ -16,23 +16,6 @@ var functions = [["Square", is_square_rect_array_of_number],
     ["Determinant", determinant_rect_array_of_number],
     ["Inverse", inverse_rect_array_of_number]]
 
-var get_matrix = fn(a) {
-    var ret = []
-    each(a, fn(e, i) {
-        var row = []
-        each(e, fn(ee, ii) {
-            var ee_ = trim(ee)
-            if (!empty(ee_)) { 
-                var row = row + number(ee_) 
-            }
-        })
-        if (!empty(row)) {
-            var ret = ret + row
-        }
-    })
-    return ret
-}
-
 reset()
 var t = component("table", "A,B,C,D,E,F,G,H,I,J")
 var r = component("table", "Property, Value")
@@ -44,7 +27,7 @@ add([t, r])
 
 var b = component("button", "Run")
 event(b, fn() {
-    var m = get_matrix(get(t, "contents"))
+    var m = table_get_array_number(t)
     config(r, "contents", [])
     each(functions, fn(e, i) {
         if (len(e) == 3) {

@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 6.2 (2021-July-21 +07:00)
+Version: 6.3 (2021-August-12 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -99,7 +99,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 6.2
+        Singkong 6.3
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -242,7 +242,7 @@ hash, print, println, puts, string, type, types, variables
         true
         >  _pi()
         3.1415926535897930
-  - mean, median, mode, range (using built-in util module):
+  - mean, median, mode, range (using util module):
         >  load_module("util")
         >  var a = [0, 1, 2, 3, 4, 3, 2, 1, 0, 0]
         >  mean(a)
@@ -253,6 +253,12 @@ hash, print, println, puts, string, type, types, variables
         [0, 3]
         >  range_(a)
         4
+  - number grouping: built-in function: number_group
+    using util module:
+        number_group_c_p
+        number_group_p_c
+        number_group_s_c
+        number_group_s_p
   - more functions in util module:
         binomial_coefficient
         binomial_distribution
@@ -655,6 +661,10 @@ hash, print, println, puts, string, type, types, variables
         table_add_fill
         table_add_row_fill
         table_fill
+        table_get_array_
+        table_get_array_number
+        table_get_array_string
+        table_to_html
         table_to_text
 - DATABASE
   - Please read: Database application development
@@ -833,12 +843,15 @@ Functions in module: set_util:
 "SET_PRODUCT", "SET_UNION"]
 
 Functions in module: ui_util:
-["TABLE_ADD_FILL", "TABLE_ADD_ROW_FILL", "TABLE_FILL", "TABLE_TO_TEXT"]
+["TABLE_ADD_FILL", "TABLE_ADD_ROW_FILL", "TABLE_FILL", "TABLE_GET_ARRAY_", 
+"TABLE_GET_ARRAY_NUMBER", "TABLE_GET_ARRAY_STRING", "TABLE_TO_HTML", 
+"TABLE_TO_TEXT"]
 
 Functions in module: util:
 ["ARRAY_COPY", "ARRAY_DIFF", "BINOMIAL_COEFFICIENT", "BINOMIAL_DISTRIBUTION", 
 "FACTORIAL", "GEOMETRIC_DISTRIBUTION_FAILURE", "GEOMETRIC_DISTRIBUTION_SUCCESS", 
-"HASH_COPY", "MEAN", "MEDIAN", "MODE", "POISSON_DISTRIBUTION", "RANGE_", 
+"HASH_COPY", "MEAN", "MEDIAN", "MODE", "NUMBER_GROUP_C_P", "NUMBER_GROUP_P_C", 
+"NUMBER_GROUP_S_C", "NUMBER_GROUP_S_P", "POISSON_DISTRIBUTION", "RANGE_", 
 "SIMPLE_FILE_DECRYPT", "SIMPLE_FILE_ENCRYPT", "SIMPLE_STRING_DECRYPT", 
 "SIMPLE_STRING_ENCRYPT", "SORT_RECT_ARRAY_OF_NUMBER_BY_INDEX", 
 "STANDARD_DEVIATION", "STANDARD_DEVIATION_", "STANDARD_DEVIATION_SAMPLE", 
@@ -1548,6 +1561,9 @@ To keep it as simple as possible:
 
         show()
 - Using ui_util module:
+  - contents of table as ARRAY (skipping empty cells):
+    table_get_array_, table_get_array_number, table_get_array_string
+  - table to HTML: table_to_html
   - table fill and table to text:
     - code:
             load_module("ui_util")
@@ -1875,33 +1891,33 @@ database management system).
                 [[[1, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:57:35], [2, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 22:00:35]]]
                 >  db_select_derby(d_derby, "test_table", ["a", "b"], {}, ["a desc"], null, null)
                 [[[2, "Test"], [1, "Test"]]]
-                >  db_select_derby(d_derby, "test_table", ["a", "b", "c"], {"a > ": 0, "e = ": 12345}, ["a desc"], null, null)
+                >  db_select_derby(d_derby, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], null, null)
                 [[[2, "Test", ""], [1, "Test", ""]]]
-                >  db_select_derby(d_derby, "test_table", ["a", "b", "c"], {"a > ": 0, "e = ": 12345}, ["a desc"], 1, null)
+                >  db_select_derby(d_derby, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], 1, null)
                 [[[1, "Test", ""]]]
-                >  db_select_derby(d_derby, "test_table", ["a", "b", "c"], {"a > ": 0, "e = ": 12345}, ["a desc"], 0, 1)
+                >  db_select_derby(d_derby, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], 0, 1)
                 [[[2, "Test", ""]]]
             Embedded Derby:
                 >  db_select_embed(d_embed, "test_table", [], {}, ["a asc", "b desc"], null, null)
                 [[[1, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:58:25], [2, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 22:00:56]]]
                 >  db_select_embed(d_embed, "test_table", ["a", "b"], {}, ["a desc"], null, null)
                 [[[2, "Test"], [1, "Test"]]]
-                >  db_select_embed(d_embed, "test_table", ["a", "b", "c"], {"a > ": 0, "e = ": 12345}, ["a desc"], null, null)
+                >  db_select_embed(d_embed, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], null, null)
                 [[[2, "Test", ""], [1, "Test", ""]]]
-                >  db_select_embed(d_embed, "test_table", ["a", "b", "c"], {"a > ": 0, "e = ": 12345}, ["a desc"], 1, null)
+                >  db_select_embed(d_embed, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], 1, null)
                 [[[1, "Test", ""]]]
-                >  db_select_embed(d_embed, "test_table", ["a", "b", "c"], {"a > ": 0, "e = ": 12345}, ["a desc"], 0, 1)
+                >  db_select_embed(d_embed, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], 0, 1)
                 [[[2, "Test", ""]]]
             PostgreSQL:
                 >  db_select_postgresql(d_pgsql, "test_table", [], {}, ["a asc", "b desc"], null, null)
                 [[[1, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:58:46], [2, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 22:01:14]]]
                 >  db_select_postgresql(d_pgsql, "test_table", ["a", "b"], {}, ["a desc"], null, null)
                 [[[2, "Test"], [1, "Test"]]]
-                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b", "c"], {"a > ": 0, "e = ": 12345}, ["a desc"], null, null)
+                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], null, null)
                 [[[2, "Test", ""], [1, "Test", ""]]]
-                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b", "c"], {"a > ": 0, "e = ": 12345}, ["a desc"], 1, null)
+                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], 1, null)
                 [[[1, "Test", ""]]]
-                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b", "c"], {"a > ": 0, "e = ": 12345}, ["a desc"], 0, 1)
+                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], 0, 1)
                 [[[2, "Test", ""]]]
     G. Update (all)
             Derby:
@@ -1915,23 +1931,23 @@ database management system).
                 [2]
     H. Update (where)
             Derby:
-                >  db_update(d_derby, "test_table", {"e > ": 10000, "a < ": 2}, {"d": 12.345})
+                >  db_update(d_derby, "test_table", {"e > ": [10000, "and"], "a < ": [2, ""]}, {"d": 12.345})
                 [1]
             Embedded Derby:
-                >  db_update(d_embed, "test_table", {"e > ": 10000, "a < ": 2}, {"d": 12.345})
+                >  db_update(d_embed, "test_table", {"e > ": [10000, "and"], "a < ": [2, ""]}, {"d": 12.345})
                 [1]
             PostgreSQL:
-                >  db_update(d_pgsql, "test_table", {"e > ": 10000, "a < ": 2}, {"d": 12.345})
+                >  db_update(d_pgsql, "test_table", {"e > ": [10000, "and"], "a < ": [2, ""]}, {"d": 12.345})
                 [1]
     I. Delete (where)
             Derby:
-                >  db_delete(d_derby, "test_table", {"a > ": 1})
+                >  db_delete(d_derby, "test_table", {"a > ": [1, ""]})
                 [1]
             Embedded Derby:
-                >  db_delete(d_embed, "test_table", {"a > ": 1})
+                >  db_delete(d_embed, "test_table", {"a > ": [1, ""]})
                 [1]
             PostgreSQL:
-                >  db_delete(d_pgsql, "test_table", {"a > ": 1})
+                >  db_delete(d_pgsql, "test_table", {"a > ": [1, ""]})
                 [1]
     J. Simple query (without argument)
             Derby:
@@ -3137,7 +3153,7 @@ Using db_util module:
         db_create_table_embed(d, "test", [["a", "integer."], ["b", "varchar."]])
 
         db_insert(d, "test", {"a": random(0,100), "b": "hello"})    
-        db_update(d, "test", {"b = ": "hello"}, {"b": "Hello World"})    
+        db_update(d, "test", {"b = ": ["hello", ""]}, {"b": "Hello World"})    
 
         var r = db_select_all(d, "test")
         if (!empty(r)) {

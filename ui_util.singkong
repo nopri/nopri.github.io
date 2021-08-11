@@ -13,7 +13,7 @@
     load_module("ui_util")
 ;
 
-require(6.2)
+require(6.3)
 
 var table_to_text = fn(a, b) 
 "
@@ -28,14 +28,14 @@ return value: STRING or NULL
     if (component_type(a) != "table") {
         return null
     }
-    if (len(b) != table_column_count(t)) {
+    if (len(b) != table_column_count(a)) {
         return null
     }
     var c = []
     each(b, fn(e, i) {
         var c = c + integer(e)
     })
-    var columns = table_column_info(t)
+    var columns = table_column_info(a)
     if (columns == null) {
         return null
     }
@@ -70,6 +70,60 @@ return value: STRING or NULL
     var s1 = newline() + "=" * len(header) + newline()
     var s2 = newline() + "-" * len(header) + newline()
     return s1 + header + s1 + join(s2, rows) + s1
+}
+
+var table_to_html = fn(a, b) 
+"
+[ui_util] function: table_to_html: returns HTML representation of a table (COMPONENT).
+arguments: 2: COMPONENT (table) and ARRAY (of NUMBER (integer), column width in percent)
+return value: STRING or NULL
+"
+{
+    if ((!is(a, "COMPONENT")) | (!is_array_and_of(b, "NUMBER"))) {
+        return null
+    }
+    if (component_type(a) != "table") {
+        return null
+    }
+    if (len(b) != table_column_count(a)) {
+        return null
+    }
+    var c = []
+    each(b, fn(e, i) {
+        var c = c + integer(e)
+    })
+    var columns = table_column_info(a)
+    if (columns == null) {
+        return null
+    }
+    var headers = []
+    each(columns, fn(e, i) {
+        var s = e[0]
+        var h = "<th bgcolor='white'><b>" + s + "</b></th>"
+        var headers = headers + h
+    })
+    var rows = []
+    var contents = get(a, "contents")
+    each(contents, fn(e, i) {
+        var temp = []
+        each(e, fn(ee, ii) {
+            var w = c[ii]
+            var n = columns[ii][1]
+            var f = {
+                0: "left",
+                1: "center",
+                2: "right"
+            }[n]
+            var t = "<td width='" + w + "%' bgcolor='white' align='" + f + "'>" + ee + "</td>"
+            var temp = temp + t
+        }) 
+        var row = "<tr>" + join("", temp) + "</tr>"
+        var rows = rows + row
+    })  
+    var t1 = "<table bgcolor='black' border='1px' width='100%' cellspacing='1' cellpadding='2'>"  
+    var t2 = "</table>"
+    var header = "<tr>" + join("", headers) + "</tr>"
+    return t1 + header + join("", rows) + t2
 }
 
 var table_fill = fn(a, b) 
@@ -142,5 +196,62 @@ return value: NUMBER or NULL
         return null
     }
     return table_add_row_fill(a, table_column_count(a), b)
+}
+
+var table_get_array_ = fn(t, f) 
+"
+[ui_util] function: table_get_array_: returns contents of a table (COMPONENT) as an ARRAY (skipping empty cells), with optional FUNCTION/BUILTIN.
+arguments: 2: COMPONENT (table) and FUNCTION/BUILTIN/NULL
+return value: ARRAY or NULL
+"
+{
+    if (!is(t, "COMPONENT")) {
+        return null
+    }
+    if (component_type(t) != "table") {
+        return null
+    }
+    if (!( is(f, "FUNCTION") | is(f, "BUILTIN") | is(f, "NULL"))) {
+        return null
+    }
+    var a = get(t, "contents")
+    var ret = []
+    each(a, fn(e, i) {
+        var row = []
+        each(e, fn(ee, ii) {
+            var ee_ = trim(ee)
+            if (!empty(ee_)) { 
+                if (f != null) {
+                    var row = row + f(ee_) 
+                } else {
+                    var row = row + ee_
+                }
+            }
+        })
+        if (!empty(row)) {
+            var ret = ret + row
+        }
+    })
+    return ret
+}
+
+var table_get_array_string = fn(t) 
+"
+[ui_util] function: table_get_array_string: returns contents of a table (COMPONENT) as an ARRAY of STRING (skipping empty cells).
+arguments: 1: COMPONENT (table)
+return value: ARRAY or NULL
+"
+{
+    return table_get_array_(t, null)
+}
+
+var table_get_array_number = fn(t) 
+"
+[ui_util] function: table_get_array_number: returns contents of a table (COMPONENT) as an ARRAY of NUMBER (skipping empty cells).
+arguments: 1: COMPONENT (table)
+return value: ARRAY or NULL
+"
+{
+    return table_get_array_(t, number)
 }
 

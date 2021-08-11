@@ -13,7 +13,7 @@
     load_module("db_util")
 ;
 
-require(6.0)
+require(6.3)
 
 var db_driver = fn(a) 
 "
@@ -237,7 +237,7 @@ return value: ARRAY or NULL (error)
 var db_select = fn(a, b, c, d, e) 
 "
 [db_util] function: db_select: runs SQL select query from specified table. 
-arguments: 5: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: value), and STRING (additional clauses: order by, offset, fetch / limit, etc)
+arguments: 5: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: [value, and/or/empty]), and STRING (additional clauses: order by, offset, fetch / limit, etc)
 return value: ARRAY or NULL (error)
 "
 {
@@ -257,11 +257,13 @@ return value: ARRAY or NULL (error)
     var key = keys(d)
     var k = []
     each(key, fn(e, i) {
-        var k = k + (e + " ? ")
+        var k = k + (e + " ? " + d[e][1])
     })
     if (!empty(k)) {
-        var kk = " where " + join(" and ", k)
-        var vv = values(d)
+        var kk = " where " + join(" ", k)
+        each(values(d), fn(e, i) {
+            var vv = vv + e[0]
+        })
     }
     var cmd = "select " + cols + " from " + b + kk + " " + e
     return query(a, [[cmd, vv]])
@@ -280,7 +282,7 @@ return value: ARRAY or NULL (error)
 var db_select_derby = fn(a, b, c, d, e, f, g) 
 "
 [db_util] function: db_select_derby: runs SQL select query from specified table (Derby). 
-arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: value), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
+arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: [value, and/or/empty]), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
 return value: ARRAY or NULL (error)
 "
 {
@@ -310,7 +312,7 @@ return value: ARRAY or NULL (error)
 var db_select_embed = fn(a, b, c, d, e, f, g) 
 "
 [db_util] function: db_select_embed: runs SQL select query from specified table (Derby, Embedded). 
-arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: value), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
+arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: [value, and/or/empty]), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
 return value: ARRAY or NULL (error)
 "
 {
@@ -320,7 +322,7 @@ return value: ARRAY or NULL (error)
 var db_select_postgresql = fn(a, b, c, d, e, f, g) 
 "
 [db_util] function: db_select_postgresql: runs SQL select query from specified table (PostgreSQL). 
-arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: value), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
+arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: [value, and/or/empty]), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
 return value: ARRAY or NULL (error)
 "
 {
@@ -380,7 +382,7 @@ return value: ARRAY or NULL (error)
 var db_update = fn(a, b, c, d) 
 "
 [db_util] function: db_update: runs SQL update query on specified table. 
-arguments: 4: DATABASE, STRING (table name), HASH (where clause, key: expression, value: value), and HASH (new value, key: column, value: value)
+arguments: 4: DATABASE, STRING (table name), HASH (where clause, key: expression, value: [value, and/or/empty]), and HASH (new value, key: column, value: value)
 return value: ARRAY or NULL (error)
 "
 {
@@ -400,10 +402,10 @@ return value: ARRAY or NULL (error)
     var k = keys(c)
     if (!empty(k)) {
         each(k, fn(e, i) {
-            var w = w + (e + " ? ")
-            var ww = ww + c[e]
+            var w = w + (e + " ? " + c[e][1])
+            var ww = ww + c[e][0]
         })
-        var www = " where " + join(" and ", w)
+        var www = " where " + join(" ", w)
     }
     var n = []
     var nn = []
@@ -423,7 +425,7 @@ return value: ARRAY or NULL (error)
 var db_delete = fn(a, b, c) 
 "
 [db_util] function: db_delete: runs SQL delete query from specified table. 
-arguments: 4: DATABASE, STRING (table name), and HASH (where clause, key: expression, value: value)
+arguments: 3: DATABASE, STRING (table name), and HASH (where clause, key: expression, value: [value, and/or/empty])
 return value: ARRAY or NULL (error)
 "
 {
@@ -440,10 +442,10 @@ return value: ARRAY or NULL (error)
     var k = keys(c)
     if (!empty(k)) {
         each(k, fn(e, i) {
-            var w = w + (e + " ? ")
-            var ww = ww + c[e]
+            var w = w + (e + " ? " + c[e][1])
+            var ww = ww + c[e][0]
         })
-        var www = " where " + join(" and ", w)
+        var www = " where " + join(" ", w)
     }
     var cmd = "delete from " + b + www
     return query(a, [[cmd, ww]])
