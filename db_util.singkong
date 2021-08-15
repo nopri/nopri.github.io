@@ -13,7 +13,7 @@
     load_module("db_util")
 ;
 
-require(6.3)
+require(6.4)
 
 var db_driver = fn(a) 
 "
@@ -90,6 +90,49 @@ return value: ARRAY or NULL
     return r
 }
 
+var query_result = fn(r) 
+"
+[db_util] function: query_result: returns query result from ARRAY. 
+arguments: 1: ARRAY (query result)
+return value: ARRAY or NULL
+"
+{
+    if (!is(r, "ARRAY")) {
+        return null
+    }
+    if (empty(r)) {
+        return null
+    }
+    var r = r[0]
+    if (!is(r, "ARRAY")) {
+        return null
+    }
+    if (empty(r)) {
+        return null
+    }
+    return r
+}
+
+var db_run_query = fn(a, b, c) 
+"
+[db_util] function: db_run_query: checks and runs SQL query.
+arguments: 2: DATABASE, ARRAY, and BOOLEAN
+return value: ARRAY or NULL
+" 
+{
+    if ((!is(a, "DATABASE")) | (!is(b, "ARRAY")) | (!is(c, "BOOLEAN"))) {
+        return null
+    }
+    if (len(b) != 2) {
+        return null
+    }
+    if (c == true) {
+        return [query(a, [b]), b[0]]
+    } else {
+        return query(a, [b])
+    }
+}
+
 var db_connect = fn(a, b, c, d) 
 "
 [db_util] function: db_connect: returns connected database.
@@ -142,9 +185,9 @@ return value: DATABASE or NULL (not connected)
     return db_connect_embed_(h + separator() + a, true)
 }
 
-var db_create_table = fn(a, b, c, d) 
+var db_create_table_ = fn(a, b, c, d) 
 "
-[db_util] function: db_create_table: creates a database table.
+[db_util] function: db_create_table_: [query] creates a database table.
 arguments: 4: DATABASE, STRING (database name), STRING (table name), and ARRAY (of ARRAY (of STRING: name, type))
 return value: ARRAY or NULL (error)
 "
@@ -175,7 +218,28 @@ return value: ARRAY or NULL (error)
     })
     var cols = join(",", cols)
     var cmd = "create table " + c + " (" + cols + ")"
-    return [query(a, [[cmd, []]]), cmd]
+    return [cmd, []]    
+}
+
+var db_create_table = fn(a, b, c, d) 
+"
+[db_util] function: db_create_table: creates a database table.
+arguments: 4: DATABASE, STRING (database name), STRING (table name), and ARRAY (of ARRAY (of STRING: name, type))
+return value: ARRAY or NULL (error)
+"
+{
+    var cmd = db_create_table_(a, b, c, d)
+    return db_run_query(a, cmd, true)
+}
+
+var db_create_table_derby_ = fn(a, b, c) 
+"
+[db_util] function: db_create_table_derby_: [query] creates a database table (Derby).
+arguments: 3: DATABASE, STRING (table name), and ARRAY (of ARRAY (of STRING: name, type))
+return value: ARRAY or NULL (error)
+"
+{
+    return db_create_table_(a, "derby", b, c)
 }
 
 var db_create_table_derby = fn(a, b, c) 
@@ -185,7 +249,18 @@ arguments: 3: DATABASE, STRING (table name), and ARRAY (of ARRAY (of STRING: nam
 return value: ARRAY or NULL (error)
 "
 {
-    return db_create_table(a, "derby", b, c)
+    var cmd = db_create_table_derby_(a, b, c)
+    return db_run_query(a, cmd, true)
+}
+
+var db_create_table_embed_ = fn(a, b, c) 
+"
+[db_util] function: db_create_table_embed_: [query] creates a database table (Derby, Embedded).
+arguments: 3: DATABASE, STRING (table name), and ARRAY (of ARRAY (of STRING: name, type))
+return value: ARRAY or NULL (error)
+"
+{
+    return db_create_table_(a, "derby", b, c)
 }
 
 var db_create_table_embed = fn(a, b, c) 
@@ -195,7 +270,18 @@ arguments: 3: DATABASE, STRING (table name), and ARRAY (of ARRAY (of STRING: nam
 return value: ARRAY or NULL (error)
 "
 {
-    return db_create_table(a, "derby", b, c)
+    var cmd = db_create_table_embed_(a, b, c)
+    return db_run_query(a, cmd, true)
+}
+
+var db_create_table_postgresql_ = fn(a, b, c) 
+"
+[db_util] function: db_create_table_postgresql_: [query] creates a database table (PostgreSQL).
+arguments: 3: DATABASE, STRING (table name), and ARRAY (of ARRAY (of STRING: name, type))
+return value: ARRAY or NULL (error)
+"
+{
+    return db_create_table_(a, "postgresql", b, c)
 }
 
 var db_create_table_postgresql = fn(a, b, c) 
@@ -205,7 +291,8 @@ arguments: 3: DATABASE, STRING (table name), and ARRAY (of ARRAY (of STRING: nam
 return value: ARRAY or NULL (error)
 "
 {
-    return db_create_table(a, "postgresql", b, c)
+    var cmd = db_create_table_postgresql_(a, b, c)
+    return db_run_query(a, cmd, true)
 }
 
 var db_query_simple = fn(a, b) 
@@ -234,14 +321,14 @@ return value: ARRAY or NULL (error)
     return query(a, [[b, c]])
 }
 
-var db_select = fn(a, b, c, d, e) 
+var db_select_ = fn(a, b, c, d, e) 
 "
-[db_util] function: db_select: runs SQL select query from specified table. 
-arguments: 5: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: [value, and/or/empty]), and STRING (additional clauses: order by, offset, fetch / limit, etc)
+[db_util] function: db_select_: [query] runs SQL select query from specified table. 
+arguments: 5: DATABASE, STRING (table name), ARRAY (empty: all columns), ARRAY (where clause, [expression (STRING), value, and/or/empty (STRING)]), and STRING (additional clauses: order by, offset, fetch / limit, etc)
 return value: ARRAY or NULL (error)
 "
 {
-    if ((!is(a, "DATABASE")) |  (!is(b, "STRING")) |  (!is(c, "ARRAY")) |  (!is(d, "HASH")) |  (!is(e, "STRING"))) {
+    if ((!is(a, "DATABASE")) |  (!is(b, "STRING")) |  (!is(c, "ARRAY")) |  (!is(d, "ARRAY")) |  (!is(e, "STRING"))) {
         return null
     }
     var b = trim(b)
@@ -254,19 +341,39 @@ return value: ARRAY or NULL (error)
     }
     var kk = ""
     var vv = []
-    var key = keys(d)
     var k = []
-    each(key, fn(e, i) {
-        var k = k + (e + " ? " + d[e][1])
+    each(d, fn(e, i) {
+        if (len(e) == 3) {
+            var k = k + (e[0] + " ? " + e[2])
+            var vv = vv + e[1]
+        }
     })
     if (!empty(k)) {
         var kk = " where " + join(" ", k)
-        each(values(d), fn(e, i) {
-            var vv = vv + e[0]
-        })
     }
     var cmd = "select " + cols + " from " + b + kk + " " + e
-    return query(a, [[cmd, vv]])
+    return [cmd, vv]
+}
+
+var db_select = fn(a, b, c, d, e) 
+"
+[db_util] function: db_select: runs SQL select query from specified table. 
+arguments: 5: DATABASE, STRING (table name), ARRAY (empty: all columns), ARRAY (where clause, [expression (STRING), value, and/or/empty (STRING)]), and STRING (additional clauses: order by, offset, fetch / limit, etc)
+return value: ARRAY or NULL (error)
+"
+{
+    var cmd = db_select_(a, b, c, d, e)
+    return db_run_query(a, cmd, false)
+}
+
+var db_select_all_ = fn(a, b) 
+"
+[db_util] function: db_select_all_: [query] runs SQL select query from specified table (all columns, all rows). 
+arguments: 2: DATABASE and STRING (table name)
+return value: ARRAY or NULL (error)
+"
+{
+    return db_select_(a, b, [], [], "")
 }
 
 var db_select_all = fn(a, b) 
@@ -276,13 +383,14 @@ arguments: 2: DATABASE and STRING (table name)
 return value: ARRAY or NULL (error)
 "
 {
-    return db_select(a, b, [], {}, "")
+    var cmd = db_select_all_(a, b)
+    return db_run_query(a, cmd, false)
 }
 
-var db_select_derby = fn(a, b, c, d, e, f, g) 
+var db_select_derby_ = fn(a, b, c, d, e, f, g) 
 "
-[db_util] function: db_select_derby: runs SQL select query from specified table (Derby). 
-arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: [value, and/or/empty]), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
+[db_util] function: db_select_derby_: [query] runs SQL select query from specified table (Derby). 
+arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), ARRAY (where clause, [expression (STRING), value, and/or/empty (STRING)]), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
 return value: ARRAY or NULL (error)
 "
 {
@@ -306,23 +414,45 @@ return value: ARRAY or NULL (error)
             var gg = " fetch first " + g + " rows only "
         }
     }    
-    return db_select(a, b, c, d, ee + ff + gg)
+    return db_select_(a, b, c, d, ee + ff + gg)
+}
+
+var db_select_derby = fn(a, b, c, d, e, f, g) 
+"
+[db_util] function: db_select_derby: runs SQL select query from specified table (Derby). 
+arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), ARRAY (where clause, [expression (STRING), value, and/or/empty (STRING)]), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
+return value: ARRAY or NULL (error)
+"
+{
+    var cmd = db_select_derby_(a, b, c, d, e, f, g)
+    return db_run_query(a, cmd, false)
+}
+
+var db_select_embed_ = fn(a, b, c, d, e, f, g) 
+"
+[db_util] function: db_select_embed_: [query] runs SQL select query from specified table (Derby, Embedded). 
+arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), ARRAY (where clause, [expression (STRING), value, and/or/empty (STRING)]), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
+return value: ARRAY or NULL (error)
+"
+{
+    return db_select_derby_(a, b, c, d, e, f, g)
 }
 
 var db_select_embed = fn(a, b, c, d, e, f, g) 
 "
 [db_util] function: db_select_embed: runs SQL select query from specified table (Derby, Embedded). 
-arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: [value, and/or/empty]), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
+arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), ARRAY (where clause, [expression (STRING), value, and/or/empty (STRING)]), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
 return value: ARRAY or NULL (error)
 "
 {
-    return db_select_derby(a, b, c, d, e, f, g)
+    var cmd = db_select_embed_(a, b, c, d, e, f, g)
+    return db_run_query(a, cmd, false)
 }
 
-var db_select_postgresql = fn(a, b, c, d, e, f, g) 
+var db_select_postgresql_ = fn(a, b, c, d, e, f, g) 
 "
-[db_util] function: db_select_postgresql: runs SQL select query from specified table (PostgreSQL). 
-arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), HASH (where clause, key: expression, value: [value, and/or/empty]), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
+[db_util] function: db_select_postgresql_: [query] runs SQL select query from specified table (PostgreSQL). 
+arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), ARRAY (where clause, [expression (STRING), value, and/or/empty (STRING)]), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
 return value: ARRAY or NULL (error)
 "
 {
@@ -346,12 +476,23 @@ return value: ARRAY or NULL (error)
             var gg = " limit " + g 
         }
     }    
-    return db_select(a, b, c, d, ee + ff + gg)
+    return db_select_(a, b, c, d, ee + ff + gg)
 }
 
-var db_insert = fn(a, b, c) 
+var db_select_postgresql = fn(a, b, c, d, e, f, g) 
 "
-[db_util] function: db_insert: runs SQL insert query into specified table. 
+[db_util] function: db_select_postgresql: runs SQL select query from specified table (PostgreSQL). 
+arguments: 7: DATABASE, STRING (table name), ARRAY (empty: all columns), ARRAY (where clause, [expression (STRING), value, and/or/empty (STRING)]), ARRAY (of STRING, order by), NUMBER (integer, offset), and NUMBER (integer, fetch)
+return value: ARRAY or NULL (error)
+"
+{
+    var cmd = db_select_postgresql_(a, b, c, d, e, f, g)
+    return db_run_query(a, cmd, false)
+}
+
+var db_insert_ = fn(a, b, c) 
+"
+[db_util] function: db_insert_: [query] runs SQL insert query into specified table. 
 arguments: 3: DATABASE, STRING (table name), and HASH (data, key: column, value: value)
 return value: ARRAY or NULL (error)
 "
@@ -376,17 +517,28 @@ return value: ARRAY or NULL (error)
     })
     var vals = "(" + join(",", p) + ")"
     var cmd = "insert into " + b + " " + cols + " values " + vals;
-    return query(a, [[cmd, v]])
+    return [cmd, v]
 }
 
-var db_update = fn(a, b, c, d) 
+var db_insert = fn(a, b, c) 
 "
-[db_util] function: db_update: runs SQL update query on specified table. 
-arguments: 4: DATABASE, STRING (table name), HASH (where clause, key: expression, value: [value, and/or/empty]), and HASH (new value, key: column, value: value)
+[db_util] function: db_insert: runs SQL insert query into specified table. 
+arguments: 3: DATABASE, STRING (table name), and HASH (data, key: column, value: value)
 return value: ARRAY or NULL (error)
 "
 {
-    if ((!is(a, "DATABASE")) |  (!is(b, "STRING")) |  (!is(c, "HASH")) |  (!is(d, "HASH"))) {
+    var cmd = db_insert_(a, b, c)
+    return db_run_query(a, cmd, false)
+}
+
+var db_update_ = fn(a, b, c, d) 
+"
+[db_util] function: db_update_: [query] runs SQL update query on specified table. 
+arguments: 4: DATABASE, STRING (table name), ARRAY (where clause, [expression (STRING), value, and/or/empty (STRING)]), and HASH (new value, key: column, value: value)
+return value: ARRAY or NULL (error)
+"
+{
+    if ((!is(a, "DATABASE")) |  (!is(b, "STRING")) |  (!is(c, "ARRAY")) |  (!is(d, "HASH"))) {
         return null
     }
     var b = trim(b)
@@ -399,11 +551,12 @@ return value: ARRAY or NULL (error)
     var w = []
     var ww = []
     var www = ""
-    var k = keys(c)
-    if (!empty(k)) {
-        each(k, fn(e, i) {
-            var w = w + (e + " ? " + c[e][1])
-            var ww = ww + c[e][0]
+    if (!empty(c)) {
+        each(c, fn(e, i) {
+            if (len(e) == 3) {
+                var w = w + (e[0] + " ? " + e[2])
+                var ww = ww + e[1]
+            }
         })
         var www = " where " + join(" ", w)
     }
@@ -419,17 +572,28 @@ return value: ARRAY or NULL (error)
     var nnn = join(",", n)
     var cmd = "update " + b + " set " + nnn + www
     var vv = array_extend_all([nn, ww])
-    return query(a, [[cmd, vv]])
+    return [cmd, vv]
 }
 
-var db_delete = fn(a, b, c) 
+var db_update = fn(a, b, c, d) 
 "
-[db_util] function: db_delete: runs SQL delete query from specified table. 
-arguments: 3: DATABASE, STRING (table name), and HASH (where clause, key: expression, value: [value, and/or/empty])
+[db_util] function: db_update: runs SQL update query on specified table. 
+arguments: 4: DATABASE, STRING (table name), ARRAY (where clause, [expression (STRING), value, and/or/empty (STRING)]), and HASH (new value, key: column, value: value)
 return value: ARRAY or NULL (error)
 "
 {
-    if ((!is(a, "DATABASE")) |  (!is(b, "STRING")) |  (!is(c, "HASH")) ) {
+    var cmd = db_update_(a, b, c, d)
+    return db_run_query(a, cmd, false)
+}
+
+var db_delete_ = fn(a, b, c) 
+"
+[db_util] function: db_delete_: [query] runs SQL delete query from specified table. 
+arguments: 3: DATABASE, STRING (table name), and ARRAY (where clause, [expression (STRING), value, and/or/empty (STRING)])
+return value: ARRAY or NULL (error)
+"
+{
+    if ((!is(a, "DATABASE")) |  (!is(b, "STRING")) |  (!is(c, "ARRAY")) ) {
         return null
     }
     var b = trim(b)
@@ -439,39 +603,28 @@ return value: ARRAY or NULL (error)
     var w = []
     var ww = []
     var www = ""
-    var k = keys(c)
-    if (!empty(k)) {
-        each(k, fn(e, i) {
-            var w = w + (e + " ? " + c[e][1])
-            var ww = ww + c[e][0]
+    if (!empty(c)) {
+        each(c, fn(e, i) {
+            if (len(e) == 3) {
+                var w = w + (e[0] + " ? " + e[2])
+                var ww = ww + e[1]
+            }
         })
         var www = " where " + join(" ", w)
     }
     var cmd = "delete from " + b + www
-    return query(a, [[cmd, ww]])
+    return [cmd, ww]
 }
 
-var query_result = fn(r) 
+var db_delete = fn(a, b, c) 
 "
-[db_util] function: query_get: returns query result from ARRAY. 
-arguments: 1: ARRAY (query result)
-return value: ARRAY or NULL
+[db_util] function: db_delete: runs SQL delete query from specified table. 
+arguments: 3: DATABASE, STRING (table name), and ARRAY (where clause, [expression (STRING), value, and/or/empty (STRING)])
+return value: ARRAY or NULL (error)
 "
 {
-    if (!is(r, "ARRAY")) {
-        return null
-    }
-    if (empty(r)) {
-        return null
-    }
-    var r = r[0]
-    if (!is(r, "ARRAY")) {
-        return null
-    }
-    if (empty(r)) {
-        return null
-    }
-    return r
+    var cmd = db_delete_(a, b, c)
+    return db_run_query(a, cmd, false)
 }
 
 var db_last = fn(a, b) 

@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 6.3 (2021-August-12 +07:00)
+Version: 6.4 (2021-August-16 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -99,7 +99,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 6.3
+        Singkong 6.4
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -677,24 +677,37 @@ hash, print, println, puts, string, type, types, variables
         db_connect_embed_
         db_connect_embed_user
         db_create_table
+        db_create_table_
         db_create_table_derby
+        db_create_table_derby_
         db_create_table_embed
+        db_create_table_embed_
         db_create_table_postgresql
+        db_create_table_postgresql_
         db_delete
+        db_delete_
         db_driver
         db_insert
+        db_insert_
         db_last
         db_last_derby
         db_last_embed
         db_last_postgresql
         db_query_simple
         db_query_single
+        db_run_query
         db_select
+        db_select_
         db_select_all
+        db_select_all_
         db_select_derby
+        db_select_derby_
         db_select_embed
+        db_select_embed_
         db_select_postgresql
+        db_select_postgresql_
         db_update
+        db_update_
         query_result
 
 
@@ -804,11 +817,15 @@ Functions in module: csv:
 Functions in module: db_util: 
 ["CREATE_FIELD_FROM_ARRAY", "DB_CONNECT", "DB_CONNECT_EMBED", 
 "DB_CONNECT_EMBED_", "DB_CONNECT_EMBED_USER", "DB_CREATE_TABLE", 
-"DB_CREATE_TABLE_DERBY", "DB_CREATE_TABLE_EMBED", "DB_CREATE_TABLE_POSTGRESQL", 
-"DB_DELETE", "DB_DRIVER", "DB_INSERT", "DB_LAST", "DB_LAST_DERBY", 
-"DB_LAST_EMBED", "DB_LAST_POSTGRESQL", "DB_QUERY_SIMPLE", "DB_QUERY_SINGLE", 
-"DB_SELECT", "DB_SELECT_ALL", "DB_SELECT_DERBY", "DB_SELECT_EMBED", 
-"DB_SELECT_POSTGRESQL", "DB_UPDATE", "QUERY_RESULT"]
+"DB_CREATE_TABLE_", "DB_CREATE_TABLE_DERBY", "DB_CREATE_TABLE_DERBY_", 
+"DB_CREATE_TABLE_EMBED", "DB_CREATE_TABLE_EMBED_", "DB_CREATE_TABLE_POSTGRESQL", 
+"DB_CREATE_TABLE_POSTGRESQL_", "DB_DELETE", "DB_DELETE_", "DB_DRIVER", 
+"DB_INSERT", "DB_INSERT_", "DB_LAST", "DB_LAST_DERBY", "DB_LAST_EMBED", 
+"DB_LAST_POSTGRESQL", "DB_QUERY_SIMPLE", "DB_QUERY_SINGLE", "DB_RUN_QUERY", 
+"DB_SELECT", "DB_SELECT_", "DB_SELECT_ALL", "DB_SELECT_ALL_", "DB_SELECT_DERBY", 
+"DB_SELECT_DERBY_", "DB_SELECT_EMBED", "DB_SELECT_EMBED_", 
+"DB_SELECT_POSTGRESQL", "DB_SELECT_POSTGRESQL_", "DB_UPDATE", "DB_UPDATE_", 
+"QUERY_RESULT"]
 
 Functions in module: rect_array_util:
 ["ADD_RECT_ARRAY_OF", "ADD_RECT_ARRAY_OF_NUMBER", 
@@ -975,7 +992,7 @@ To keep it as simple as possible:
   creating a table, name (comma-separated string) is used as column names. 
   This function also accepts optional argument BOOLEAN: if true, created 
   component will be read-only (default: false). However, this only applicable 
-  when creating edit, password, table, or text. 
+  when creating edit, mask, password, table, or text. 
   - Component name interpretation:
     - barchart: (none)
     - button: label
@@ -986,6 +1003,9 @@ To keep it as simple as possible:
     - grid: tab title
     - image: file name
     - label: label
+    - mask: format (#: number, U: upper case, L: lower case, A: character or
+        number, ?: character, *: anything, H: hex character;
+        for more information: javax.swing.text.MaskFormatter)
     - panel: tab title
     - password: text
     - progress: (none)
@@ -1002,8 +1022,8 @@ To keep it as simple as possible:
 - To get a list of supported component types, built-in function components can 
   be used. Currently, this function returns:
     ["barchart", "button", "checkbox", "combobox", "date", "edit", "grid", 
-    "image", "label", "panel", "password", "progress", "radio", "tab", "table", 
-    "text", "view"]
+    "image", "label", "mask", "panel", "password", "progress", "radio", "tab", 
+    "table", "text", "view"]
 - To get type of a COMPONENT, please use built-in function component_type. This
   function returns component type as STRING (one of values returned by 
   components function, as above). 
@@ -1131,7 +1151,7 @@ To keep it as simple as possible:
     title of barchart, STRING)
   - active (checkbox/radio BOOLEAN, combobox/tab/table NUMBER (selected index), 
     button NUMBER (mnemonic index))
-  - contents (contents of edit/password/text/view STRING, 
+  - contents (contents of edit/mask/password/text/view STRING, 
     file of image STRING, ARRAY of ARRAY (table), 
     ARRAY (combobox), DATE/STRING (date), NUMBER (progress), ARRAY of ARRAY 
     (of [NUMBER (value), STRING (label), STRING (color name or RGB value)], barchart))
@@ -1149,7 +1169,7 @@ To keep it as simple as possible:
   - text (label of button/checkbox/label/radio, selected item of combobox, 
     STRING)
   - active (checkbox/radio BOOLEAN, combobox/tab/table NUMBER, button NUMBER)
-  - contents (contents of edit/password/text/view STRING, 
+  - contents (contents of edit/mask/password/text/view STRING, 
     file of image STRING, ARRAY of ARRAY (of STRING, table), 
     ARRAY (of STRING, combobox), DATE (date), NUMBER (progress))
   (configuration may be ignored if it is not applicable and NULL will be
@@ -1200,55 +1220,6 @@ To keep it as simple as possible:
   Registered FUNCTION will be called whenever the default event for specified
   COMPONENT should be handled. 
   Please note that specified FUNCTION must not require any arguments.
-  Note:
-  - Please also read about nested function in Singkong documentation (FUNCTION).
-    code:
-        var hello = "Hello World"
-        var a = fn() {
-                reset()
-                var b = component("button", "Button")
-                add(b)
-                event(b, fn() {
-                        # hello is not available here;
-                        # please also read about nested function;
-                        # in Singkong documentation;
-                        message(hello)
-                })
-                show()
-        }
-        a()
-    fix:
-        var hello = "Hello World"
-        var a = fn() {
-                reset()
-                var b = component("button", "Button")
-                add(b)
-                var hello = hello
-                event(b, fn() {
-                        # original hello is not available here;
-                        # hello from a is available here;
-                        # please also read about nested function;
-                        # in Singkong documentation;
-                        message(hello)
-                })
-                show()
-        }
-        a()
-    fix (using variables built-in function, since Singkong version 4.6):
-        var hello = "Hello World"
-        var a = fn() {
-                reset()
-                var b = component("button", "Button")
-                add(b)
-                event(b, fn() {
-                        # using variables();
-                        # please also read about nested function;
-                        # in Singkong documentation;
-                        message(variables()["HELLO"][1])
-                })
-                show()
-        }
-        a()
 - Mouse:
   - Mouse and mouse motion events: event handler for these events can be registered 
     using built-in function event_mouse. This function accepts two arguments:      
@@ -1742,25 +1713,40 @@ database management system).
         db_connect_embed_
         db_connect_embed_user
         db_create_table
+        db_create_table_
         db_create_table_derby
+        db_create_table_derby_
         db_create_table_embed
+        db_create_table_embed_
         db_create_table_postgresql
+        db_create_table_postgresql_
         db_delete
+        db_delete_
         db_driver
         db_insert
+        db_insert_
         db_last
         db_last_derby
         db_last_embed
         db_last_postgresql
         db_query_simple
         db_query_single
+        db_run_query
         db_select
+        db_select_
         db_select_all
+        db_select_all_
         db_select_derby
+        db_select_derby_
         db_select_embed
+        db_select_embed_
         db_select_postgresql
+        db_select_postgresql_
         db_update
+        db_update_
         query_result
+
+    load_module("db_util")
 
     A. Connect to database
         Functions:
@@ -1772,11 +1758,11 @@ database management system).
         Embedded Derby (database name: test) in current working directory (create, if not exists):    
             >  var d_embed = db_connect_embed("test")
             >  d_embed
-            DATABASE (URL=jdbc:derby:test;create=true, user=, driver=org.apache.derby.jdbc.EmbeddedDriver)    
+            DATABASE (URL=jdbc:derby:test;create=true, user=, driver=org.apache.derby.jdbc.EmbeddedDriver)
         Embedded Derby (database name: test) in home directory
             >  var d_embed_user = db_connect_embed_user("test")
             >  d_embed_user
-            DATABASE (URL=jdbc:derby:/home/test/test;create=true, user=, driver=org.apache.derby.jdbc.EmbeddedDriver)    
+            DATABASE (URL=jdbc:derby:/home/test/test;create=true, user=, driver=org.apache.derby.jdbc.EmbeddedDriver)
         Derby at localhost:1527, database name: test (create, if not exists), user: admin, password: admin
             >  var d_derby = db_connect("derby", "//localhost:1527/test;create=true", "admin", "admin")
             >  d_derby
@@ -1839,7 +1825,17 @@ database management system).
             PostgreSQL:
                 >  var r = db_create_table_postgresql(d_pgsql, "test_table", [["a", "id"], ["b", "varchar."], ["c", "text."], ["d", "decimal."], ["e", "integer."], ["f", "boolean."], ["g", "date."], ["h", "timestamp."]])
                 >  r
-                [[0], "create table test_table (a serial,b varchar default '',c text default '',d decimal(19,4) default 0,e integer default 0,f boolean default false,g date default current_date,h timestamp default current_timestamp)"]        
+                [[0], "create table test_table (a serial,b varchar default '',c text default '',d decimal(19,4) default 0,e integer default 0,f boolean default false,g date default current_date,h timestamp default current_timestamp)"]
+        SQL command only (please notice the underscore in function name):
+                >  var r = db_create_table_derby_(d_derby, "test_table", [["a", "id"], ["b", "varchar."], ["c", "text."], ["d", "decimal."], ["e", "integer."], ["f", "boolean."], ["g", "date."], ["h", "timestamp."]])
+                >  r
+                ["create table test_table (a integer not null generated always as identity (start with 1, increment by 1),b varchar (32672) default '',c clob default '',d decimal(19,4) default 0,e integer default 0,f boolean default false,g date default current_date,h timestamp default current_timestamp)", []]
+                >  var r = db_create_table_embed_(d_embed, "test_table", [["a", "id"], ["b", "varchar."], ["c", "text."], ["d", "decimal."], ["e", "integer."], ["f", "boolean."], ["g", "date."], ["h", "timestamp."]])
+                >  r
+                ["create table test_table (a integer not null generated always as identity (start with 1, increment by 1),b varchar (32672) default '',c clob default '',d decimal(19,4) default 0,e integer default 0,f boolean default false,g date default current_date,h timestamp default current_timestamp)", []]
+                >  var r = db_create_table_postgresql_(d_pgsql, "test_table", [["a", "id"], ["b", "varchar."], ["c", "text."], ["d", "decimal."], ["e", "integer."], ["f", "boolean."], ["g", "date."], ["h", "timestamp."]])
+                >  r
+                ["create table test_table (a serial,b varchar default '',c text default '',d decimal(19,4) default 0,e integer default 0,f boolean default false,g date default current_date,h timestamp default current_timestamp)", []]
     C. Insert 
             Derby:
                 >  var r = db_insert(d_derby, "test_table", {"b": "Test", "e": 12345})
@@ -1853,6 +1849,13 @@ database management system).
                 >  var r = db_insert(d_pgsql, "test_table", {"b": "Test", "e": 12345})
                 >  r
                 [1]
+        SQL command only (please notice the underscore in function name):
+                >  db_insert_(d_derby, "test_table", {"b": "Test", "e": 12345})
+                ["insert into test_table (b,e) values (?,?)", ["Test", 12345]]
+                >  db_insert_(d_embed, "test_table", {"b": "Test", "e": 12345})
+                ["insert into test_table (b,e) values (?,?)", ["Test", 12345]]
+                >  db_insert_(d_pgsql, "test_table", {"b": "Test", "e": 12345})
+                ["insert into test_table (b,e) values (?,?)", ["Test", 12345]]
     D. Last insert id
             Derby:
                 >  db_last_derby(d_derby)
@@ -1878,87 +1881,148 @@ database management system).
     E. Select all
             Derby:
                 >  db_select_all(d_derby, "test_table")
-                [[[1, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:57:35], [2, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 22:00:35]]]
+                [[[1, "Test", "", 0, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:44:40], [2, "Test", "", 0, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:47:40]]]
             Embedded Derby:
                 >  db_select_all(d_embed, "test_table")
-                [[[1, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:58:25], [2, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 22:00:56]]]
+                [[[1, "Test", "", 0, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:44:57], [2, "Test", "", 0, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:48:12]]]
             PostgreSQL:
                 >  db_select_all(d_pgsql, "test_table")
-                [[[1, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:58:46], [2, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 22:01:14]]]
+                [[[1, "Test", "", 0, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:45:06], [2, "Test", "", 0, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:48:26]]]
+        SQL command only
+                >  db_select_all_(d_derby, "test_table")
+                ["select * from test_table ", []]
+                >  db_select_all_(d_embed, "test_table")
+                ["select * from test_table ", []]
+                >  db_select_all_(d_pgsql, "test_table")
+                ["select * from test_table ", []]
     F. Select (column, where, order, offset, fetch/limit)
             Derby:
-                >  db_select_derby(d_derby, "test_table", [], {}, ["a asc", "b desc"], null, null)
-                [[[1, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:57:35], [2, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 22:00:35]]]
-                >  db_select_derby(d_derby, "test_table", ["a", "b"], {}, ["a desc"], null, null)
+                >  db_select_derby(d_derby, "test_table", [], [], ["a asc", "b desc"], null, null)
+                [[[1, "Test", "", 0, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:44:40], [2, "Test", "", 0, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:47:40]]]
+                >  db_select_derby(d_derby, "test_table", ["a", "b"], [], ["a desc"], null, null)
                 [[[2, "Test"], [1, "Test"]]]
-                >  db_select_derby(d_derby, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], null, null)
+                >  db_select_derby(d_derby, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], null, null)
                 [[[2, "Test", ""], [1, "Test", ""]]]
-                >  db_select_derby(d_derby, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], 1, null)
+                >  db_select_derby(d_derby, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], 1, null)
                 [[[1, "Test", ""]]]
-                >  db_select_derby(d_derby, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], 0, 1)
+                >  db_select_derby(d_derby, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], 0, 1)
                 [[[2, "Test", ""]]]
+            SQL command only
+                >  db_select_derby_(d_derby, "test_table", [], [], ["a asc", "b desc"], null, null)
+                ["select * from test_table  order by a asc,b desc", []]
+                >  db_select_derby_(d_derby, "test_table", ["a", "b"], [], ["a desc"], null, null)
+                ["select a,b from test_table  order by a desc", []]
+                >  db_select_derby_(d_derby, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], null, null)
+                ["select a,b,c from test_table where a >  ? and e =  ?   order by a desc", [0, 12345]]
+                >  db_select_derby_(d_derby, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], 1, null)
+                ["select a,b,c from test_table where a >  ? and e =  ?   order by a desc offset 1 rows ", [0, 12345]]
+                >  db_select_derby_(d_derby, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], 0, 1)
+                ["select a,b,c from test_table where a >  ? and e =  ?   order by a desc offset 0 rows  fetch first 1 rows only ", [0, 12345]]
             Embedded Derby:
-                >  db_select_embed(d_embed, "test_table", [], {}, ["a asc", "b desc"], null, null)
-                [[[1, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:58:25], [2, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 22:00:56]]]
-                >  db_select_embed(d_embed, "test_table", ["a", "b"], {}, ["a desc"], null, null)
+                >  db_select_embed(d_embed, "test_table", [], [], ["a asc", "b desc"], null, null)
+                [[[1, "Test", "", 0, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:44:57], [2, "Test", "", 0, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:48:12]]]
+                >  db_select_embed(d_embed, "test_table", ["a", "b"], [], ["a desc"], null, null)
                 [[[2, "Test"], [1, "Test"]]]
-                >  db_select_embed(d_embed, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], null, null)
+                >  db_select_embed(d_embed, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], null, null)
                 [[[2, "Test", ""], [1, "Test", ""]]]
-                >  db_select_embed(d_embed, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], 1, null)
+                >  db_select_embed(d_embed, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], 1, null)
                 [[[1, "Test", ""]]]
-                >  db_select_embed(d_embed, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], 0, 1)
+                >  db_select_embed(d_embed, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], 0, 1)
                 [[[2, "Test", ""]]]
+            SQL command only
+                >  db_select_embed_(d_embed, "test_table", [], [], ["a asc", "b desc"], null, null)
+                ["select * from test_table  order by a asc,b desc", []]
+                >  db_select_embed_(d_embed, "test_table", ["a", "b"], [], ["a desc"], null, null)
+                ["select a,b from test_table  order by a desc", []]
+                >  db_select_embed_(d_embed, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], null, null)
+                ["select a,b,c from test_table where a >  ? and e =  ?   order by a desc", [0, 12345]]
+                >  db_select_embed_(d_embed, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], 1, null)
+                ["select a,b,c from test_table where a >  ? and e =  ?   order by a desc offset 1 rows ", [0, 12345]]
+                >  db_select_embed_(d_embed, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], 0, 1)
+                ["select a,b,c from test_table where a >  ? and e =  ?   order by a desc offset 0 rows  fetch first 1 rows only ", [0, 12345]]
             PostgreSQL:
-                >  db_select_postgresql(d_pgsql, "test_table", [], {}, ["a asc", "b desc"], null, null)
-                [[[1, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:58:46], [2, "Test", "", 0, 12345, false, 2021-07-19 00:00:00, 2021-07-19 22:01:14]]]
-                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b"], {}, ["a desc"], null, null)
+                >  db_select_postgresql(d_pgsql, "test_table", [], [], ["a asc", "b desc"], null, null)
+                [[[1, "Test", "", 0, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:45:06], [2, "Test", "", 0, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:48:26]]]
+                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b"], [], ["a desc"], null, null)
                 [[[2, "Test"], [1, "Test"]]]
-                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], null, null)
+                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], null, null)
                 [[[2, "Test", ""], [1, "Test", ""]]]
-                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], 1, null)
+                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], 1, null)
                 [[[1, "Test", ""]]]
-                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b", "c"], {"a > ": [0, "and"], "e = ": [12345, ""]}, ["a desc"], 0, 1)
+                >  db_select_postgresql(d_pgsql, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], 0, 1)
                 [[[2, "Test", ""]]]
+            SQL command only
+                >  db_select_postgresql_(d_pgsql, "test_table", [], [], ["a asc", "b desc"], null, null)
+                ["select * from test_table  order by a asc,b desc", []]
+                >  db_select_postgresql_(d_pgsql, "test_table", ["a", "b"], [], ["a desc"], null, null)
+                ["select a,b from test_table  order by a desc", []]
+                >  db_select_postgresql_(d_pgsql, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], null, null)
+                ["select a,b,c from test_table where a >  ? and e =  ?   order by a desc", [0, 12345]]
+                >  db_select_postgresql_(d_pgsql, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], 1, null)
+                ["select a,b,c from test_table where a >  ? and e =  ?   order by a desc offset 1 rows ", [0, 12345]]
+                >  db_select_postgresql_(d_pgsql, "test_table", ["a", "b", "c"], [["a > ", 0, "and"], ["e = ", 12345, ""]], ["a desc"], 0, 1)
+                ["select a,b,c from test_table where a >  ? and e =  ?   order by a desc offset 0 rows  limit 1", [0, 12345]]
     G. Update (all)
             Derby:
-                >  db_update(d_derby, "test_table", {}, {"d": 12.34})
+                >  db_update(d_derby, "test_table", [], {"d": 12.34})
                 [2]
             Embedded Derby:
-                >  db_update(d_embed, "test_table", {}, {"d": 12.34})
+                >  db_update(d_embed, "test_table", [], {"d": 12.34})
                 [2]
             PostgreSQL:
-                >  db_update(d_pgsql, "test_table", {}, {"d": 12.34})
+                >  db_update(d_pgsql, "test_table", [], {"d": 12.34})
                 [2]
+        SQL command only
+                >  db_update_(d_derby, "test_table", [], {"d": 12.34})
+                ["update test_table set d=?", [12.3400]]
+                >  db_update_(d_embed, "test_table", [], {"d": 12.34})
+                ["update test_table set d=?", [12.3400]]
+                >  db_update_(d_pgsql, "test_table", [], {"d": 12.34})
+                ["update test_table set d=?", [12.3400]]
     H. Update (where)
             Derby:
-                >  db_update(d_derby, "test_table", {"e > ": [10000, "and"], "a < ": [2, ""]}, {"d": 12.345})
+                >  db_update(d_derby, "test_table", [["e > ", 10000, "and"], ["a < ", 2, ""]], {"d": 12.345})
                 [1]
             Embedded Derby:
-                >  db_update(d_embed, "test_table", {"e > ": [10000, "and"], "a < ": [2, ""]}, {"d": 12.345})
+                >  db_update(d_embed, "test_table", [["e > ", 10000, "and"], ["a < ", 2, ""]], {"d": 12.345})
                 [1]
             PostgreSQL:
-                >  db_update(d_pgsql, "test_table", {"e > ": [10000, "and"], "a < ": [2, ""]}, {"d": 12.345})
+                >  db_update(d_pgsql, "test_table", [["e > ", 10000, "and"], ["a < ", 2, ""]], {"d": 12.345})
                 [1]
+        SQL command only
+                >  db_update_(d_derby, "test_table", [["e > ", 10000, "and"], ["a < ", 2, ""]], {"d": 12.345})
+                ["update test_table set d=? where e >  ? and a <  ? ", [12.3450, 10000, 2]]
+                >  db_update_(d_embed, "test_table", [["e > ", 10000, "and"], ["a < ", 2, ""]], {"d": 12.345})
+                ["update test_table set d=? where e >  ? and a <  ? ", [12.3450, 10000, 2]]
+                >  db_update_(d_pgsql, "test_table", [["e > ", 10000, "and"], ["a < ", 2, ""]], {"d": 12.345})
+                ["update test_table set d=? where e >  ? and a <  ? ", [12.3450, 10000, 2]]
     I. Delete (where)
             Derby:
-                >  db_delete(d_derby, "test_table", {"a > ": [1, ""]})
+                >  db_delete(d_derby, "test_table", [["a > ", 1, ""]])
                 [1]
             Embedded Derby:
-                >  db_delete(d_embed, "test_table", {"a > ": [1, ""]})
+                >  db_delete(d_embed, "test_table", [["a > ", 1, ""]])
                 [1]
             PostgreSQL:
-                >  db_delete(d_pgsql, "test_table", {"a > ": [1, ""]})
+                >  db_delete(d_pgsql, "test_table", [["a > ", 1, ""]])
                 [1]
+        SQL command only
+                >  db_delete_(d_derby, "test_table", [["a > ", 1, ""]])
+                ["delete from test_table where a >  ? ", [1]]
+                >  db_delete_(d_embed, "test_table", [["a > ", 1, ""]])
+                ["delete from test_table where a >  ? ", [1]]
+                >  db_delete_(d_pgsql, "test_table", [["a > ", 1, ""]])
+                ["delete from test_table where a >  ? ", [1]]
     J. Simple query (without argument)
             Derby:
                 >  db_query_simple(d_derby, "select * from test_table")
-                [[[1, "Test", "", 12.3450, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:57:35]]]
+                [[[1, "Test", "", 12.3450, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:44:40]]]
             Embedded Derby:
                 >  db_query_simple(d_embed, "select * from test_table")
-                [[[1, "Test", "", 12.3450, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:58:25]]]
+                [[[1, "Test", "", 12.3450, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:44:57]]]
             PostgreSQL:
                 >  db_query_simple(d_pgsql, "select * from test_table")
-                [[[1, "Test", "", 12.3450, 12345, false, 2021-07-19 00:00:00, 2021-07-19 21:58:46]]]
+                [[[1, "Test", "", 12.3450, 12345, false, 2021-08-15 00:00:00, 2021-08-15 17:45:06]]]
     K. Single query (with argument)
             Derby:
                 >  db_query_single(d_derby, "select a, b from test_table where a > ?", [0])
@@ -1971,20 +2035,97 @@ database management system).
                 [[[1, "Test"]]]
     L. Delete (all)
             Derby:
-                >  db_delete(d_derby, "test_table", {})
+                >  db_delete(d_derby, "test_table", [])
                 [1]
                 >  db_select_all(d_derby, "test_table")
                 [[]]
             Embedded Derby:
-                >  db_delete(d_embed, "test_table", {})
+                >  db_delete(d_embed, "test_table", [])
                 [1]
                 >  db_select_all(d_embed, "test_table")
                 [[]]
             PostgreSQL:
-                >  db_delete(d_pgsql, "test_table", {})
+                >  db_delete(d_pgsql, "test_table", [])
                 [1]
                 >  db_select_all(d_pgsql, "test_table")
                 [[]]
+        SQL command only
+                >  db_delete_(d_derby, "test_table", [])
+                ["delete from test_table", []]
+                >  db_delete_(d_embed, "test_table", [])
+                ["delete from test_table", []]
+                >  db_delete_(d_pgsql, "test_table", [])
+                ["delete from test_table", []]
+    M. Using built-in function: query
+            Derby:
+            Query (with transaction) OK
+                >  var q1 = db_insert_(d_derby, "test_table", {"b": "Test", "e": 12345})
+                >  q1
+                ["insert into test_table (b,e) values (?,?)", ["Test", 12345]]
+                >  var q2 = db_update_(d_derby, "test_table", [], {"d": 12.34})
+                >  q2
+                ["update test_table set d=?", [12.3400]]
+                >  query(d_derby, [q1, q2])
+                [1, 1]
+                >  db_select_all(d_derby, "test_table")
+                [[[3, "Test", "", 12.3400, 12345, false, 2021-08-15 00:00:00, 2021-08-15 18:25:34]]]
+            Query (with transaction) Failed 
+            (there is no column named 'error' in table test_table)
+                >  var q3 = db_update_(d_derby, "test_table", [], {"error": 12.34})
+                >  q1
+                ["insert into test_table (b,e) values (?,?)", ["Test", 12345]]
+                >  q3
+                ["update test_table set error=?", [12.3400]]
+                >  println(query(d_derby, [q1, q3]))
+                null
+                >  db_select_all(d_derby, "test_table")
+                [[[3, "Test", "", 12.3400, 12345, false, 2021-08-15 00:00:00, 2021-08-15 18:25:34]]]
+            Embedded Derby:
+            Query (with transaction) OK
+                >  var q1 = db_insert_(d_embed, "test_table", {"b": "Test", "e": 12345})
+                >  q1
+                ["insert into test_table (b,e) values (?,?)", ["Test", 12345]]
+                >  var q2 = db_update_(d_embed, "test_table", [], {"d": 12.34})
+                >  q2
+                ["update test_table set d=?", [12.3400]]
+                >  query(d_embed, [q1, q2])
+                [1, 1]
+                >  db_select_all(d_embed, "test_table")
+                [[[3, "Test", "", 12.3400, 12345, false, 2021-08-15 00:00:00, 2021-08-15 18:31:27]]]
+            Query (with transaction) Failed 
+            (there is no column named 'error' in table test_table)
+                >  var q3 = db_update_(d_embed, "test_table", [], {"error": 12.34})
+                >  q1
+                ["insert into test_table (b,e) values (?,?)", ["Test", 12345]]
+                >  q3
+                ["update test_table set error=?", [12.3400]]
+                >  println(query(d_embed, [q1, q3]))
+                null
+                >  db_select_all(d_embed, "test_table")
+                [[[3, "Test", "", 12.3400, 12345, false, 2021-08-15 00:00:00, 2021-08-15 18:31:27]]]
+            PostgreSQL:
+            Query (with transaction) OK
+                >  var q1 = db_insert_(d_pgsql, "test_table", {"b": "Test", "e": 12345})
+                >  q1
+                ["insert into test_table (b,e) values (?,?)", ["Test", 12345]]
+                >  var q2 = db_update_(d_pgsql, "test_table", [], {"d": 12.34})
+                >  q2
+                ["update test_table set d=?", [12.3400]]
+                >  query(d_pgsql, [q1, q2])
+                [1, 1]
+                >  db_select_all(d_pgsql, "test_table")
+                [[[3, "Test", "", 12.3400, 12345, false, 2021-08-15 00:00:00, 2021-08-15 18:34:53]]]
+            Query (with transaction) Failed 
+            (there is no column named 'error' in table test_table)
+                >  var q3 = db_update_(d_pgsql, "test_table", [], {"error": 12.34})
+                >  q1
+                ["insert into test_table (b,e) values (?,?)", ["Test", 12345]]
+                >  q3
+                ["update test_table set error=?", [12.3400]]
+                >  println(query(d_pgsql, [q1, q3]))
+                null
+                >  db_select_all(d_pgsql, "test_table")
+                [[[3, "Test", "", 12.3400, 12345, false, 2021-08-15 00:00:00, 2021-08-15 18:34:53]]]
 
 
 -----------------------------------------------------------------------------
@@ -2817,6 +2958,7 @@ var grid = component("grid", "Grid")
 var t2 = component("table", "A,B,C,D,E")
 var x = component("text", "Singkong")
 var v = component("view", "<b>Singkong</b><br>Programming")
+var s = component("mask", "(###) ###-###")
 
 panel_add(panel, t1, 10, 10, 250, 400)
 tab_add(a, panel)
@@ -2832,7 +2974,7 @@ config(z, "contents", [[10, "A", "green"], [20, "B", "blue"]])
 
 add([e, a, z])
 add_n([i, l, x, p, c, r, m, b])
-add_s([v, d, g])
+add_s([v, d, g, s])
 
 each(range(0,8), fn(e, i) {
 	statusbar(e, "Status: " + e, i%2 == 0)
@@ -3153,7 +3295,7 @@ Using db_util module:
         db_create_table_embed(d, "test", [["a", "integer."], ["b", "varchar."]])
 
         db_insert(d, "test", {"a": random(0,100), "b": "hello"})    
-        db_update(d, "test", {"b = ": ["hello", ""]}, {"b": "Hello World"})    
+        db_update(d, "test", [["b = ", "hello", ""]], {"b": "Hello World"})    
 
         var r = db_select_all(d, "test")
         if (!empty(r)) {
