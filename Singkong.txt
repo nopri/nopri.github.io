@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 6.4 (2021-August-16 +07:00)
+Version: 6.5 (2021-August-27 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -99,7 +99,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 6.4
+        Singkong 6.5
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -652,7 +652,10 @@ hash, print, println, puts, string, type, types, variables
   - GUI input/output functions: confirm, directory, input, open, message, 
     password, save
     (if GUI is not available: simpler text-based version)
-  - GUI dialogs: login_dialog, panel_dialog
+  - GUI dialogs: color_chooser, login_dialog, panel_dialog
+  - Drawing: draw_width, draw_rect, fill_rect, draw_arc, fill_arc, draw_oval, 
+    fill_oval, draw_round_rect, fill_round_rect, draw_string, draw_line, 
+    draw_polygon, fill_polygon, draw_polyline
   - Clipboard: clipboard_get, clipboard_set
   - Sound: beep, play_sound
   - array of component check: is_array_of_component_of
@@ -721,28 +724,31 @@ To get a list of built-in functions, please call builtins()
 "BASE64_DECODE", "BASE64_ENCODE", "BEEP", "BOOLEAN_XOR", "BUILTINS", 
 "BUTTON_IMAGE", "CALL", "CALL_INFO", "CBRT", "CENTER", "CGI_CONTENTS", 
 "CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", "CHR", "CLEAR", 
-"CLIPBOARD_GET", "CLIPBOARD_SET", "CLOSING", "COMPONENT", "COMPONENT_TYPE", 
-"COMPONENTS", "CONFIG", "CONFIRM", "COPY", "COPY_RESOURCE", "COS", "COSH", 
-"COUNT", "CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", "DATE", 
-"DATETIME", "DAY", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", "DISABLED", 
-"DO", "EACH", "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", 
-"EVENT_FRAME", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", 
-"EXIT", "EXP", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
-"FORMAT_DIFF", "FORMAT_TIME", "FRAME", "FRAME_CLOSE", "FROM_BIN", "FROM_HEX", 
-"FROM_OCT", "GET", "GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", 
-"HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", 
-"HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IN", 
-"INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", 
-"INTERACTIVE", "IS", "IS_ARRAY_AND_OF", "IS_ARRAY_OF", 
-"IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", "IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", 
-"IS_UPDATE_AVAILABLE", "ISALNUM", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", 
-"JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", 
-"LOAD_FILE_OR_RESOURCE", "LOAD_MODULE", "LOAD_RESOURCE", "LOG", "LOG10", 
-"LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MD5_FILE", "MENUBAR", 
-"MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", "MONTH", "NEWLINE", "NUMBER", 
-"NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_NOT", "NUMBER_OR", 
-"NUMBER_SCALE", "NUMBER_TO_BYTE", "NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", 
-"ORD", "PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
+"CLIPBOARD_GET", "CLIPBOARD_SET", "CLOSING", "COLOR_CHOOSER", "COMPONENT", 
+"COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY", "COPY_RESOURCE", 
+"COS", "COSH", "COUNT", "CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", 
+"DATE", "DATETIME", "DAY", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", 
+"DISABLED", "DO", "DRAW_ARC", "DRAW_LINE", "DRAW_OVAL", "DRAW_POLYGON", 
+"DRAW_POLYLINE", "DRAW_RECT", "DRAW_ROUND_RECT", "DRAW_STRING", "DRAW_WIDTH", 
+"EACH", "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FRAME", 
+"EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", "EXIT", "EXP", 
+"FILL_ARC", "FILL_OVAL", "FILL_POLYGON", "FILL_RECT", "FILL_ROUND_RECT", 
+"FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", 
+"FORMAT_TIME", "FRAME", "FRAME_CLOSE", "FROM_BIN", "FROM_HEX", "FROM_OCT", 
+"GET", "GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", 
+"HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
+"HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", 
+"INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTERACTIVE", 
+"IS", "IS_ARRAY_AND_OF", "IS_ARRAY_OF", "IS_ARRAY_OF_COMPONENT_OF", 
+"IS_LEAP_YEAR", "IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", "IS_UPDATE_AVAILABLE", 
+"ISALNUM", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", "JOIN", "KEYS", 
+"KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOAD_FILE_OR_RESOURCE", 
+"LOAD_MODULE", "LOAD_RESOURCE", "LOG", "LOG10", "LOGIN_DIALOG", "LOWER", 
+"MATCHES", "MAX", "MD5", "MD5_FILE", "MENUBAR", "MESSAGE", "MIN", "MINUTE", 
+"MKDIR", "MODULES", "MONTH", "NEWLINE", "NUMBER", "NUMBER_AND", 
+"NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_NOT", "NUMBER_OR", "NUMBER_SCALE", 
+"NUMBER_TO_BYTE", "NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", "ORD", 
+"PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
 "PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", "PRINT", 
 "PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", 
 "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", 
@@ -767,7 +773,7 @@ To get a list of built-in functions, please call builtins()
 "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-304
+319
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -970,7 +976,7 @@ To keep it as simple as possible:
 - There is only one frame for each Singkong program. No other frames
   can be created (using Singkong code). 
   To show common dialogs, please use related built-in functions (confirm, 
-  directory, input, open, message, password, save, login_dialog).
+  directory, input, open, message, password, save, login_dialog, color_chooser).
   To create custom panel or grid dialogs, please use built-in function panel_dialog.
   To create more advanced dialogs, please use Java method.
   To set frame title, please use built-in function title.
@@ -999,6 +1005,7 @@ To keep it as simple as possible:
     - checkbox: label
     - combobox: items (comma-separated string)
     - date: format
+    - draw: width (integer; default 100), height (integer; default 100)
     - edit: text
     - grid: tab title
     - image: file name
@@ -1021,9 +1028,9 @@ To keep it as simple as possible:
       - Using Ctrl or Command key (depending on the operating system)
 - To get a list of supported component types, built-in function components can 
   be used. Currently, this function returns:
-    ["barchart", "button", "checkbox", "combobox", "date", "edit", "grid", 
-    "image", "label", "mask", "panel", "password", "progress", "radio", "tab", 
-    "table", "text", "view"]
+    ["barchart", "button", "checkbox", "combobox", "date", "draw", "edit", 
+    "grid", "image", "label", "mask", "panel", "password", "progress", "radio", 
+    "tab", "table", "text", "view"]
 - To get type of a COMPONENT, please use built-in function component_type. This
   function returns component type as STRING (one of values returned by 
   components function, as above). 
@@ -1529,6 +1536,54 @@ To keep it as simple as possible:
         event(btn_b, fn() {
           menubar(b)
         })
+
+        show()
+- Drawing: built-in functions:
+    draw_width
+    draw_rect
+    fill_rect
+    draw_arc
+    fill_arc
+    draw_oval
+    fill_oval
+    draw_round_rect
+    fill_round_rect
+    draw_string
+    draw_line
+    draw_polygon
+    fill_polygon
+    draw_polyline
+    example:
+        reset()
+        var dr = component("draw", "500, 500")
+        add(dr)
+
+        config(dr, "foreground", "black")
+        config(dr, "background", "white")
+
+        draw_width(dr, 2)
+
+        draw_rect(dr, 10, 10, 100, 50)
+        fill_rect(dr, 120, 10, 100, 50)
+
+        draw_arc(dr, 10, 80, 100, 50, 90, 270)
+        fill_arc(dr, 120, 80, 100, 50, 90, 270)
+
+        draw_oval(dr, 10, 150, 100, 50)
+        fill_oval(dr, 120, 150, 100, 50)
+
+        draw_round_rect(dr, 10, 220, 100, 50, 30, 30)
+        fill_round_rect(dr, 120, 220, 100, 50, 30, 30)
+
+        config(dr, "font", ["monospaced", 1, 30])
+        draw_string(dr, "Singkong", 10, 320)
+
+        draw_line(dr, 10, 340, 240, 340)
+
+        draw_polygon(dr, [10, 50, 90], [400, 360, 400])
+        fill_polygon(dr, [120, 160, 200], [400, 360, 400])
+
+        draw_polyline(dr, [10, 50, 90], [480, 440, 480])
 
         show()
 - Using ui_util module:
@@ -2959,6 +3014,12 @@ var t2 = component("table", "A,B,C,D,E")
 var x = component("text", "Singkong")
 var v = component("view", "<b>Singkong</b><br>Programming")
 var s = component("mask", "(###) ###-###")
+var dr = component("draw", "50, 50")
+
+config(dr, "foreground", "black")
+config(dr, "background", "white")
+draw_string(dr, ":)", 20, 22)
+draw_rect(dr, 8, 8, 30, 20)
 
 panel_add(panel, t1, 10, 10, 250, 400)
 tab_add(a, panel)
@@ -2974,7 +3035,7 @@ config(z, "contents", [[10, "A", "green"], [20, "B", "blue"]])
 
 add([e, a, z])
 add_n([i, l, x, p, c, r, m, b])
-add_s([v, d, g, s])
+add_s([v, d, g, s, dr])
 
 each(range(0,8), fn(e, i) {
 	statusbar(e, "Status: " + e, i%2 == 0)

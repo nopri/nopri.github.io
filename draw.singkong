@@ -1,0 +1,32 @@
+reset()
+var dr = component("draw", "500, 500")
+add(dr)
+
+config(dr, "foreground", "black")
+config(dr, "background", "white")
+
+draw_width(dr, 2)
+
+draw_rect(dr, 10, 10, 100, 50)
+fill_rect(dr, 120, 10, 100, 50)
+
+draw_arc(dr, 10, 80, 100, 50, 90, 270)
+fill_arc(dr, 120, 80, 100, 50, 90, 270)
+
+draw_oval(dr, 10, 150, 100, 50)
+fill_oval(dr, 120, 150, 100, 50)
+
+draw_round_rect(dr, 10, 220, 100, 50, 30, 30)
+fill_round_rect(dr, 120, 220, 100, 50, 30, 30)
+
+config(dr, "font", ["monospaced", 1, 30])
+draw_string(dr, "Singkong", 10, 320)
+
+draw_line(dr, 10, 340, 240, 340)
+
+draw_polygon(dr, [10, 50, 90], [400, 360, 400])
+fill_polygon(dr, [120, 160, 200], [400, 360, 400])
+
+draw_polyline(dr, [10, 50, 90], [480, 440, 480])
+
+show()

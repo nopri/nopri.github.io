@@ -17,6 +17,12 @@ var t2 = component("table", "A,B,C,D,E")
 var x = component("text", "Singkong")
 var v = component("view", "<b>Singkong</b><br>Programming")
 var s = component("mask", "(###) ###-###")
+var dr = component("draw", "50, 50")
+
+config(dr, "foreground", "black")
+config(dr, "background", "white")
+draw_string(dr, ":)", 20, 22)
+draw_rect(dr, 8, 8, 30, 20)
 
 panel_add(panel, t1, 10, 10, 250, 400)
 tab_add(a, panel)
@@ -32,7 +38,7 @@ config(z, "contents", [[10, "A", "green"], [20, "B", "blue"]])
 
 add([e, a, z])
 add_n([i, l, x, p, c, r, m, b])
-add_s([v, d, g, s])
+add_s([v, d, g, s, dr])
 
 each(range(0,8), fn(e, i) {
 	statusbar(e, "Status: " + e, i%2 == 0)
