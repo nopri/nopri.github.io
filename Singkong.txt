@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2021
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 6.5 (2021-August-27 +07:00)
+Version: 6.6 (2021-August-30 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -48,6 +48,8 @@ Bundled JDBC Drivers (compatible with Java 5.0 or later):
 26. Example: Java: custom dialog
 27. Example: Monkey programming language interpreter in Singkong
 28. Example: Working with Comma-Separated Values file
+29. Example: Drawing: simple painting program
+
 
 -----------------------------------------------------------------------------
 
@@ -99,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 6.5
+        Singkong 6.6
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -655,7 +657,8 @@ hash, print, println, puts, string, type, types, variables
   - GUI dialogs: color_chooser, login_dialog, panel_dialog
   - Drawing: draw_width, draw_rect, fill_rect, draw_arc, fill_arc, draw_oval, 
     fill_oval, draw_round_rect, fill_round_rect, draw_string, draw_line, 
-    draw_polygon, fill_polygon, draw_polyline
+    draw_polygon, fill_polygon, draw_polyline, draw_read, draw_write_png, 
+    draw_write_jpg, draw_write_bmp, draw_get_pixel, draw_set_pixel
   - Clipboard: clipboard_get, clipboard_set
   - Sound: beep, play_sound
   - array of component check: is_array_of_component_of
@@ -728,27 +731,28 @@ To get a list of built-in functions, please call builtins()
 "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY", "COPY_RESOURCE", 
 "COS", "COSH", "COUNT", "CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", 
 "DATE", "DATETIME", "DAY", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", 
-"DISABLED", "DO", "DRAW_ARC", "DRAW_LINE", "DRAW_OVAL", "DRAW_POLYGON", 
-"DRAW_POLYLINE", "DRAW_RECT", "DRAW_ROUND_RECT", "DRAW_STRING", "DRAW_WIDTH", 
-"EACH", "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FRAME", 
-"EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", "EXIT", "EXP", 
-"FILL_ARC", "FILL_OVAL", "FILL_POLYGON", "FILL_RECT", "FILL_ROUND_RECT", 
-"FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", 
-"FORMAT_TIME", "FRAME", "FRAME_CLOSE", "FROM_BIN", "FROM_HEX", "FROM_OCT", 
-"GET", "GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", 
-"HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
-"HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", 
-"INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTERACTIVE", 
-"IS", "IS_ARRAY_AND_OF", "IS_ARRAY_OF", "IS_ARRAY_OF_COMPONENT_OF", 
-"IS_LEAP_YEAR", "IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", "IS_UPDATE_AVAILABLE", 
-"ISALNUM", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", "JOIN", "KEYS", 
-"KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", "LOAD_FILE_OR_RESOURCE", 
-"LOAD_MODULE", "LOAD_RESOURCE", "LOG", "LOG10", "LOGIN_DIALOG", "LOWER", 
-"MATCHES", "MAX", "MD5", "MD5_FILE", "MENUBAR", "MESSAGE", "MIN", "MINUTE", 
-"MKDIR", "MODULES", "MONTH", "NEWLINE", "NUMBER", "NUMBER_AND", 
-"NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_NOT", "NUMBER_OR", "NUMBER_SCALE", 
-"NUMBER_TO_BYTE", "NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", "ORD", 
-"PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
+"DISABLED", "DO", "DRAW_ARC", "DRAW_GET_PIXEL", "DRAW_LINE", "DRAW_OVAL", 
+"DRAW_POLYGON", "DRAW_POLYLINE", "DRAW_READ", "DRAW_RECT", "DRAW_ROUND_RECT", 
+"DRAW_SET_PIXEL", "DRAW_STRING", "DRAW_WIDTH", "DRAW_WRITE_BMP", 
+"DRAW_WRITE_JPG", "DRAW_WRITE_PNG", "EACH", "EMPTY", "ENDSWITH", "ENV", 
+"EQUALS", "EVAL", "EVENT", "EVENT_FRAME", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", 
+"EVENT_MOUSE_FRAME", "EXIT", "EXP", "FILL_ARC", "FILL_OVAL", "FILL_POLYGON", 
+"FILL_RECT", "FILL_ROUND_RECT", "FIRST", "FONTS", "FORMAT_DATE", 
+"FORMAT_DATETIME", "FORMAT_DIFF", "FORMAT_TIME", "FRAME", "FRAME_CLOSE", 
+"FROM_BIN", "FROM_HEX", "FROM_OCT", "GET", "GRID_ADD", "GRID_CLEAR", 
+"GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", 
+"HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", 
+"HTTP_RESPONSE_OK", "IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", 
+"INPUT", "INTEGER", "INTERACTIVE", "IS", "IS_ARRAY_AND_OF", "IS_ARRAY_OF", 
+"IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", "IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", 
+"IS_UPDATE_AVAILABLE", "ISALNUM", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", 
+"JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", 
+"LOAD_FILE_OR_RESOURCE", "LOAD_MODULE", "LOAD_RESOURCE", "LOG", "LOG10", 
+"LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MD5_FILE", "MENUBAR", 
+"MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", "MONTH", "NEWLINE", "NUMBER", 
+"NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_NOT", "NUMBER_OR", 
+"NUMBER_SCALE", "NUMBER_TO_BYTE", "NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", 
+"ORD", "PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
 "PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", "PRINT", 
 "PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", 
 "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", 
@@ -773,7 +777,7 @@ To get a list of built-in functions, please call builtins()
 "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-319
+325
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -1553,6 +1557,12 @@ To keep it as simple as possible:
     draw_polygon
     fill_polygon
     draw_polyline
+    draw_read
+    draw_write_png
+    draw_write_jpg
+    draw_write_bmp
+    draw_get_pixel
+    draw_set_pixel
     example:
         reset()
         var dr = component("draw", "500, 500")
@@ -2695,6 +2705,8 @@ provide functionalities in Java Programming Language.
 
 14. Embedding Singkong into another applications
 Java applications:
+- Note: after evaluating Singkong code, calling System.exit() explicitly 
+  might be needed, to terminate the application.
 - Class: com.noprianto.singkong.Singkong
 - Methods: 
     public static java.lang.String evaluatorString(java.lang.String);
@@ -3019,7 +3031,6 @@ var dr = component("draw", "50, 50")
 config(dr, "foreground", "black")
 config(dr, "background", "white")
 draw_string(dr, ":)", 20, 22)
-draw_rect(dr, 8, 8, 30, 20)
 
 panel_add(panel, t1, 10, 10, 250, 400)
 tab_add(a, panel)
@@ -3723,6 +3734,204 @@ Download monkey.singkong runnable jar: https://nopri.github.io/monkeyinterpreter
     [1, 2]
 
 - Note: embedded double quote is not supported
+
+
+-----------------------------------------------------------------------------
+
+29. Example: Drawing: simple painting program
+reset()
+
+var name = "Paint"
+var width = 1024
+var height = 768
+var font_size = 20
+size(width, height)
+resizable(false)
+title(name)
+closing("Are you sure you want to quit this application?", "Please confirm")
+
+var g = component("grid", "")
+var d = component("draw", "" + width + "," + height)
+config(d, "background", "white")
+
+var gn = component("grid", "")
+var bf = component("button", "Foreground")
+var bb = component("button", "Background")
+var pf = component("panel", "")
+var pb = component("panel", "")
+var lx = component("label", "Pixel (+/-)")
+var xr = component("text", "0")
+var xg = component("text", "0")
+var xb = component("text", "0")
+var bx = component("button", "Set")
+var br = component("button", "Open")
+var bw = component("button", "Save (.png)")
+var pp = component("panel", "")
+var po = component("label", " ")
+grid_add(gn, bf, 0, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gn, pf, 1, 0, 1, 1, 0.1, 0, 3, 1, 4, 4, 4, 4)
+grid_add(gn, bb, 2, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gn, pb, 3, 0, 1, 1, 0.1, 0, 3, 1, 4, 4, 4, 4)
+grid_add(gn, lx, 4, 0, 1, 1, 0.1, 0, 3, 1, 4, 4, 4, 4)
+grid_add(gn, xr, 5, 0, 1, 1, 0.1, 0, 3, 1, 4, 4, 4, 4)
+grid_add(gn, xg, 6, 0, 1, 1, 0.1, 0, 3, 1, 4, 4, 4, 4)
+grid_add(gn, xb, 7, 0, 1, 1, 0.1, 0, 3, 1, 4, 4, 4, 4)
+grid_add(gn, bx, 8, 0, 1, 1, 0, 0, 3, 1, 4, 4, 4, 4)
+grid_add(gn, br, 9, 0, 1, 1, 0.2, 1, 3, 1, 4, 4, 4, 4)
+grid_add(gn, bw, 10, 0, 1, 1, 0.2, 0, 1, 1, 4, 4, 4, 4)
+grid_add(gn, pp, 11, 0, 1, 1, 1, 0, 3, 1, 4, 4, 4, 4)
+var gd = component("grid", "")
+config(gd, "border", "Draw")
+var rl = component("radio", "Line")
+var rt = component("radio", "Text")
+config(rl, "active", true)
+var rr = component("radio", "Rectangle")
+var ro = component("radio", "Oval")
+radio_group([rl, rt, rr, ro])
+config(pf, "background", "black")
+config(pb, "background", "white")
+var cf = component("checkbox", "Fill")
+config(cf, "active", true)
+var cl = component("label", "Width")
+var cw = component("combobox", "1,2,3,4,5,6,7,8")
+var gt = component("grid", "")
+config(gt, "border", "Text")
+var co = component("combobox", join(",", fonts()))
+var ts = component("text", "" + font_size)
+var tt = component("text", "")
+grid_add(gd, rl, 0, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, rt, 1, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, rr, 2, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, ro, 3, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, cf, 4, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, cl, 5, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, cw, 6, 0, 1, 1, 1, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gt, co, 0, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gt, ts, 1, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gt, tt, 2, 0, 1, 1, 1, 0, 3, 1, 4, 4, 4, 4)
+
+grid_add(g, gn, 0, 0, 2, 1, 0, 0, 1, 1, 4, 4, 4, 4)
+grid_add(g, d, 0, 1, 2, 1, 1, 1, 3, 0, 4, 4, 4, 4)
+grid_add(g, gd, 0, 2, 1, 1, 1, 0, 3, 1, 4, 4, 4, 4)
+grid_add(g, gt, 1, 2, 1, 1, 1, 0, 3, 1, 4, 4, 4, 4)
+add(g)
+add_s(po)
+
+var x = [null, null, null, null]
+
+event(bf, fn() {
+    var r = color_chooser()
+    if (r != null) {
+        config(d, "foreground", r)
+        config(pf, "background", r)
+    }
+})
+
+event(bb, fn() {
+    var r = color_chooser()
+    if (r != null) {
+        config(d, "background", r)
+        config(pb, "background", r)
+    }
+})
+
+event_mouse(d, fn(a) {
+    config(po, "text", a[1] + ", " + a[2])
+
+    if (a[0] == "PRESSED") {
+        set(x, 0, a[1])
+        set(x, 1, a[2])
+    } 
+    if (a[0] == "RELEASED") {
+        set(x, 2, a[1])
+        set(x, 3, a[2])
+
+        draw_width(d, number(get(cw, "text")))
+
+        var f = get(cf, "active")
+
+        var m = get(rl, "active")
+        if (m == true) {
+            draw_line(d, x[0], x[1], x[2], x[3])
+        } 
+
+        var m = get(rt, "active")
+        if (m == true) {
+            var s = trim(get(tt, "contents"))
+            var fa = get(co, "text")
+            var fs = number(trim(get(ts, "contents")), font_size)
+            config(ts, "contents", fs)
+            if (len(s) > 0) {
+                config(d, "font", [fa, 0, fs])
+                draw_string(d, s, x[0], x[1])
+            }
+        } 
+
+        var m = get(rr, "active") 
+        if (m == true) {
+            if (f == true) {
+                fill_rect(d, x[0], x[1], x[2]-x[0], x[3]-x[1])
+            } else {
+                draw_rect(d, x[0], x[1], x[2]-x[0], x[3]-x[1])
+            }
+        }
+        var m = get(ro, "active")
+        if (m == true) {
+            if (f == true) {
+                fill_oval(d, x[0], x[1], x[2]-x[0], x[3]-x[1])
+            } else {
+                draw_oval(d, x[0], x[1], x[2]-x[0], x[3]-x[1])
+            }
+        }
+    }
+})
+
+event(bx, fn() {
+    var r = number(trim(get(xr, "contents")), 0)
+    var g = number(trim(get(xg, "contents")), 0)
+    var b = number(trim(get(xb, "contents")), 0)
+    each(range(0, width), fn(e, i) {
+        each(range(0, height), fn(ee, ii) {
+            var p = draw_get_pixel(d, e, ee)
+            if (p != null) {
+                var q = [p[0] + r, p[1] + g, p[2] + b]
+                draw_set_pixel(d, e, ee, q)
+            }
+        })
+    })
+})
+
+event(br, fn() {
+    var f = open()
+    if (!empty(f)) {
+        draw_read(d, f)
+        title(name + ": " + f)
+    }    
+})
+
+event(bw, fn() {
+    var action_save = false
+    var f = save()
+    if (!empty(f)) {
+        if (stat(f)["exists"] == true) {
+            var res = confirm("File already exists. Overwrite?", 
+                "Please confirm")
+            if (res == "OK") {
+                var action_save = true
+            }
+        } else {
+            var action_save = true
+        }
+        if (action_save == true) {
+            if (draw_write_png(d, f) == true) {
+                title(name + ": " + f)
+                message("File saved")
+            }
+        }
+    }    
+})
+
+show()
 
 
 =============================================================================

@@ -22,7 +22,6 @@ var dr = component("draw", "50, 50")
 config(dr, "foreground", "black")
 config(dr, "background", "white")
 draw_string(dr, ":)", 20, 22)
-draw_rect(dr, 8, 8, 30, 20)
 
 panel_add(panel, t1, 10, 10, 250, 400)
 tab_add(a, panel)
