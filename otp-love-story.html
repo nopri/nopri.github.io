@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>One-time Password dan Cerita Cinta Kita</title>
+    <meta charset="utf-8">
+    <meta name="description" content="One-time Password dan Cerita Cinta Kita">
+    <meta name="keywords" content="singkong, singkong programming, singkong programming language, otp, one-time password, love story, fiction">
+    <meta name="author"  content="Noprianto">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body
+        {
+            font-size       : 16px;
+            line-height     : 22px;
+            font-family     : sans-serif;
+	    padding         : 20px;
+        }
+
+        h3
+        {
+            padding-top     : 20px;
+        }
+	
+	p
+	{
+	    text-align      : justify;
+	}
+    </style>
+</head>
+<body>
+<h3>One-time Password dan Cerita Cinta Kita</h3>
+<hr>
+<p>
+Kau tahu, aku cinta padamu. Karena kalau tidak, pastilah tak kuceritakan ini padamu. Dan aku tahu, kau mungkin juga cinta padaku. Karena kalau tidak, bagaimana mungkin kita selalu satu hati?
+</p>
+<p>
+Kata orang, setiap kisah cinta dimulai dengan sebuah cerita. Dan, cerita kita adalah tentang pilah pilih tempat makan secara acak. Kadang kita mencari suasana berbeda, kadang sekedar karena belum gajian. Di manapun kita sepakat, di sana jugalah cinta kita semakin bersemi.   
+</p>
+<p>
+Tentu kau tahu bahwa kita tidak selalu bisa bersama. Pekerjaan kita, rutinitas sehari-hari, semua serba berbeda. Jarak pun ikut memisahkan kita. Kadang aku heran, bagaimana mungkin sekedar tempat makan, bisa menyatukan kita. Tapi, begitulah kata orang bijak. Selalu akan ada perbedaan dalam cinta. Kita hanya perlu mendengar kata hati kita. Dan barangkali, tetap saling bicara. 
+</p>
+<p>
+Saling bicara lewat hati, tepatnya. Bukanlah ada lagu lama, bercerita betapa menakjubkan kamu bisa berbicara langsung pada hatiku. Tanpa bersuara, kadang dengan senyuman, dan pandangan matamu. Andaikata kita berbicara bahasa yang berbeda, cinta itu akan tetap ada. Andaikata koneksi internet terputus diantara kita, rasa itu masih akan tetap sama.  
+</p>
+<p>
+Aku harap, cerita kita masih akan panjang. Tidak semua bisa tersampaikan. Tapi, tetap tidak mengubah apa yang ada. Cinta tetaplah cinta, walau tak terungkapkan.
+</p>
+<p>
+***
+</p>
+<p>
+Pembaca yang terhormat, saya rasa cukup sampai di sini kata-kata gombalnya. Judul tulisan ini adalah tentang one-time password (OTP), yang dibumbui kisah cinta.
+</p>
+<p>
+Saat ini, semakin sering kita menggunakan sistem yang dilengkapi OTP. Setelah nama dan sandi yang tepat dimasukkan, kita masih diminta untuk mengisikan sebuah kode unik (password), yang sekali pakai (one-time). Dengan demikian, sekedar nama dan sandi yang tepat saja tidak cukup. OTP adalah proteksi tambahan untuk kita.  
+</p>
+<p>
+Kode OTP ini bisa berbasis waktu (time-based OTP, atau TOTP) dan dapat menjadi tidak valid, misal setelah 30 detik. Mekanisme pengiriman kodenya pun bisa macam-macam, misal lewat SMS. Atau, yang lebih nyaman barangkali, adalah dengan aplikasi authenticator (misal: Google Authenticator). Dengan aplikasi authenticator yang dipasang ke ponsel pintar kita, tidak diperlukan koneksi internet ataupun ketersediaan jaringan komunikasi. Sepenuhnya offline. Seperti cerita cinta kita di atas.
+</p>
+<p>
+***
+</p>
+<p>
+Tentu saja, untuk menghasilkan kode OTP yang dianggap valid oleh server (aplikasi atau sistem yang kita gunakan), perlu ada kesepakatan yang sama diawal (secret key, misal berupa kode acak). Ingatlah bahwa cerita cinta kita bersemi karena pilihan tempat makan acak. Secret ini dihasilkan oleh server dan dapat ditampilkan apa adanya (misal dalam Base32) ataupun lewat QR code. Di aplikasi authenticator, kita melakukan setup dengan mengisikan key tersebut secara manual ataupun dengan memindai QR code. Proses setup ini hanya cukup sekali saja.
+</p>
+<p>
+Dengan algoritma yang sama, berbasiskan key tersebut, kode OTP akan dihasilkan ketika diperlukan. Sebagai contoh, setiap kali login berhasil, server tinggal meminta pengguna untuk memasukkan OTP yang dihasilkan dari aplikasi authenticator, dan membandingkannya dengan OTP yang dihasilkan di sisi server. Sebagai catatan, untuk yang time-based, pastikanlah jam di ponsel (dimana aplikasi authenticator dijalankan) telah diatur dengan tepat. 
+</p>
+<p>
+Seperti cerita cinta di atas, apabila key dan algoritmanya sama, ini bisa bekerja lintas platform, lintas zona waktu, dan lainnya. Semua disampaikan dengan tepat, langsung ke hati penerima. Cukup dengan perhatian, senyuman, dan pandangan mata, rasa cinta akan tersampaikan. 
+</p>
+<p>
+***
+</p>
+<p>
+Mari kita implementasikan TOTP dengan Bahasa Pemrograman Python dan pustaka PyOTP. Di sisi server, kita hasilkan key dan akan menampilkan apa adanya, agar pengguna aplikasi authenticator dapat melakukan setup secara manual. Dengan Base32 yang digunakan, kode ini akan cukup nyaman untuk terbaca. 
+</p>
+<p>
+Selesai pengguna mengisikan, OTP akan ditampilkan di aplikasi authenticator. Dengan asumsi jam diatur dengan tepat, server akan menghasilkan OTP yang sama. Keduanya tinggal dibandingkan. Apabila tepat, maka berikutnya, setiap kali login, pengguna tersebut idealnya perlu diminta memasukkan kode OTP. Kita dapat berikan status bahwa akun pengguna tersebut telah diproteksi dengan 2FA (Two-Factor Authentication) ataupun MFA (Multi-Factor Authentication).
+</p>
+<p>
+Contoh source code:
+</p>
+<pre>
+>>> import pyotp
+>>> s = pyotp.random_base32()
+>>> s
+u'BFQCEX5XGTQXPM7Z'
+</pre>
+<p> 
+Variabel s tersebut adalah secret key yang dihasilkan.
+</p>
+<pre>
+>>> t = pyotp.TOTP(s)
+>>> t.now()
+u'195594'
+</pre>
+<p>
+Pada saat ini, kode TOTP yang dihasilkan adalah sebagaimana tertulis di atas. Apabila pengguna memasukkan kode yang sama (yang dihasilkan dari aplikasi authenticator), maka verifikasi berhasil:
+</p>
+<pre>
+>>> t.verify('195594')
+True
+</pre>
+<p>
+Akan tetapi, katakanlah kita menunda 30 detik, kode yang sama tidak lagi valid untuk waktu tersebut:
+</p>
+<pre>
+>>> import time
+>>> time.sleep(30)
+>>> t.verify('195594')
+False
+</pre>
+<p>
+***
+</p>
+<p>
+Penulis berharap suatu hari, fitur ini akan tersedia pada Bahasa Pemrograman Singkong. Penulis perlu lebih banyak belajar dan memahami teori dibaliknya (misal dengan membaca RFC 6238). Ini akan butuh waktu, usaha, dan passion. 
+</p>
+<p>Menutup cerita ini, kata orang: terlalu banyak bekerja dengan Bahasa Pemrograman Singkong akan membuat kita menulis cerita cinta. Gombal ataupun tidak. 
+</p>
+</body>
+</html>

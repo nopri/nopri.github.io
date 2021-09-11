@@ -176,6 +176,9 @@ Pangsit Perkedel: Tiga windu yang lalu
 pangsit_perkedel-tiga_windu_yang_lalu.odt
 pangsit_perkedel-tiga_windu_yang_lalu.pdf
 
+One-time Password dan Cerita Cinta Kita
+otp-love-story.html
+
 
 7. Monkey Programming Language Interpreters
 =============================================
