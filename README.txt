@@ -169,7 +169,7 @@ noprianto-singkong-antara_passion_dan_kolaborasi_riset.pdf
 - synedit.py
 
 
-6. Short Stories in Bahasa Indonesia
+6. Stories in Bahasa Indonesia
 =============================================
 Pangsit Perkedel: Tiga windu yang lalu
 (2019-Apr-06)
@@ -178,6 +178,10 @@ pangsit_perkedel-tiga_windu_yang_lalu.pdf
 
 One-time Password dan Cerita Cinta Kita
 otp-love-story.html
+
+Kolaborasi
+(a serial fiction about people working in software development industry)
+https://kolaborasi.dev
 
 
 7. Monkey Programming Language Interpreters
