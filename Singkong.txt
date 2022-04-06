@@ -1,8 +1,8 @@
 Singkong Programming Language Interpreter
-(c) Noprianto <nopri.anto@icloud.com>, 2019-2021
+(c) Noprianto <nopri.anto@icloud.com>, 2019-2022
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 6.6 (2021-August-30 +07:00)
+Version: 6.7 (2022-April-07 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -214,7 +214,7 @@ hash, print, println, puts, string, type, types, variables
   - precision: 10240, default scale: 4
   - to change the number scale, please use built-in function number_scale 
   - operators: + - * / == != %(remainder) ^(power) < <= > >=
-  - related functions: abs, array_number, chr, integer, number, number_boolean,
+  - related functions: abs, array_number, chr, integer, integer_gcd, number, number_boolean,
     number_group, number_to_byte, random, round, sort_number, words_en, words_id
   - system related functions: delay
   - Singkong related functions: require
@@ -225,6 +225,7 @@ hash, print, println, puts, string, type, types, variables
   - natural exponential, logarithm, square/cube root functions: exp, log, log10, sqrt, cbrt
   - base conversion: from_bin, from_hex, from_oct, to_bin, to_hex, to_oct
   - bitwise operation: number_xor, number_or, number_and, number_not
+  - bit shift operation: left_shift, right_shift, unsigned_right_shift
   - sorting: by value
   - constant values: _e, _pi
         >  number_scale(15)
@@ -674,7 +675,7 @@ hash, print, println, puts, string, type, types, variables
         table_to_text
 - DATABASE
   - Please read: Database application development
-  - related functions: database, database_connected, query
+  - related functions: database, database_connected, database_metadata, query
   - To work with relational database without using SQL command directly:
     built-in module db_util:
         create_field_from_array
@@ -730,23 +731,24 @@ To get a list of built-in functions, please call builtins()
 "CLIPBOARD_GET", "CLIPBOARD_SET", "CLOSING", "COLOR_CHOOSER", "COMPONENT", 
 "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY", "COPY_RESOURCE", 
 "COS", "COSH", "COUNT", "CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", 
-"DATE", "DATETIME", "DAY", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", 
-"DISABLED", "DO", "DRAW_ARC", "DRAW_GET_PIXEL", "DRAW_LINE", "DRAW_OVAL", 
-"DRAW_POLYGON", "DRAW_POLYLINE", "DRAW_READ", "DRAW_RECT", "DRAW_ROUND_RECT", 
-"DRAW_SET_PIXEL", "DRAW_STRING", "DRAW_WIDTH", "DRAW_WRITE_BMP", 
-"DRAW_WRITE_JPG", "DRAW_WRITE_PNG", "EACH", "EMPTY", "ENDSWITH", "ENV", 
-"EQUALS", "EVAL", "EVENT", "EVENT_FRAME", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", 
-"EVENT_MOUSE_FRAME", "EXIT", "EXP", "FILL_ARC", "FILL_OVAL", "FILL_POLYGON", 
-"FILL_RECT", "FILL_ROUND_RECT", "FIRST", "FONTS", "FORMAT_DATE", 
-"FORMAT_DATETIME", "FORMAT_DIFF", "FORMAT_TIME", "FRAME", "FRAME_CLOSE", 
-"FROM_BIN", "FROM_HEX", "FROM_OCT", "GET", "GRID_ADD", "GRID_CLEAR", 
-"GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", 
-"HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", 
-"HTTP_RESPONSE_OK", "IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", 
-"INPUT", "INTEGER", "INTERACTIVE", "IS", "IS_ARRAY_AND_OF", "IS_ARRAY_OF", 
+"DATABASE_METADATA", "DATE", "DATETIME", "DAY", "DELAY", "DELETE", "DIFF", 
+"DIR", "DIRECTORY", "DISABLED", "DO", "DRAW_ARC", "DRAW_GET_PIXEL", "DRAW_LINE", 
+"DRAW_OVAL", "DRAW_POLYGON", "DRAW_POLYLINE", "DRAW_READ", "DRAW_RECT", 
+"DRAW_ROUND_RECT", "DRAW_SET_PIXEL", "DRAW_STRING", "DRAW_WIDTH", 
+"DRAW_WRITE_BMP", "DRAW_WRITE_JPG", "DRAW_WRITE_PNG", "EACH", "EMPTY", 
+"ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FRAME", 
+"EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", "EXIT", "EXP", 
+"FILL_ARC", "FILL_OVAL", "FILL_POLYGON", "FILL_RECT", "FILL_ROUND_RECT", 
+"FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", 
+"FORMAT_TIME", "FRAME", "FRAME_CLOSE", "FROM_BIN", "FROM_HEX", "FROM_OCT", 
+"GET", "GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", 
+"HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
+"HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", 
+"INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTEGER_GCD", 
+"INTERACTIVE", "IS", "IS_ARRAY_AND_OF", "IS_ARRAY_OF", 
 "IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", "IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", 
 "IS_UPDATE_AVAILABLE", "ISALNUM", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", 
-"JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEN", "LF", "LOAD", 
+"JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEFT_SHIFT", "LEN", "LF", "LOAD", 
 "LOAD_FILE_OR_RESOURCE", "LOAD_MODULE", "LOAD_RESOURCE", "LOG", "LOG10", 
 "LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MD5_FILE", "MENUBAR", 
 "MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", "MONTH", "NEWLINE", "NUMBER", 
@@ -758,26 +760,27 @@ To get a list of built-in functions, please call builtins()
 "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", 
 "READ_BYTE", "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", 
 "REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", 
-"RESIZABLE", "REST", "REVERSE", "RIGHT", "ROUND", "SAVE", "SCREEN", "SECOND", 
-"SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", 
-"SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
-"SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
-"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", 
-"START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", 
-"STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", 
-"SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
-"TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", 
-"TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", 
-"TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", 
-"TABLE_SCROLL", "TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", 
-"THREAD", "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", 
-"TO_BIN", "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", 
-"TYPES", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "USERHOME", "VALUES", 
-"VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", 
+"RESIZABLE", "REST", "REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", "SAVE", 
+"SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", 
+"SHA256_FILE", "SHA384", "SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", 
+"SHUFFLE", "SIN", "SINGKONG", "SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", 
+"SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
+"SORT_STRING", "SPLIT", "SQRT", "START", "START_TIMER", "STARTSWITH", "STAT", 
+"STATUSBAR", "STDIN", "STOP", "STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", 
+"STRING_TO_BYTE_ARRAY", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", 
+"TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", 
+"TABLE_COLUMN_COUNT", "TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", 
+"TABLE_GET_VALUE", "TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", 
+"TABLE_RIGHT", "TABLE_ROW_COUNT", "TABLE_SCROLL", "TABLE_SET_VALUE", 
+"TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", "THREAD_ALIVE", 
+"THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", "TO_DEGREES", 
+"TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
+"UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "USERHOME", 
+"VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", 
 "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-325
+330
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -1019,6 +1022,7 @@ To keep it as simple as possible:
         for more information: javax.swing.text.MaskFormatter)
     - panel: tab title
     - password: text
+    - piechart: (none)
     - progress: (none)
     - radio: label
     - tab: (none)
@@ -1033,8 +1037,8 @@ To keep it as simple as possible:
 - To get a list of supported component types, built-in function components can 
   be used. Currently, this function returns:
     ["barchart", "button", "checkbox", "combobox", "date", "draw", "edit", 
-    "grid", "image", "label", "mask", "panel", "password", "progress", "radio", 
-    "tab", "table", "text", "view"]
+     "grid", "image", "label", "mask", "panel", "password", "piechart", 
+     "progress", "radio", "tab", "table", "text", "view"]
 - To get type of a COMPONENT, please use built-in function component_type. This
   function returns component type as STRING (one of values returned by 
   components function, as above). 
@@ -1083,8 +1087,8 @@ To keep it as simple as possible:
         grid_add(g, b1, 0, 0, 1, 1, 0.5, 1.0, 3, 0, 5, 5, 5, 5)
         grid_add(g, b2, 1, 0, 1, 1, 0.5, 1.0, 3, 0, 5, 5, 5, 5)
         grid_add(g, b3, 0, 1, 2, 1, 1.0, 0.5, 3, 0, 5, 5, 5, 5)
-        grid_add(g, b4, 0, 2, 1, 1, 0.5, 0.5, 0, 1, 5, 5, 5, 5)
-        grid_add(g, b5, 1, 2, 1, 1, 0.5, 0.5, 0, 2, 5, 5, 5, 5)
+        grid_add(g, b4, 0, 2, 1, 1, 0.5, 0.5, 0, 1)
+        grid_add(g, b5, 1, 2, 1, 1, 0.5, 0.5, 0, 2)
         add(g)
         show()
   - To remove a COMPONENT from a grid, please use built-in function grid_remove.
@@ -1159,13 +1163,13 @@ To keep it as simple as possible:
   - foreground/background (all components, STRING (color name or RGB value))
   - font (all components, ARRAY [STRING (font name), NUMBER (0=plain, 1=bold, 2=italic, 3=bold and italic), NUMBER (size)])
   - text (label of button/checkbox/label/radio, selected item of combobox, 
-    title of barchart, STRING)
+    title of barchart/piechart, STRING)
   - active (checkbox/radio BOOLEAN, combobox/tab/table NUMBER (selected index), 
     button NUMBER (mnemonic index))
   - contents (contents of edit/mask/password/text/view STRING, 
     file of image STRING, ARRAY of ARRAY (table), 
     ARRAY (combobox), DATE/STRING (date), NUMBER (progress), ARRAY of ARRAY 
-    (of [NUMBER (value), STRING (label), STRING (color name or RGB value)], barchart))
+    (of [NUMBER (value), STRING (label), STRING (color name or RGB value)], barchart/piechart))
   (configuration may be ignored if it is not applicable -- no errors will be
    returned).
 - To get a configuration of a COMPONENT configured using config, please use
@@ -3037,19 +3041,30 @@ tab_add(a, panel)
 grid_add(grid, t2, 0, 0, 1, 1, 1, 1, 3, 0, 5, 5, 5, 5)
 tab_add(a, grid)
 
-var z = component("barchart", "")
-config(z, "foreground", "red")
-config(z, "background", "white")
-config(z, "font", ["monospaced", 1, 20])
-config(z, "text", "Singkong")
-config(z, "contents", [[10, "A", "green"], [20, "B", "blue"]]) 
+var bc = component("barchart", "")
+config(bc, "foreground", "black")
+config(bc, "background", "white")
+config(bc, "font", ["monospaced", 1, 20])
+config(bc, "text", "Bar Chart")
+config(bc, "contents", [[10, "A (10)", "red"], [20, "B (20)", "green"], [30, "C (30)", "blue"]]) 
 
-add([e, a, z])
+var pc = component("piechart", "")
+config(pc, "foreground", "black")
+config(pc, "background", "white")
+config(pc, "font", ["monospaced", 1, 20])
+config(pc, "text", "Pie Chart")
+config(pc, "contents", [[40, "D (40)", "red"], [50, "E (50)", "green"], [60, "F (60)", "blue"]]) 
+
+var grid_chart = component("grid", "Grid")
+grid_add(grid_chart, bc, 0, 0, 1, 1, 1, 1, 3, 0)
+grid_add(grid_chart, pc, 0, 1, 1, 1, 1, 1, 3, 0)
+
+add([e, a, grid_chart])
 add_n([i, l, x, p, c, r, m, b])
 add_s([v, d, g, s, dr])
 
 each(range(0,8), fn(e, i) {
-	statusbar(e, "Status: " + e, i%2 == 0)
+    statusbar(e, "Status: " + e, i%2 == 0)
 })
 
 menubar([ 
