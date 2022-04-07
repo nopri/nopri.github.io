@@ -3,7 +3,7 @@ Perkedel
 Compilers/interpreters bundle 
 for Windows
 
-Author:  Noprianto <nopri.anto@icloud.com>, 2020
+Author:  Noprianto <nopri.anto@icloud.com>, 2020-2022
 Website: nopri.github.io
 License: public domain
 
@@ -14,7 +14,7 @@ Bundled:
  ECJ (Eclipse)
  MinGW (Code::Blocks)  
  Tcl/Tk (cross compiled from source)
- Python (python.org, pip, 2.7 (ReportLab, web.py, SQLiteBoy), 3.5)
+ Python (python.org, pip, 2.7 (ReportLab, web.py, PyOTP, SQLiteBoy), 3.5)
  CHICKEN Scheme (compiled from source)
  Singkong.jar
 
@@ -25,7 +25,7 @@ var name = "Perkedel"
 var about = name + lf() +
     "Compilers/interpreters bundle" + lf() + 
     "for Windows" + lf() + lf() + 
-    "Author:  Noprianto <nopri.anto@icloud.com>, 2020" + lf() + 
+    "Author:  Noprianto <nopri.anto@icloud.com>, 2020-2022" + lf() + 
     "Website: nopri.github.io" + lf() + 
     "License: public domain" + lf() + lf() + 
     "Developed using: Singkong, Batch file, C" + lf() +
@@ -35,7 +35,7 @@ var about = name + lf() +
     " ECJ (Eclipse)" + lf() +
     " MinGW (Code::Blocks)" + lf() +
     " Tcl/Tk (cross compiled from source)" + lf() + 
-    " Python (python.org, pip, 2.7 (ReportLab, web.py, SQLiteBoy), 3.5)" + lf() +    
+    " Python (python.org, pip, 2.7 (ReportLab, web.py, PyOTP, SQLiteBoy), 3.5)" + lf() +    
     " CHICKEN Scheme (compiled from source)" + lf() +
     " Singkong.jar" + lf() + lf() +
     "Thank you for using Perkedel" + lf() + lf() +
