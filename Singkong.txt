@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2022
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 6.7 (2022-April-07 +07:00)
+Version: 6.8 (2022-April-27 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 6.6
+        Singkong 6.8
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -641,10 +641,11 @@ hash, print, println, puts, string, type, types, variables
 - COMPONENT
   - Please read: GUI application development
   - related functions: add, add_e, add_n, add_s, add_w, button_image, clear, closing, 
-    component, component_type, components, config, event, event_frame,  
-    event_keyboard_frame, event_mouse, event_mouse_frame, fonts, frame, 
-    frame_close, get, grid_add, grid_clear, grid_remove,
-    gui, hide, menubar, panel_add, panel_clear, panel_remove, printer, radio_group, 
+    component, component_info, component_type, components, config, event, event_focus,  
+    event_frame, event_keyboard_frame, event_mouse, event_mouse_frame, fonts, frame, 
+    frame_close, frame_location, frame_top, get, grid_add, grid_clear, grid_remove,
+    gui, hide, menubar, panel_add, panel_clear, panel_remove, popup_component, 
+    popup_hide, popup_show, printer, radio_group, 
     remove, remove_e, remove_n, remove_s, remove_w, reset, resizable, 
     screen, show, size, start, start_timer, statusbar, stop, stop_timer, 
     tab_add, tab_clear, tab_remove, table_add,  
@@ -729,20 +730,21 @@ To get a list of built-in functions, please call builtins()
 "BUTTON_IMAGE", "CALL", "CALL_INFO", "CBRT", "CENTER", "CGI_CONTENTS", 
 "CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", "CHR", "CLEAR", 
 "CLIPBOARD_GET", "CLIPBOARD_SET", "CLOSING", "COLOR_CHOOSER", "COMPONENT", 
-"COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY", "COPY_RESOURCE", 
-"COS", "COSH", "COUNT", "CR", "CRLF", "CWD", "DATABASE", "DATABASE_CONNECTED", 
-"DATABASE_METADATA", "DATE", "DATETIME", "DAY", "DELAY", "DELETE", "DIFF", 
-"DIR", "DIRECTORY", "DISABLED", "DO", "DRAW_ARC", "DRAW_GET_PIXEL", "DRAW_LINE", 
-"DRAW_OVAL", "DRAW_POLYGON", "DRAW_POLYLINE", "DRAW_READ", "DRAW_RECT", 
-"DRAW_ROUND_RECT", "DRAW_SET_PIXEL", "DRAW_STRING", "DRAW_WIDTH", 
-"DRAW_WRITE_BMP", "DRAW_WRITE_JPG", "DRAW_WRITE_PNG", "EACH", "EMPTY", 
-"ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FRAME", 
-"EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", "EXIT", "EXP", 
-"FILL_ARC", "FILL_OVAL", "FILL_POLYGON", "FILL_RECT", "FILL_ROUND_RECT", 
-"FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", 
-"FORMAT_TIME", "FRAME", "FRAME_CLOSE", "FROM_BIN", "FROM_HEX", "FROM_OCT", 
-"GET", "GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", 
-"HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
+"COMPONENT_INFO", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY", 
+"COPY_RESOURCE", "COS", "COSH", "COUNT", "CR", "CRLF", "CWD", "DATABASE", 
+"DATABASE_CONNECTED", "DATABASE_METADATA", "DATE", "DATETIME", "DAY", "DELAY", 
+"DELETE", "DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "DRAW_ARC", 
+"DRAW_GET_PIXEL", "DRAW_LINE", "DRAW_OVAL", "DRAW_POLYGON", "DRAW_POLYLINE", 
+"DRAW_READ", "DRAW_RECT", "DRAW_ROUND_RECT", "DRAW_SET_PIXEL", "DRAW_STRING", 
+"DRAW_WIDTH", "DRAW_WRITE_BMP", "DRAW_WRITE_JPG", "DRAW_WRITE_PNG", "EACH", 
+"EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FOCUS", 
+"EVENT_FRAME", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", 
+"EXIT", "EXP", "FILL_ARC", "FILL_OVAL", "FILL_POLYGON", "FILL_RECT", 
+"FILL_ROUND_RECT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
+"FORMAT_DIFF", "FORMAT_TIME", "FRAME", "FRAME_CLOSE", "FRAME_LOCATION", 
+"FRAME_TOP", "FROM_BIN", "FROM_HEX", "FROM_OCT", "GET", "GRID_ADD", 
+"GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", "HOUR", 
+"HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
 "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", 
 "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTEGER_GCD", 
 "INTERACTIVE", "IS", "IS_ARRAY_AND_OF", "IS_ARRAY_OF", 
@@ -755,32 +757,33 @@ To get a list of built-in functions, please call builtins()
 "NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_NOT", "NUMBER_OR", 
 "NUMBER_SCALE", "NUMBER_TO_BYTE", "NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", 
 "ORD", "PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
-"PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", "PRINT", 
-"PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", 
-"QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", 
-"READ_BYTE", "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", 
-"REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", 
-"RESIZABLE", "REST", "REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", "SAVE", 
-"SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", 
-"SHA256_FILE", "SHA384", "SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", 
-"SHUFFLE", "SIN", "SINGKONG", "SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", 
-"SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
-"SORT_STRING", "SPLIT", "SQRT", "START", "START_TIMER", "STARTSWITH", "STAT", 
-"STATUSBAR", "STDIN", "STOP", "STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", 
-"STRING_TO_BYTE_ARRAY", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", 
-"TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", 
-"TABLE_COLUMN_COUNT", "TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", 
-"TABLE_GET_VALUE", "TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", 
-"TABLE_RIGHT", "TABLE_ROW_COUNT", "TABLE_SCROLL", "TABLE_SET_VALUE", 
-"TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", "THREAD_ALIVE", 
-"THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", "TO_DEGREES", 
-"TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
-"UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "USERHOME", 
-"VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", 
-"X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
+"PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", 
+"POPUP_COMPONENT", "POPUP_HIDE", "POPUP_SHOW", "PRINT", "PRINTER", "PRINTLN", 
+"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
+"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "READ_BYTE", 
+"RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", 
+"REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", 
+"REST", "REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", "SAVE", "SCREEN", "SECOND", 
+"SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", 
+"SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
+"SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
+"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", 
+"START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", 
+"STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", "SUM", 
+"SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
+"TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", 
+"TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", 
+"TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", 
+"TABLE_SCROLL", "TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", 
+"THREAD", "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", 
+"TO_BIN", "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", 
+"TYPES", "UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", 
+"USERHOME", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", 
+"WRITE_BYTE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", 
+"YEAR"]
 
 >  len(builtins())
-330
+337
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -989,11 +992,15 @@ To keep it as simple as possible:
   To set frame title, please use built-in function title.
   To set frame size, please use built-in function size (this might not work on 
   some system configuration and will be ignored).
-  To get frame properties (width, height, title, resizable), please use built-in function
-  frame.
+  To change always on top state, please use built-in function frame_top.
+  To move frame to a new location or to the center of the screen, please use 
+  built-in function frame_location.
+  To get frame properties (width, height, title, resizable, always on top, x, y), 
+  please use built-in function frame.
   To reset frame (remove all COMPONENTs, reset frame title and size to default
   values, stop all timers, disable frame closing confirmation, reset status bar,
-  reset menu bar), please use built-in function reset. 
+  reset menu bar, reset always on top state, hide all popups), please use 
+  built-in function reset. 
   To programmatically close frame, please use built-in function frame_close.
 - Every user interface component is a COMPONENT in Singkong.
 - To create a user interface component, please use built-in function component.
@@ -1042,6 +1049,8 @@ To keep it as simple as possible:
 - To get type of a COMPONENT, please use built-in function component_type. This
   function returns component type as STRING (one of values returned by 
   components function, as above). 
+- To get x (screen), y (screen), x, y, width, and height of a COMPONENT,
+  please use built-in function component_info.
 - To add a COMPONENT or an ARRAY of COMPONENT to frame, please use one of the
   following built-in functions: add, add_e, add_n, add_s, add_w (which adds a 
   COMPONENT or an ARRAY of COMPONENT to specific region 
@@ -1165,7 +1174,7 @@ To keep it as simple as possible:
   - text (label of button/checkbox/label/radio, selected item of combobox, 
     title of barchart/piechart, STRING)
   - active (checkbox/radio BOOLEAN, combobox/tab/table NUMBER (selected index), 
-    button NUMBER (mnemonic index))
+    button NUMBER (mnemonic index), text NUMBER (column, applicable in grid))
   - contents (contents of edit/mask/password/text/view STRING, 
     file of image STRING, ARRAY of ARRAY (table), 
     ARRAY (combobox), DATE/STRING (date), NUMBER (progress), ARRAY of ARRAY 
@@ -1183,7 +1192,7 @@ To keep it as simple as possible:
   - font (all components, ARRAY [STRING (font name), NUMBER (0=plain, 1=bold, 2=italic, 3=bold and italic), NUMBER (size)])
   - text (label of button/checkbox/label/radio, selected item of combobox, 
     STRING)
-  - active (checkbox/radio BOOLEAN, combobox/tab/table NUMBER, button NUMBER)
+  - active (checkbox/radio BOOLEAN, combobox/tab/table NUMBER, button NUMBER, text NUMBER)
   - contents (contents of edit/mask/password/text/view STRING, 
     file of image STRING, ARRAY of ARRAY (of STRING, table), 
     ARRAY (of STRING, combobox), DATE (date), NUMBER (progress))
@@ -1310,6 +1319,139 @@ To keep it as simple as possible:
   		"Please confirm")
 
         show()  
+- Focus events: event handler for these events can be registered using built-in 
+  function event_focus. This function accepts one argument: FUNCTION. 
+  Registered FUNCTION will be called whenever focus event for specified COMPONENT 
+  should be handled. Please note that specified FUNCTION must require 
+  one argument (an ARRAY [type (STRING: GAINED, LOST), x, y]).
+        reset()
+        
+        var i = component("label", "Focus event: text")
+        var t = component("table", "TYPE, X, Y", true)
+        var x = component("text", "Click")
+
+        event_focus(x, fn(x) {
+          table_add(t, [x])
+        })
+
+        add_n(i)
+        add(t)
+        add_s(x)
+
+        show()  
+- Popup:
+  - Not to be confused with popup menu.
+  - To show a popup, please use built-in function popup_show.
+    - Using panel
+        reset()
+        var t = component("text", "")
+        var b = component("button", "OK")
+        var p = component("panel", "")
+        panel_add(p, t, 10, 10, 100, 30)
+        panel_add(p, b, 10, 50, 80, 30)
+
+        var r = [-1]
+
+        var c = component("button", "popup")
+        event(c, fn() {
+            var x = popup_show(p, 120, 100, 50, 50, false)
+            set(r, 0, x)
+        })
+        add_s(c)
+        show()
+    - Using grid
+        reset()
+        var t = component("text", "")
+        var b = component("button", "OK")
+        var g = component("grid", "")
+        grid_add(g, t, 0, 0, 1, 1, 1, 1, 3, 0)
+        grid_add(g, b, 0, 1, 1, 1, 1, 1, 1, 0)
+
+        var r = [-1]
+
+        var c = component("button", "popup")
+        event(c, fn() {
+            var x = popup_show(g, 120, 100, 50, 50, false)
+            set(r, 0, x)
+        })
+        add_s(c)
+        show()
+    - Using grid and relative popup position
+        reset()
+        var t = component("text", "")
+        var b = component("button", "OK")
+        var g = component("grid", "")
+        grid_add(g, t, 0, 0, 1, 1, 1, 1, 3, 0)
+        grid_add(g, b, 0, 1, 1, 1, 1, 1, 1, 0)
+
+        var r = [-1]
+
+        var c = component("button", "popup")
+        event(c, fn() {
+            var x = popup_show(g, 120, 100, 50, 50, true)
+            set(r, 0, x)
+        })
+        add_s(c)
+        show()
+  - To show a popup at a COMPONENT, please use built-in function popup_component.
+    - Using grid and focus event handler
+        reset()
+        var t = component("text", "Focus on combobox")
+        var c = component("combobox", "")
+        var g = component("grid", "")
+        config(g, "background", "gray")
+        var r = [-1]
+        event_focus(c, fn(e) {
+            if (e[0] == "GAINED") {
+                var i = component_info(c)
+                var x = popup_component(g, c, i[4], 300, 0, i[5])
+                set(r, 0, x)
+            }
+        })
+
+        add_n([t, c])
+        show()
+  - To hide a popup, please use built-in function popup_hide.
+    - Using grid and button inside the popup
+        reset()
+        var t = component("text", "")
+        var b = component("button", "Close")
+        var g = component("grid", "")
+        grid_add(g, t, 0, 0, 1, 1, 1, 1, 3, 0)
+        grid_add(g, b, 0, 1, 1, 1, 1, 1, 1, 0)
+
+        var r = [-1]
+
+        var c = component("button", "popup")
+        event(c, fn() {
+            var x = popup_show(g, 120, 100, 50, 50, true)
+            set(r, 0, x)
+        })
+        add_s(c)
+        show()
+
+        event(b, fn() {
+            popup_hide(r[0])
+        })
+    - Using grid and focus event handler
+        reset()
+        var t = component("text", "Focus on combobox")
+        var c = component("combobox", "")
+        var g = component("grid", "")
+        config(g, "background", "gray")
+        var r = [-1]
+        event_focus(c, fn(e) {
+            if (e[0] == "GAINED") {
+                var i = component_info(c)
+                var x = popup_component(g, c, i[4], 300, 0, i[5])
+                set(r, 0, x)
+            } else {
+                popup_hide(r[0])
+            }
+        })
+
+        add_n([t, c])
+        show()
 - Clipboard: to set clipboard contents, please use built-in function 
   clipboard_set. To get clipboard contents, built-in function clipboard_get
   can be used.
@@ -1418,6 +1560,19 @@ To keep it as simple as possible:
         var d = component("date","")
         config(d, "contents", @)
   - Get a configuration of a date COMPONENT: a DATE is returned 
+- Setting the number of columns of a text component:
+  - Configure: active
+  - Applicable in grid 
+  - Example:
+        reset()
+        var g = component("grid", "")
+        var t1 = component("text", "Text 1")
+        config(t1, "active", 10)
+        var t2 = component("text", "Text 2")
+        grid_add(g, t1, 0, 0, 1, 1, 1, 1, 0, 0)
+        grid_add(g, t2, 1, 0, 1, 1, 1, 1, 0, 0)
+        add(g)
+        show()
 - Sound:
   - To play a beep sound, please use built-in function beep.
   - To play a sound from file or resource, please use built-in function 
