@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2022
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 6.8 (2022-April-27 +07:00)
+Version: 6.9 (2022-May-16 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 6.8
+        Singkong 6.9
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -363,7 +363,7 @@ hash, print, println, puts, string, type, types, variables
   - file related functions: dir, read_byte, write_byte
   - CGI related functions: cgi_contents
   - HTTP client related functions: http_response_ok
-  - system related functions: arguments, inet_address, system
+  - system related functions: arguments, inet_address, runtime_version, system
   - Singkong related functions: builtins, modules, singkong_interpreter
   - byte array: number_to_byte_array, string_from_byte_array, string_to_byte_array
         >  number_to_byte_array(123)
@@ -538,9 +538,9 @@ hash, print, println, puts, string, type, types, variables
 - DATE
   - @ @Y @YY @YYY @YYYY @YYYYM @YYYYMM @YYYYMMD @YYYYMMDD @YYYYMMDDh 
     @YYYYMMDDhh @YYYYMMDDhhm @YYYYMMDDhhmm @YYYYMMDDhhmms @YYYYMMDDhhmmss
-  - related functions: date, datetime, day, diff, format_date, format_datetime,
-    format_diff, format_time, hour, is_leap_year, minute, month, part, second, 
-    sort_date, year
+  - related functions: date, datetime, day, days_of_month, diff, format_date, 
+    format_datetime, format_diff, format_time, hour, is_leap_year, minute, 
+    month, part, second, sort_date, year
   - file related functions: stat
   - sorting: before/after
 - FUNCTION
@@ -732,18 +732,18 @@ To get a list of built-in functions, please call builtins()
 "CLIPBOARD_GET", "CLIPBOARD_SET", "CLOSING", "COLOR_CHOOSER", "COMPONENT", 
 "COMPONENT_INFO", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY", 
 "COPY_RESOURCE", "COS", "COSH", "COUNT", "CR", "CRLF", "CWD", "DATABASE", 
-"DATABASE_CONNECTED", "DATABASE_METADATA", "DATE", "DATETIME", "DAY", "DELAY", 
-"DELETE", "DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "DRAW_ARC", 
-"DRAW_GET_PIXEL", "DRAW_LINE", "DRAW_OVAL", "DRAW_POLYGON", "DRAW_POLYLINE", 
-"DRAW_READ", "DRAW_RECT", "DRAW_ROUND_RECT", "DRAW_SET_PIXEL", "DRAW_STRING", 
-"DRAW_WIDTH", "DRAW_WRITE_BMP", "DRAW_WRITE_JPG", "DRAW_WRITE_PNG", "EACH", 
-"EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FOCUS", 
-"EVENT_FRAME", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", 
-"EXIT", "EXP", "FILL_ARC", "FILL_OVAL", "FILL_POLYGON", "FILL_RECT", 
-"FILL_ROUND_RECT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
-"FORMAT_DIFF", "FORMAT_TIME", "FRAME", "FRAME_CLOSE", "FRAME_LOCATION", 
-"FRAME_TOP", "FROM_BIN", "FROM_HEX", "FROM_OCT", "GET", "GRID_ADD", 
-"GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", "HOUR", 
+"DATABASE_CONNECTED", "DATABASE_METADATA", "DATE", "DATETIME", "DAY", 
+"DAYS_OF_MONTH", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", "DISABLED", 
+"DO", "DRAW_ARC", "DRAW_GET_PIXEL", "DRAW_LINE", "DRAW_OVAL", "DRAW_POLYGON", 
+"DRAW_POLYLINE", "DRAW_READ", "DRAW_RECT", "DRAW_ROUND_RECT", "DRAW_SET_PIXEL", 
+"DRAW_STRING", "DRAW_WIDTH", "DRAW_WRITE_BMP", "DRAW_WRITE_JPG", 
+"DRAW_WRITE_PNG", "EACH", "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", 
+"EVENT_FOCUS", "EVENT_FRAME", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", 
+"EVENT_MOUSE_FRAME", "EXIT", "EXP", "FILL_ARC", "FILL_OVAL", "FILL_POLYGON", 
+"FILL_RECT", "FILL_ROUND_RECT", "FIRST", "FONTS", "FORMAT_DATE", 
+"FORMAT_DATETIME", "FORMAT_DIFF", "FORMAT_TIME", "FRAME", "FRAME_CLOSE", 
+"FRAME_LOCATION", "FRAME_TOP", "FROM_BIN", "FROM_HEX", "FROM_OCT", "GET", 
+"GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", "HOUR", 
 "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
 "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", 
 "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTEGER_GCD", 
@@ -763,27 +763,27 @@ To get a list of built-in functions, please call builtins()
 "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "READ_BYTE", 
 "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", 
 "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", 
-"REST", "REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", "SAVE", "SCREEN", "SECOND", 
-"SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", 
-"SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
-"SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
-"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", 
-"START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", 
-"STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", "SUM", 
-"SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
-"TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", 
-"TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", 
-"TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", 
-"TABLE_SCROLL", "TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", 
-"THREAD", "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", 
-"TO_BIN", "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", 
-"TYPES", "UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", 
-"USERHOME", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", 
-"WRITE_BYTE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", 
-"YEAR"]
+"REST", "REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", "RUNTIME_VERSION", "SAVE", 
+"SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", 
+"SHA256_FILE", "SHA384", "SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", 
+"SHUFFLE", "SIN", "SINGKONG", "SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", 
+"SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
+"SORT_STRING", "SPLIT", "SQRT", "START", "START_TIMER", "STARTSWITH", "STAT", 
+"STATUSBAR", "STDIN", "STOP", "STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", 
+"STRING_TO_BYTE_ARRAY", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", 
+"TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", 
+"TABLE_COLUMN_COUNT", "TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", 
+"TABLE_GET_VALUE", "TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", 
+"TABLE_RIGHT", "TABLE_ROW_COUNT", "TABLE_SCROLL", "TABLE_SET_VALUE", 
+"TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", "THREAD_ALIVE", 
+"THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", "TO_DEGREES", 
+"TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
+"UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "USERHOME", 
+"VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", 
+"X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-337
+339
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
