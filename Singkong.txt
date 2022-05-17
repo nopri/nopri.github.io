@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2022
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 6.9 (2022-May-16 +07:00)
+Version: 7.0 (2022-May-18 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 6.9
+        Singkong 7.0
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -1032,6 +1032,8 @@ To keep it as simple as possible:
     - piechart: (none)
     - progress: (none)
     - radio: label
+    - spin: value (integer), minimum (integer), maximum (integer), step size (integer)
+        invalid value: default values will be used
     - tab: (none)
     - table: column names (comma-separated string)
     - text: text
@@ -1044,8 +1046,8 @@ To keep it as simple as possible:
 - To get a list of supported component types, built-in function components can 
   be used. Currently, this function returns:
     ["barchart", "button", "checkbox", "combobox", "date", "draw", "edit", 
-     "grid", "image", "label", "mask", "panel", "password", "piechart", 
-     "progress", "radio", "tab", "table", "text", "view"]
+    "grid", "image", "label", "mask", "panel", "password", "piechart", 
+    "progress", "radio", "spin", "tab", "table", "text", "view"]
 - To get type of a COMPONENT, please use built-in function component_type. This
   function returns component type as STRING (one of values returned by 
   components function, as above). 
@@ -1177,7 +1179,7 @@ To keep it as simple as possible:
     button NUMBER (mnemonic index), text NUMBER (column, applicable in grid))
   - contents (contents of edit/mask/password/text/view STRING, 
     file of image STRING, ARRAY of ARRAY (table), 
-    ARRAY (combobox), DATE/STRING (date), NUMBER (progress), ARRAY of ARRAY 
+    ARRAY (combobox), DATE/STRING (date), NUMBER (progress/spin), ARRAY of ARRAY 
     (of [NUMBER (value), STRING (label), STRING (color name or RGB value)], barchart/piechart))
   (configuration may be ignored if it is not applicable -- no errors will be
    returned).
@@ -1195,7 +1197,7 @@ To keep it as simple as possible:
   - active (checkbox/radio BOOLEAN, combobox/tab/table NUMBER, button NUMBER, text NUMBER)
   - contents (contents of edit/mask/password/text/view STRING, 
     file of image STRING, ARRAY of ARRAY (of STRING, table), 
-    ARRAY (of STRING, combobox), DATE (date), NUMBER (progress))
+    ARRAY (of STRING, combobox), DATE (date), NUMBER (progress/spin))
   (configuration may be ignored if it is not applicable and NULL will be
    returned).
 - To use resources for contents of edit/image/password/text/view:
@@ -1238,7 +1240,7 @@ To keep it as simple as possible:
   - checkbox: checked/unchecked
   - radio: selected/deselected
   - tab/table: selected item changed
-  - edit/password/text: contents changed
+  - date/edit/password/spin/text: contents changed
   Event handlers for these events can be registered using built-in function
   event. This function accepts two arguments: COMPONENT and FUNCTION.
   Registered FUNCTION will be called whenever the default event for specified
@@ -3175,7 +3177,9 @@ var e = component("edit", "Hello, World")
 var i = component("image", "image.jpg")
 var l = component("label", "Singkong Programming Language")
 var p = component("password", "test")
+var sp = component("spin", "1,0,10,2")
 var g = component("progress", "")
+config(g, "contents", 50)
 var r = component("radio", "Radio Button")
 var a = component("tab", "")
 var panel = component("panel", "Panel")
@@ -3216,7 +3220,7 @@ grid_add(grid_chart, pc, 0, 1, 1, 1, 1, 1, 3, 0)
 
 add([e, a, grid_chart])
 add_n([i, l, x, p, c, r, m, b])
-add_s([v, d, g, s, dr])
+add_s([v, d, sp, g, s, dr])
 
 each(range(0,8), fn(e, i) {
     statusbar(e, "Status: " + e, i%2 == 0)

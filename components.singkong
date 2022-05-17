@@ -7,7 +7,9 @@ var e = component("edit", "Hello, World")
 var i = component("image", "image.jpg")
 var l = component("label", "Singkong Programming Language")
 var p = component("password", "test")
+var sp = component("spin", "1,0,10,2")
 var g = component("progress", "")
+config(g, "contents", 50)
 var r = component("radio", "Radio Button")
 var a = component("tab", "")
 var panel = component("panel", "Panel")
@@ -48,7 +50,7 @@ grid_add(grid_chart, pc, 0, 1, 1, 1, 1, 1, 3, 0)
 
 add([e, a, grid_chart])
 add_n([i, l, x, p, c, r, m, b])
-add_s([v, d, g, s, dr])
+add_s([v, d, sp, g, s, dr])
 
 each(range(0,8), fn(e, i) {
     statusbar(e, "Status: " + e, i%2 == 0)
