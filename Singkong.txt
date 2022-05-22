@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2022
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 7.0 (2022-May-18 +07:00)
+Version: 7.1 (2022-May-22 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 7.0
+        Singkong 7.1
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -1051,8 +1051,8 @@ To keep it as simple as possible:
 - To get type of a COMPONENT, please use built-in function component_type. This
   function returns component type as STRING (one of values returned by 
   components function, as above). 
-- To get x (screen), y (screen), x, y, width, and height of a COMPONENT,
-  please use built-in function component_info.
+- To get x (screen), y (screen), x, y, width, height, name, and read-only 
+  information of a COMPONENT, please use built-in function component_info.
 - To add a COMPONENT or an ARRAY of COMPONENT to frame, please use one of the
   following built-in functions: add, add_e, add_n, add_s, add_w (which adds a 
   COMPONENT or an ARRAY of COMPONENT to specific region 
@@ -1181,6 +1181,7 @@ To keep it as simple as possible:
     file of image STRING, ARRAY of ARRAY (table), 
     ARRAY (combobox), DATE/STRING (date), NUMBER (progress/spin), ARRAY of ARRAY 
     (of [NUMBER (value), STRING (label), STRING (color name or RGB value)], barchart/piechart))
+  - margin (button ARRAY of NUMBER [top, left, bottom, right], applicable in grid)
   (configuration may be ignored if it is not applicable -- no errors will be
    returned).
 - To get a configuration of a COMPONENT configured using config, please use
@@ -1198,6 +1199,7 @@ To keep it as simple as possible:
   - contents (contents of edit/mask/password/text/view STRING, 
     file of image STRING, ARRAY of ARRAY (of STRING, table), 
     ARRAY (of STRING, combobox), DATE (date), NUMBER (progress/spin))
+  - margin (button ARRAY of NUMBER [top, left, bottom, right])
   (configuration may be ignored if it is not applicable and NULL will be
    returned).
 - To use resources for contents of edit/image/password/text/view:
