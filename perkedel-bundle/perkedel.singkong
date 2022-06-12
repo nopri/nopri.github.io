@@ -437,5 +437,4 @@ event(b_java, fn() {
 
 var screen_size = screen()
 size(screen_size[0] * percent, screen_size[1] * percent) 
-frame_location()
 show()
