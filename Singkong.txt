@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nopri.anto@icloud.com>, 2019-2022
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 7.2 (2022-June-12 +07:00)
+Version: 7.3 (2022-July-08 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 7.2
+        Singkong 7.3
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -674,6 +674,12 @@ hash, print, println, puts, string, type, types, variables
         table_get_array_string
         table_to_html
         table_to_text
+  - user interface, calendar related functions: please use functions from ui_calendar module:
+        create_calendar
+        create_calendar_basic
+        create_calendar_basic_compact
+        create_calendar_simple
+        create_calendar_simple_compact
 - DATABASE
   - Please read: Database application development
   - related functions: database, database_connected, database_metadata, query
@@ -801,7 +807,7 @@ return value: <any type>
 
 To get a list of built-in modules, please call modules()
 >  modules()
-["csv", "db_util", "rect_array_util", "set_util", "ui_util", "util"]
+["csv", "db_util", "rect_array_util", "set_util", "ui_util", "ui_calendar", "util"]
 
 To load a built-in module, please use built-in function load_module, 
 for example:
@@ -810,6 +816,7 @@ for example:
 >  load_module("rect_array_util")
 >  load_module("set_util")
 >  load_module("ui_util")
+>  load_module("ui_calendar")
 >  load_module("util")
 
 Note: reusing function name from built-in modules as identifier is allowed:
@@ -879,6 +886,10 @@ Functions in module: ui_util:
 ["TABLE_ADD_FILL", "TABLE_ADD_ROW_FILL", "TABLE_FILL", "TABLE_GET_ARRAY_", 
 "TABLE_GET_ARRAY_NUMBER", "TABLE_GET_ARRAY_STRING", "TABLE_TO_HTML", 
 "TABLE_TO_TEXT"]
+
+Functions in module: ui_calendar:
+["CREATE_CALENDAR", "CREATE_CALENDAR_BASIC", "CREATE_CALENDAR_BASIC_COMPACT", 
+"CREATE_CALENDAR_SIMPLE", "CREATE_CALENDAR_SIMPLE_COMPACT"]
 
 Functions in module: util:
 ["ARRAY_COPY", "ARRAY_DIFF", "BINOMIAL_COEFFICIENT", "BINOMIAL_DISTRIBUTION", 
@@ -1789,6 +1800,60 @@ To keep it as simple as possible:
             ----------------------------------------------------------------
             |0         |         0          |                             0|
             ================================================================
+- Calendar:
+  - Using ui_calendar module:
+    - Example: simple style
+        load_module("ui_calendar")
+        reset()
+        var d = part(@)
+        var g = create_calendar_simple(d[0], d[1])
+        add(g)
+        show()
+    - Example: simple style, compact buttons
+        load_module("ui_calendar")
+        reset()
+        var d = part(@)
+        var g = create_calendar_simple_compact(d[0], d[1])
+        add(g)
+        show()
+    - Example: basic style
+        load_module("ui_calendar")
+        reset()
+        var d = part(@)
+        var g = create_calendar_basic(d[0], d[1])
+        add(g)
+        show()
+    - Example: basic style, compact buttons
+        load_module("ui_calendar")
+        reset()
+        var d = part(@)
+        var g = create_calendar_basic_compact(d[0], d[1])
+        add(g)
+        show()
+    - Example: custom style, button handler
+        load_module("ui_calendar")
+        reset()
+        var h = fn(d, s, dow) {
+            message(d)
+            message(s)
+            message(dow)
+        } 
+        var d = part(@)
+        var data = {
+            "handler": h,
+            "prev_handler": h,
+            "next_handler": h,
+            "today_foreground": "blue",
+            "weekend_days": [1],
+            "weekend_foreground": "red",
+            "prev_foreground": "gray",
+            "next_foreground": "gray",
+            "margin": [0, 0, 0, 0]
+        }
+        var g = create_calendar(d[0], d[1], data)
+        add(g)
+        show()
+    - For more information, please read documentation of create_calendar.
 
 
 -----------------------------------------------------------------------------
@@ -3220,7 +3285,14 @@ var grid_chart = component("grid", "Grid")
 grid_add(grid_chart, bc, 0, 0, 1, 1, 1, 1, 3, 0)
 grid_add(grid_chart, pc, 0, 1, 1, 1, 1, 1, 3, 0)
 
-add([e, a, grid_chart])
+var ge = component("grid", "")
+load_module("ui_calendar")
+var dd = part(@)
+var ca = create_calendar_simple_compact(dd[0], dd[1])
+grid_add(ge, e, 0, 0, 1, 1, 1, 1, 3, 0)
+grid_add(ge, ca, 0, 1, 1, 1, 1, 1, 3, 0)
+
+add([ge, a, grid_chart])
 add_n([i, l, x, p, c, r, m, b])
 add_s([v, d, sp, g, s, dr])
 

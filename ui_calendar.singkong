@@ -1,0 +1,349 @@
+#
+    UI Calendar
+    ui_calendar.singkong
+
+    Part of Singkong Programming Language Interpreter
+    (c) Noprianto <nopri.anto@icloud.com>
+
+    More information: https://nopri.github.io/singkong.html
+    Download Singkong: https://nopri.github.io/Singkong.jar
+    (License: Free to use or redistribute, no warranty)
+
+    To use this module:
+    load_module("ui_calendar")
+;
+
+require(7.2)
+
+var create_calendar = fn(year, month, data) 
+"
+[ui_calendar] function: create_calendar: creates a calendar (grid).
+arguments: 3: NUMBER (year), NUMBER (month), HASH (data)
+keys (data, type: STRING):
+    format: STRING (date format, default: yyyy-MM-dd)
+    label: ARRAY of STRING (days, default: [Sun, Mon, Tue, Wed, Thu, Fri, Sat])
+    margin: ARRAY of NUMBER (button margins)
+    background: STRING (background color)
+    foreground: STRING (foreground color)
+    header_background: STRING (header background color)
+    header_foreground: STRING (header foreground color)
+    prev_background: STRING (prev month background color)
+    prev_foreground: STRING (prev month foreground color)
+    next_background: STRING (next month background color)
+    next_foreground: STRING (next month foreground color)
+    today_background: STRING (today background color)
+    today_foreground: STRING (today foreground color)
+    weekend_days: ARRAY of NUMBER (1=Sunday)
+    weekend_background: STRING (weekend background color)
+    weekend_foreground: STRING (weekend foreground color)
+    weekend_header_background: STRING (weekend header background color)
+    weekend_header_foreground: STRING (weekend header foreground color)
+    default_font: ARRAY (default font)
+    header_font: ARRAY (header font)
+    prev_font: ARRAY (prev month font)
+    next_font: ARRAY (next month font)
+    today_font: ARRAY (today font)
+    weekend_font: ARRAY (weekend font)
+    handler: FUNCTION or BUILTIN (handler, arguments: DATE, STRING (formatted DATE), NUMBER (1=Sunday))
+    prev_handler: FUNCTION or BUILTIN (prev month handler, arguments: DATE, STRING (formatted DATE), NUMBER (1=Sunday))
+    next_handler: FUNCTION or BUILTIN (next month handler, arguments: DATE, STRING (formatted DATE), NUMBER (1=Sunday))
+return value: COMPONENT (grid)
+"
+{
+    var c = component("grid", "")
+    var days = days_of_month(year, month)
+    if (empty(days)) {
+        return c
+    }
+    if (!is(data, "HASH")) {
+        var data = {}
+    }
+
+    var format = data["format"]
+    var label = data["label"]
+    var margin = data["margin"]
+    var background = data["background"]
+    var foreground = data["foreground"]
+    var header_background = data["header_background"]
+    var header_foreground = data["header_foreground"]
+    var prev_background = data["prev_background"]
+    var prev_foreground = data["prev_foreground"]
+    var next_background = data["next_background"]
+    var next_foreground = data["next_foreground"]
+    var today_background = data["today_background"]
+    var today_foreground = data["today_foreground"]
+    var weekend_days = data["weekend_days"]
+    var weekend_background = data["weekend_background"]
+    var weekend_foreground = data["weekend_foreground"]
+    var weekend_header_background = data["weekend_header_background"]
+    var weekend_header_foreground = data["weekend_header_foreground"]
+    var default_font = data["default_font"]
+    var header_font = data["header_font"]
+    var prev_font = data["prev_font"]
+    var next_font = data["next_font"]
+    var today_font = data["today_font"]
+    var weekend_font = data["weekend_font"]
+    var handler = data["handler"]
+    var prev_handler = data["prev_handler"]
+    var next_handler = data["next_handler"]
+
+    if (!is(format, "STRING")) {
+        var format = "yyyy-MM-dd"
+    }
+    if (!is(weekend_days, "ARRAY")) {
+        var weekend_days = []
+    }
+    var dow = []
+    if (is(label, "ARRAY")) { 
+        if (len(label) == 7) {
+            var dow = label
+        }
+    }
+    if (empty(dow)) {
+        var dow = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    }
+    
+    var t = part(@)    
+    var btns = []
+    each(days, fn(e, i) {
+        var b = component("button", string(e[0]))
+        config(b, "margin", margin)
+        if ((t[0] == year) & (t[1] == month) & (t[2] == e[0])) {
+            if (is(today_background, "STRING")) {
+                config(b, "background", today_background)
+            }
+            if (is(today_foreground, "STRING")) {
+                config(b, "foreground", today_foreground)
+            }
+            config(b, "font", today_font)
+        } else {
+            if (in(weekend_days, e[1])) {
+                if (is(weekend_background, "STRING")) {
+                    config(b, "background", weekend_background)
+                }
+                if (is(weekend_foreground, "STRING")) {
+                    config(b, "foreground", weekend_foreground)
+                }
+                config(b, "font", weekend_font)
+            } else {
+                if (is(background, "STRING")) {
+                    config(b, "background", background)
+                }
+                if (is(foreground, "STRING")) {
+                    config(b, "foreground", foreground)
+                }
+                config(b, "font", default_font)
+            }
+        }
+        var btns = btns + [e[0], e[1], b]
+        event(b, fn() {
+            var m = date([year, month, e[0]])
+            var s = format_date(m, format)
+            if (in(["FUNCTION", "BUILTIN"], type(handler))) {
+                if (param(handler) == 3) {
+                    handler(m, s, e[1])
+                }
+            }
+        })
+    })
+
+    each(dow, fn(e, i) {
+        var h = component("button", e)
+        config(h, "margin", margin)
+        if (in(weekend_days, i+1)) {
+            if (is(weekend_header_background, "STRING")) {
+                config(h, "background", weekend_header_background)
+            }
+            if (is(weekend_header_foreground, "STRING")) {
+                config(h, "foreground", weekend_header_foreground)
+            }
+        } else {
+            if (is(header_background, "STRING")) {
+                config(h, "background", header_background)
+            }
+            if (is(header_foreground, "STRING")) {
+                config(h, "foreground", header_foreground)
+            }
+        }
+        if (is(header_font, "ARRAY")) {
+            config(h, "font", header_font)
+        } else {
+            var btn_font = get(h, "font")
+            set(btn_font, 0, "monospaced")
+            config(h, "font", btn_font)
+        }
+        grid_add(c, h, i, 0, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0)
+    })
+
+
+    var prev = first(days)[1] - 1
+    if (prev > 0) {        
+        var prev_year = year
+        var prev_month = month - 1
+        if ((prev_month) == 0) {
+            var prev_month = 12
+            var prev_year = year - 1
+        }
+        var prev_days = days_of_month(prev_year, prev_month)
+        var prev_len = len(prev_days)
+        var prev_slice = slice(prev_days, prev_len-prev, prev_len+1)
+        var prev_btns = []
+        each(prev_slice, fn(e, i) {
+            var b = component("button", string(e[0]))
+            config(b, "margin", margin)
+            if (is(prev_background, "STRING")) {
+                config(b, "background", prev_background)
+            }
+            if (is(prev_foreground, "STRING")) {
+                config(b, "foreground", prev_foreground)
+            }
+            config(b, "font", prev_font)
+            var prev_btns = prev_btns + [e[0], e[1], b]
+            event(b, fn() {
+                var m = date([prev_year, prev_month, e[0]])
+                var s = format_date(m, format)
+                if (in(["FUNCTION", "BUILTIN"], type(prev_handler))) {
+                    if (param(prev_handler) == 3) {
+                        prev_handler(m, s, e[1])
+                    }
+                }
+            })
+        })
+        each(prev_btns, fn(e, i) {
+            var b = e[2]
+            var x = e[1] - 1
+            grid_add(c, b, x, 1, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0)
+        })
+    }
+
+    var y = [1]
+    each(btns, fn(e, i) {
+        var b = e[2]
+        var x = e[1] - 1
+        if (x % 7 == 0) {
+            set(y, 0, y[0]+1)
+        }
+        grid_add(c, b, x, y[0], 1, 1, 1, 1, 3, 0, 0, 0, 0, 0)
+    })
+
+    var next = 7 - last(days)[1]
+    if (next > 0) {        
+        var next_year = year
+        var next_month = month + 1
+        if ((next_month) == 13) {
+            var next_month = 1
+            var next_year = year + 1
+        }
+        var next_days = days_of_month(next_year, next_month)
+        var next_slice = slice(next_days, 0, next)
+        var next_btns = []
+        each(next_slice, fn(e, i) {
+            var b = component("button", string(e[0]))
+            config(b, "margin", margin)
+            if (is(next_background, "STRING")) {
+                config(b, "background", next_background)
+            }
+            if (is(next_foreground, "STRING")) {
+                config(b, "foreground", next_foreground)
+            }
+            config(b, "font", next_font)
+            var next_btns = next_btns + [e[0], e[1], b]
+            event(b, fn() {
+                var m = date([next_year, next_month, e[0]])
+                var s = format_date(m, format)
+                if (in(["FUNCTION", "BUILTIN"], type(next_handler))) {
+                    if (param(next_handler) == 3) {
+                        next_handler(m, s, e[1])
+                    }
+                }
+            })
+        })
+        each(next_btns, fn(e, i) {
+            var b = e[2]
+            var x = e[1] - 1
+            grid_add(c, b, x, y[0], 1, 1, 1, 1, 3, 0, 0, 0, 0, 0)
+        })
+    }
+
+    return c
+}
+
+var create_calendar_basic = fn(year, month) 
+"
+[ui_calendar] function: create_calendar_basic: creates a calendar (grid), basic style.
+arguments: 2: NUMBER (year), NUMBER (month)
+" 
+{
+    var data = {
+        "prev_foreground": "gray", 
+        "next_foreground": "gray"
+    }
+    return create_calendar(year, month, data)
+}
+
+var create_calendar_basic_compact = fn(year, month) 
+"
+[ui_calendar] function: create_calendar_basic_compact: creates a calendar (grid), basic style, compact buttons.
+arguments: 2: NUMBER (year), NUMBER (month)
+" 
+{
+    var data = {
+        "margin": [0, 0, 0, 0],
+        "prev_foreground": "gray", 
+        "next_foreground": "gray"
+    }
+    return create_calendar(year, month, data)
+}
+
+var create_calendar_simple = fn(year, month) 
+"
+[ui_calendar] function: create_calendar_simple: creates a calendar (grid), simple style.
+arguments: 2: NUMBER (year), NUMBER (month)
+" 
+{
+    var data = {
+        "background": "white", 
+        "foreground": "black", 
+        "header_background": "white", 
+        "header_foreground": "black", 
+        "prev_background": "white", 
+        "prev_foreground": "gray", 
+        "next_background": "white", 
+        "next_foreground": "gray", 
+        "today_background": "white", 
+        "today_foreground": "blue", 
+        "weekend_days": [1], 
+        "weekend_background": "white", 
+        "weekend_foreground": "red",
+        "weekend_header_background": "white", 
+        "weekend_header_foreground": "black"
+    }
+    return create_calendar(year, month, data)
+}
+
+var create_calendar_simple_compact = fn(year, month) 
+"
+[ui_calendar] function: create_calendar_simple_compact: creates a calendar (grid), simple style, compact buttons.
+arguments: 2: NUMBER (year), NUMBER (month)
+" 
+{
+    var data = {
+        "margin": [0, 0, 0, 0],
+        "background": "white", 
+        "foreground": "black", 
+        "header_background": "white", 
+        "header_foreground": "black", 
+        "prev_background": "white", 
+        "prev_foreground": "gray", 
+        "next_background": "white", 
+        "next_foreground": "gray", 
+        "today_background": "white", 
+        "today_foreground": "blue", 
+        "weekend_days": [1], 
+        "weekend_background": "white", 
+        "weekend_foreground": "red",
+        "weekend_header_background": "white", 
+        "weekend_header_foreground": "black"
+    }
+    return create_calendar(year, month, data)
+}

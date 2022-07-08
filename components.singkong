@@ -48,7 +48,14 @@ var grid_chart = component("grid", "Grid")
 grid_add(grid_chart, bc, 0, 0, 1, 1, 1, 1, 3, 0)
 grid_add(grid_chart, pc, 0, 1, 1, 1, 1, 1, 3, 0)
 
-add([e, a, grid_chart])
+var ge = component("grid", "")
+load_module("ui_calendar")
+var dd = part(@)
+var ca = create_calendar_simple_compact(dd[0], dd[1])
+grid_add(ge, e, 0, 0, 1, 1, 1, 1, 3, 0)
+grid_add(ge, ca, 0, 1, 1, 1, 1, 1, 3, 0)
+
+add([ge, a, grid_chart])
 add_n([i, l, x, p, c, r, m, b])
 add_s([v, d, sp, g, s, dr])
 
