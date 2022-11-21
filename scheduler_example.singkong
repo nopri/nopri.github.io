@@ -1,0 +1,118 @@
+load_module("ui_util")
+
+var tt = "Scheduler: First Come First Serve and Round Robin Example"
+var rows = 10
+reset()
+
+var t = component("table", "BURST TIME (NUMBER)")
+table_add_row_fill(t, rows, "")
+var e = component("edit", "", true)
+add([t, e])
+
+var b = component("button", "First Come First Serve")
+config(b, "active", 0)
+var rr = component("button", "Round Robin")
+config(rr, "active", 0)
+var r = component("button", "Clear")
+config(r, "active", 0)
+var a = component("button", "About")
+config(a, "active", 0)
+add_s([b, rr, r, a])
+
+title(tt)
+closing("Are you sure you want to quit this application?", "Please confirm")
+show()
+
+event(b, fn() {
+    var n = table_get_array_number(t)
+    if (!empty(n)) {
+        var x = lf()
+        var s = ["Process" + x, [], "Waiting Time" + x, 0, [0]]
+        each(n, fn(e, i) {
+            var nn = e[0]
+            if (nn > 0) {
+                set(s, 0, s[0] + "P" + (i+1) + " " + nn + x )
+                set(s, 1, s[1] + nn)
+            } 
+        })
+        var ls = len(s[1])
+        if (ls > 0) {
+            each(range(1, ls), fn(e, i) {
+                set(s, 3, s[3] + s[1][e-1])
+                set(s, 4, s[4] + s[3])
+            })
+            each(s[4], fn(e, i) {
+                set(s, 2, s[2] + "P" + (i+1) + " " + e + x)
+            })
+        }
+        var c = "First Come First Serve" + x + s[0] + x + s[2] + x + "Average Waiting Time" + x + average(s[4])
+        config(e, "contents", c)
+    } else {
+        message("No data available")
+    }    
+})
+
+event(r, fn() {
+    if (confirm("Please confirm", "Clear") == "OK") {
+        config(t, "contents", [])
+        config(e, "contents", "")
+        table_add_row_fill(t, rows, "")
+    }
+})
+
+event(rr, fn() {
+    var n = table_get_array_number(t)
+    if (!empty(n)) {
+        var s = component("spin", "20, 10, 100, 10")
+        var g = component("grid", "")
+        grid_add(g, s, 0, 0, 1, 1, 1, 1, 3, 0)
+        var r = panel_dialog(g, "Time slice", 300, 150)
+        if (r == "OK") {
+            var q = get(s, "contents")
+            var p = [[]]
+            each(n, fn(e, i) {
+                set(p, 0, p[0] + e[0])
+            })
+            var p = p[0]
+            var c = [0]
+            var s = [["Round Robin", "Time slice: " + q]]
+
+            repeat {
+                each(p, fn(e, i) {
+                    if (e != null) {
+                        var m = "[" + c[0] + "] P" + (i+1) + ": " + e
+                        set(s, 0, s[0] + m)                             
+                        if (e <=  q) {
+                            set(c, 0, c[0] + e)
+                            set(p, i, null)
+                        } else {
+                            set(c, 0, c[0] + q)
+                            set(p, i, e - q)  
+                        }
+                    }
+                })
+                if (is_array_of(p, "null") == true) {
+                    return null
+                }
+             }
+            var m = "[" + c[0] + "]"
+            set(s, 0, s[0] + m)            
+            config(e, "contents", join(lf(), s[0]))
+        } 
+    } else {
+        message("No data available")
+    }    
+})
+
+event(a, fn() {
+    var m = tt + lf() + "
+    Started by Noprianto, <nop@noprianto.com>, 2022.
+    Programmed using Singkong programming language.
+    This is a public domain software.
+
+    More information:
+    https://nopri.github.io
+    "
+    message(m, "About")
+})
+
