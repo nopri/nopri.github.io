@@ -1,6 +1,6 @@
 #
 Perkedel
-Compilers/interpreters bundle 
+Compilers, interpreters, and database systems bundle 
 for Windows
 
 Author:  Noprianto <nopri.anto@icloud.com>, 2020-2022
@@ -14,8 +14,9 @@ Bundled:
  ECJ (Eclipse)
  MinGW (Code::Blocks)  
  Tcl/Tk (cross compiled from source)
- Python (python.org, pip, 2.7 (ReportLab, web.py, PyOTP, SQLiteBoy), 3.5)
+ Python (python.org, pip, 2.7 (ReportLab, web.py, PyOTP, psycopg2 (binary), SQLiteBoy), 3.5)
  CHICKEN Scheme (compiled from source)
+ PostgreSQL (cross compiled from source)
  Singkong.jar
 
 Thank you for using Perkedel
@@ -23,7 +24,7 @@ Thank you for using Perkedel
 
 var name = "Perkedel"
 var about = name + lf() +
-    "Compilers/interpreters bundle" + lf() + 
+    "Compilers, interpreters, and database systems bundle" + lf() + 
     "for Windows" + lf() + lf() + 
     "Author:  Noprianto <nopri.anto@icloud.com>, 2020-2022" + lf() + 
     "Website: nopri.github.io" + lf() + 
@@ -35,8 +36,9 @@ var about = name + lf() +
     " ECJ (Eclipse)" + lf() +
     " MinGW (Code::Blocks)" + lf() +
     " Tcl/Tk (cross compiled from source)" + lf() + 
-    " Python (python.org, pip, 2.7 (ReportLab, web.py, PyOTP, SQLiteBoy), 3.5)" + lf() +    
+    " Python (python.org, pip, 2.7 (ReportLab, web.py, PyOTP, psycopg2 (binary), SQLiteBoy), 3.5)" + lf() +    
     " CHICKEN Scheme (compiled from source)" + lf() +
+    " PostgreSQL (cross compiled from source)" + lf() + 
     " Singkong.jar" + lf() + lf() +
     "Thank you for using Perkedel" + lf() + lf() +
     "Singkong version: " + singkong()["version_string"] + lf() + 
@@ -72,6 +74,7 @@ var cmd_python2_i = "Python 2"
 var cmd_python3_i = "Python 3"
 var cmd_tcl_i = "Tcl"
 var cmd_singkong_i = "Singkong"
+var cmd_pgsql = "PostgreSQL"
 var cmd_examples = "Examples"
 var cmd_rebuild = "Rebuild"
 var cmd_update = "Update"
@@ -93,6 +96,7 @@ var color_6 = ["white", "black"]
 var color_7 = ["red", null]
 var color_8 = ["gray", "white"]
 var color_9 = ["black", "white"]
+var color_10 = ["white", "blue"]
 
 
 var hash_run = {
@@ -106,6 +110,9 @@ var hash_run = {
         ["perkedel\perkedel-run.exe", "tcl\bin\tclsh86.exe"],
     cmd_singkong_i: 
         ["jre\bin\javaw.exe", "-jar", "Singkong.jar"],
+    cmd_pgsql: 
+        ["perkedel\perkedel-run.exe", 
+            "perkedel\perkedel-command-pgsql.bat"],
     cmd_examples: 
         ["perkedel\perkedel-run.exe", 
             "perkedel\perkedel-open-examples.bat"],
@@ -303,6 +310,8 @@ var b_tcl_i = component("button", cmd_tcl_i)
 config_c(b_tcl_i, color_5)
 var b_singkong_i = component("button", cmd_singkong_i)
 config_c(b_singkong_i, color_6)
+var b_pgsql = component("button", cmd_pgsql)
+config_c(b_pgsql, color_10)
 var b_examples = component("button", cmd_examples)
 config_c(b_examples, color_8)
 var b_rebuild = component("button", cmd_rebuild)
@@ -314,7 +323,7 @@ config(b_info, "active", 0)
 config_c(b_info, color_9)
 
 add_n([b_scheme_i, b_python2_i, b_python3_i, b_tcl_i, 
-    b_singkong_i, b_examples, b_rebuild, b_update, b_info])
+    b_singkong_i, b_pgsql, b_examples, b_rebuild, b_update, b_info])
 add(e_code)
 add_s([b_open, l_info, b_c, b_cpp, b_java, 
     b_python2, b_python3, b_scheme, b_tcl, b_singkong])
@@ -352,6 +361,10 @@ event(b_tcl_i, fn() {
 
 event(b_singkong_i, fn() {
     f_run(cmd_singkong_i)
+})
+
+event(b_pgsql, fn() {
+    f_run(cmd_pgsql)
 })
 
 event(b_rebuild, fn() {
