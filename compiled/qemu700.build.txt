@@ -1,0 +1,68 @@
+#packages
+sudo apt-get install mingw-w64 mingw-w64-tools win-iconv-mingw-w64-dev libz-mingw-w64-dev dpkg-dev meson ninja-build git
+
+export CFLAGS="-Os -s"
+export PKG_CONFIG_PATH="/opt/local/lib/pkgconfig/:/usr/i686-w64-mingw32/lib/pkgconfig/"
+
+#build glib2
+apt-get source libglib2.0-0
+cd glib2.0-2.72.4/
+nano cross.txt
+export GNUTLS_CPUID_OVERRIDE=0x1
+CFLAGS="-Os -s" meson -Dprefix=/opt/local --cross-file cross.txt build
+cd build/
+meson compile
+sudo meson install
+
+#build pixman
+cd ~/source/
+apt-get source libpixman-1-0
+cd pixman-0.40.0/
+./configure --prefix=/opt/local/ --host=i686-w64-mingw32
+make CFLAGS="-Os -s"
+sudo make install
+
+#build SDL2
+cd ~/source/
+apt-get source libsdl2
+cd libsdl2-2.0.20+dfsg/
+./configure --prefix=/opt/local/ --host=i686-w64-mingw32
+make CFLAGS="-Os -s"
+sudo make install
+
+#build SDL2 Image
+cd ~/source/
+apt-get source libsdl2-image-2.0-0
+cd libsdl2-image-2.0.5+dfsg1/
+./configure --prefix=/opt/local/ --host=i686-w64-mingw32
+make CFLAGS="-Os -s -I/opt/local/include/SDL2/"
+sudo make install
+
+#strip
+cd /opt/local/bin/
+sudo i686-w64-mingw32-strip *.exe
+sudo i686-w64-mingw32-strip *.dll
+
+#qemu
+cd ~/source/
+wget https://download.qemu.org/qemu-7.0.0.tar.xz
+tar xf qemu-7.0.0.tar.xz
+cd qemu-7.0.0/
+./configure --prefix=/opt/qemu --cross-prefix=i686-w64-mingw32-
+make CFLAGS="-Os -s" 
+sudo make install
+
+cd /opt/qemu/
+sudo cp -iv /opt/local/bin/*.dll . 
+sudo cp -iv /usr/i686-w64-mingw32/bin/iconv.dll .
+sudo cp -iv /usr/i686-w64-mingw32/lib/libwinpthread-1.dll .
+sudo cp -iv /usr/i686-w64-mingw32/lib/zlib1.dll .
+sudo cp -iv /usr/lib/gcc/i686-w64-mingw32/10-win32/*.dll .
+sudo i686-w64-mingw32-strip *.dll
+sudo i686-w64-mingw32-strip *.exe
+
+#compress
+cd /opt/
+7z a -mx=9 ~/qemu700.7z qemu
+
+
