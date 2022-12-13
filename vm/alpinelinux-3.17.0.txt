@@ -1,0 +1,1 @@
+qemu-system-i386 -machine q35 -m 1G -vga none -device virtio-vga,xres=640,yres=480 -rtc base=localtime -hda alpinelinux-3.17.0.qcow2 -boot c 
