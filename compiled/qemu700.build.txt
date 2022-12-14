@@ -7,9 +7,9 @@ export PKG_CONFIG_PATH="/opt/local/lib/pkgconfig/:/usr/i686-w64-mingw32/lib/pkgc
 #build glib2
 apt-get source libglib2.0-0
 cd glib2.0-2.72.4/
-nano cross.txt
+nano glib-cross-compile.txt
 export GNUTLS_CPUID_OVERRIDE=0x1
-CFLAGS="-Os -s" meson -Dprefix=/opt/local --cross-file cross.txt build
+CFLAGS="-Os -s" meson -Dprefix=/opt/local --cross-file glib-cross-compile.txt build
 cd build/
 meson compile
 sudo meson install
