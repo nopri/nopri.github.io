@@ -1,0 +1,23 @@
+- Initialize database (data dir: data, relative to current working directory)
+bin\pg_ctl.exe initdb -D data -o "-U postgres -W -A md5"
+
+- Start database server (press ENTER to return to prompt)
+bin\pg_ctl.exe -D data start
+
+- Display status
+bin\pg_ctl.exe status -D data
+
+- Create user (name: test, with password, allow user to create database)
+bin\createuser.exe -h localhost -U postgres -P -d test
+
+- Create database (name: test, as user test)
+bin\createdb.exe -h localhost -U test test
+
+- Interactive terminal (connect as user test, quit: \q then press ENTER)
+bin\psql.exe -h localhost -U test test
+
+- Interactive terminal (connect as user postgres, quit: \q then press ENTER)
+bin\psql.exe -h localhost -U postgres
+
+- Stop database server
+bin\pg_ctl.exe -D data stop
