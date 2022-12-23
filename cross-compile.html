@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bahasa Singkong, Virtual Machine, dan Cross-Compilation</title>
+    <meta charset="utf-8">
+    <meta name="description" content="Bahasa Singkong, Virtual Machine, dan Cross-Compilation">
+    <meta name="keywords" content="singkong, singkong programming, singkong programming language, virtual machine, vm, cross-compilation, cross-compile">
+    <meta name="author"  content="Noprianto">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body
+        {
+            font-size       : 16px;
+            line-height     : 22px;
+            font-family     : sans-serif;
+	    padding         : 20px;
+        }
+
+        h3
+        {
+            padding-top     : 20px;
+        }
+	
+	p
+	{
+	    text-align      : justify;
+	}
+    </style>
+</head>
+<body>
+<h3>Bahasa Singkong, Virtual Machine, dan Cross-Compilation</h3>
+<hr>
+<p>
+Dapat berjalan di sebanyak mungkin sistem operasi komputer sangatlah penting bagi interpreter bahasa pemrograman Singkong. Oleh karena itu, interpreter bahasa Singkong ditulis dengan bahasa Java, dengan hanya menggunakan application programming interface yang kompatibel dengan Java 5.0 (yang dirilis pada tahun 2004, 15 tahun sebelum bahasa Singkong dibuat). Secara teknis, interpreter Singkong, yang dibundel sebagai Singkong.jar, dikompilasi pada Java 8 dengan -source 1.5 -target 1.5, dan diuji pada berbagai versi Java runtime. Semua ini agar program yang ditulis dengan bahasa Singkong dapat berjalan di sebanyak mungkin sistem operasi komputer, sebagai contoh: macOS, Windows, Linux, Chrome OS, Solaris, FreeBSD, OpenBSD, dan NetBSD. Bukan saja untuk versi terbaru, melainkan yang untuk versi yang sudah dirilis sejak 20-an tahun lalu (misal Windows 98 ataupun Mac OS X 10.4). 
+</p>
+<p>
+Oleh karena itu, pengujian pada berbagai sistem operasi tersebut sangatlah penting. Termasuk versi-versi Java runtime (mulai dari versi 5.0 sampai yang terbaru). Ini artinya, sejumlah instalasi sistem operasi tersebut diperlukan. Tapi, dengan belasan kombinasi antara sistem operasi dan Java runtime, akan sangat merepotkan apabila pengujian harus dilakukan pada komputer secara fisik. Oleh karena itu, penggunaan virtual machine sangat membantu.
+</p>
+<p>
+Pengujian interpreter bahasa Singkong dilakukan pada sejumlah virtual machine yang dijalankan lewat VirtualBox (untuk host x86 dan x86_64) ataupun QEMU (untuk host x86, x86_64, dan yang berbasis ARM). Untuk VirtualBox, cukup dengan mendownload pada websitenya (misal untuk Windows), atau dengan yang disediakan oleh distribusi sistem operasi (misal pada Linux). Untuk QEMU, ceritanya sedikit berbeda. 
+</p>
+<div style="border: 1px solid #000000; padding: 10px;">
+<p>
+Apabila Anda lebih menyukai untuk langsung mendownload hasil kompilasi yang langkah-langkahnya akan dibahas berikut, kunjungilah <a href="https://nopri.github.io/#compiled">nopri.github.io</a>. Semua hasil kompilasi menghasilkan binary yang standalone/portable, tidak diperlukan instalasi system-wide, dan tidak diperlukan hak admin untuk menjalankan. Pembahasan berikut mungkin akan berguna apabila Anda ingin melakukan kompilasi sendiri. 
+</p>
+</div>
+<p>
+Binary QEMU di Windows tidak disertakan secara resmi dan binary yang tersedia tampaknya membutuhkan hak admin untuk instalasi. Bagaimana kalau QEMU dikompilasi sendiri? QEMU ditulis dengan C, dan oleh karenanya, kita akan membutuhkan compiler C. Sejumlah compiler C tersedia, tentu saja termasuk untuk Windows. Walau, sebagai alternatif, kita juga bisa menggunakan cross-compiler MinGW-w64, apabila lebih terbiasa bekerja dengan gcc di Linux. Mari kita bahas lebih lanjut. 
+</p>
+<p>
+Distribusi Linux yang digunakan adalah Ubuntu versi 22.04, arsitektur x86_64. Sementara, versi QEMU yang akan dikompilasi adalah versi 7.0.0. Cukup baru pada saat artikel ini ditulis. Sejumlah package perlu diinstalasi terlebih dahulu, dengan perintah berikut:
+<br>
+<pre>
+sudo apt-get install mingw-w64 mingw-w64-tools win-iconv-mingw-w64-dev libz-mingw-w64-dev dpkg-dev meson ninja-build git
+</pre>
+Bisa kita lihat, setelah instalasi, cross-compiler MinGW-w64 tersedia dan dapat langsung digunakan. Dengan demikian, sesuai definisi cross-compiler, sebagai contoh, kita bisa menghasilkan binary untuk Windows (x86 atau x86_64), di Linux (x86_64 dalam hal ini). Sayangnya, kita butuh beberapa langkah tambahan untuk QEMU.   
+</p>
+<p>
+Pertama, QEMU membutuhkan sejumlah pustaka, seperti GLib, Pixman, SDL2, SDL2_image. Ini artinya, kita perlu cross-compile pustaka-pustaka tersebut terlebih dahulu, dari source code. Semuanya tersedia di repository Ubuntu 22.04, namun tipe archive deb-src perlu diaktifkan pada /etc/apt/sources.list.
+</p>
+<p>
+Langkah berikut adalah menyiapkan sejumlah environment variable yang dibutuhkan dalam tahapan kompilasi (perhatikanlah bahwa prefix instalasi adalah /opt/local untuk sejumlah pustaka, dan /opt/qemu untuk QEMU):
+<pre>
+export CFLAGS="-Os -s"
+export PKG_CONFIG_PATH="/opt/local/lib/pkgconfig/:/usr/i686-w64-mingw32/lib/pkgconfig/"
+</pre>
+Kemudian, kita kompilasi GLib, yang dapat dilakukan dengan perintah-perintah berikut (file <a href="compiled/glib-cross-compile.txt">glib-cross-compile.txt</a>):
+<pre>
+cd ~/source/
+apt-get source libglib2.0-0
+cd glib2.0-2.72.4/
+nano glib-cross-compile.txt
+export GNUTLS_CPUID_OVERRIDE=0x1
+CFLAGS="-Os -s" meson -Dprefix=/opt/local --cross-file glib-cross-compile.txt build
+cd build/
+meson compile
+sudo meson install
+</pre>
+Setelahnya, kita lanjutkan dengan kompilasi Pixman:
+<pre>
+cd ~/source/
+apt-get source libpixman-1-0
+cd pixman-0.40.0/
+./configure --prefix=/opt/local/ --host=i686-w64-mingw32
+make CFLAGS="-Os -s"
+sudo make install
+</pre>
+Berikutnya adalah SDL2:
+<pre>
+cd ~/source/
+apt-get source libsdl2
+cd libsdl2-2.0.20+dfsg/
+./configure --prefix=/opt/local/ --host=i686-w64-mingw32
+make CFLAGS="-Os -s"
+sudo make install
+</pre>
+Dan, akhirnya SDL2_image:
+<pre>
+cd ~/source/
+apt-get source libsdl2-image-2.0-0
+cd libsdl2-image-2.0.5+dfsg1/
+./configure --prefix=/opt/local/ --host=i686-w64-mingw32
+make CFLAGS="-Os -s -I/opt/local/include/SDL2/"
+sudo make install
+</pre>
+Setelah semua langkah tersebut berhasil, semua pustaka yang diperlukan akan terinstall pada /opt/local. Mari kita strip binary yang dihasilkan dengan perintah-perintah berikut:
+<pre>
+cd /opt/local/bin/
+sudo i686-w64-mingw32-strip *.exe
+sudo i686-w64-mingw32-strip *.dll
+</pre>
+</p>
+<p>
+Kita sampai pada tahapan kompilasi QEMU. Untuk versi 7.0.0, kita akan mendownload langsung pada websitenya. Perintah-perintah berikut mencakup download dan kompilasi. Perhatikanlah bahwa kompilasi akan membutuhkan waktu cukup lama, mulai dari 10 menit (untuk CPU dengan spesifikasi relatif tinggi) sampai sekitar 1 jam. 
+<pre>
+cd ~/source/
+wget https://download.qemu.org/qemu-7.0.0.tar.xz
+tar xf qemu-7.0.0.tar.xz
+cd qemu-7.0.0/
+./configure --prefix=/opt/qemu --cross-prefix=i686-w64-mingw32-
+make CFLAGS="-Os -s" 
+sudo make install
+</pre>
+Setelah berhasil, QEMU akan terinstall pada /opt/qemu. Mari kita strip dan lengkapi dengan sejumlah file dll yang diperlukan:
+<pre>
+cd /opt/qemu/
+sudo cp -iv /opt/local/bin/*.dll . 
+sudo cp -iv /usr/i686-w64-mingw32/bin/iconv.dll .
+sudo cp -iv /usr/i686-w64-mingw32/lib/libwinpthread-1.dll .
+sudo cp -iv /usr/i686-w64-mingw32/lib/zlib1.dll .
+sudo cp -iv /usr/lib/gcc/i686-w64-mingw32/10-win32/*.dll .
+sudo i686-w64-mingw32-strip *.dll
+sudo i686-w64-mingw32-strip *.exe
+</pre>
+</p>
+<p>
+Pembahasan tambahan: kita juga dapat melakukan cross-compilation PostgreSQL (dalam hal ini, contoh versi yang digunakan adalah 9.6.24). PostgreSQL, bersama Apache Derby, adalah relational database management system yang didukung dan dibundel bersama Singkong.jar (client/driver dan server untuk Derby, client/driver untuk PostgreSQL). Berikut adalah langkah-langkahnya (hanya untuk x86):
+<pre>
+wget https://ftp.postgresql.org/pub/source/v9.6.24/postgresql-9.6.24.tar.bz2
+tar jxvf postgresql-9.6.24.tar.bz2
+cd postgresql-9.6.24/
+./configure --prefix=/opt/postgresql --host=i686-w64-mingw32
+CFLAGS="-Os -s" make
+sudo make install
+cd /opt/postgresql/bin/
+sudo cp -iv /usr/i686-w64-mingw32/lib/zlib1.dll .
+</pre> 
+</p>
+<p>
+Terima kasih telah membaca :)
+</p>
+</body>
+</html>
