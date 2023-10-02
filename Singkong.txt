@@ -1,14 +1,14 @@
 Singkong Programming Language Interpreter
-(c) Noprianto <nopri.anto@icloud.com>, 2019-2022
+(c) Noprianto <nop@noprianto.com>, 2019-2023
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 7.3 (2022-July-08 +07:00)
+Version: 7.4 (2023-October-02 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
 Monkey.java is based on monkey.py: an open source, simple implementation of 
 Monkey programming language interpreter in Python.
-Monkey.java and monkey.py, (c) Noprianto <nopri.anto@icloud.com>, 2019.
+Monkey.java and monkey.py, (c) Noprianto <nop@noprianto.com>, 2019.
 
 monkey.py is based on code (in Go) in book: Writing an interpreter in Go
 
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 7.3
+        Singkong 7.4
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -1335,7 +1335,7 @@ To keep it as simple as possible:
 
         show()  
 - Focus events: event handler for these events can be registered using built-in 
-  function event_focus. This function accepts one argument: FUNCTION. 
+  function event_focus. This function accepts two arguments: COMPONENT and FUNCTION. 
   Registered FUNCTION will be called whenever focus event for specified COMPONENT 
   should be handled. Please note that specified FUNCTION must require 
   one argument (an ARRAY [type (STRING: GAINED, LOST), x, y]).
@@ -2442,7 +2442,7 @@ Interface (CGI).
     CGI-enabled directories. 
   - To handle HTTP request, shell script or batch file (depending on the 
     operating system) may be used (which in turn, runs Singkong interpreter 
-    and Singkong program, for example "java -jar Singkong.jar index.singkong").
+    and Singkong program, for example "java -DSINGKONG=0 -jar Singkong.jar index.singkong").
     - Command echoing feature, if any, should be turned off.
 
 
