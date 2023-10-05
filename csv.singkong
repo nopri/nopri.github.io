@@ -3,7 +3,7 @@
     csv.singkong
 
     Part of Singkong Programming Language Interpreter
-    (c) Noprianto <nopri.anto@icloud.com>
+    (c) Noprianto <nop@noprianto.com>
 
     More information: https://nopri.github.io/singkong.html
     Download Singkong: https://nopri.github.io/Singkong.jar
@@ -45,6 +45,8 @@ return value: ARRAY or NULL (error)
     }
 
     var LEXER = {
+        "prev_token": null,
+
         "read_char": fn(x) {   
             if (x["read"] >= len(x["input"])) {
                 set(x, "ch", "")
@@ -142,7 +144,10 @@ return value: ARRAY or NULL (error)
     repeat {
         var t = l["next_token"](l)
         if (t["type"] == TOKEN["EOF"]) {
-            return ret
+            if (l["prev_token"]["type"] == TOKEN["SEPARATOR"]) {
+            } else {
+                return ret
+            }
         }
         if (t["type"] == TOKEN["NEWLINE"]) {
             var ret = ret + temp
@@ -151,6 +156,13 @@ return value: ARRAY or NULL (error)
         if (!in([TOKEN["SEPARATOR"], TOKEN["NEWLINE"]], t["type"])) {
             var temp = temp + t["literal"]
         }
+
+        if (t["type"] == TOKEN["SEPARATOR"]) {
+            if (l["prev_token"]["type"] == TOKEN["SEPARATOR"]) {
+                var temp = temp + ""
+            }
+        }
+        set(l, "prev_token", t)
     }
     if (len(temp) > 0) {
         var ret = ret + temp
