@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2023
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 7.5 (2023-October-05 +07:00)
+Version: 7.6 (2023-October-08 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 7.5
+        Singkong 7.6
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -357,7 +357,7 @@ hash, print, println, puts, string, type, types, variables
   - modify ARRAY: please use built-in function set
   - related functions: array, array_equals, array_extend, array_extend_all, array_number, 
     array_string, average, call, count, each, empty, first, in, index, join, 
-    last, len, max, min, pop, push, random, range, rest, reverse, shuffle, slice, 
+    last, len, max, min, parse_array, pop, push, random, range, rest, reverse, shuffle, slice, 
     sort_array, sort_boolean, sort_date, sort_hash, sort_number, sort_string, sum
   - array check functions: is_array_and_of, is_array_of, is_array_of_component_of
   - file related functions: dir, read_byte, write_byte
@@ -518,6 +518,8 @@ hash, print, println, puts, string, type, types, variables
         >  {1:2, 3:4} == {1.0001:2, 3:4}
         false
   - modify HASH: please use built-in function set
+  - using string function: if optional second argument (BOOLEAN) is true (default: false),
+    use strings for keys.
   - related functions: empty, keys, len, parse_hash, random, sort_hash, values
   - file related functions: properties_read, properties_write, stat
   - CGI related functions: cgi_header, cgi_get, cgi_post, cgi_post_hash
@@ -763,7 +765,7 @@ To get a list of built-in functions, please call builtins()
 "NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_NOT", "NUMBER_OR", 
 "NUMBER_SCALE", "NUMBER_TO_BYTE", "NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", 
 "ORD", "PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
-"PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", 
+"PARSE_ARRAY", "PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", 
 "POPUP_COMPONENT", "POPUP_HIDE", "POPUP_SHOW", "PRINT", "PRINTER", "PRINTLN", 
 "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
 "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "READ_BYTE", 
@@ -789,7 +791,7 @@ To get a list of built-in functions, please call builtins()
 "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-339
+340
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -2495,9 +2497,10 @@ Singkong comes with simple HTTP client.
   - If the server supports X-HTTP-Method-Override, http_post_override probably
     can be used (for example, with PATCH request method)
 - Working with JSON
-  - JSON is not explicitly supported in Singkong. However, HASH probably can be 
-    used.
-  - To convert from HASH to STRING, please use built-in function string.
+  - JSON is not explicitly supported in Singkong. However, ARRAY or HASH probably can be used.
+  - To convert from ARRAY, HASH, or another types to STRING, please use built-in function string.
+  - To make sure that strings are used for keys (HASH), pass true as second argument to string.
+  - To convert from STRING to ARRAY, please use built-in function parse_array.  
   - To convert from STRING to HASH, please use built-in function parse_hash.  
 - Additional built-in functions:
   - http_response_ok: on successful HTTP request (returns ARRAY (headers, 
@@ -3677,7 +3680,7 @@ file)
     SINGKONG=/home/user/singkong/Singkong.jar
     PROGRAM=/home/user/singkong/index.singkong
 
-    $JAVA -jar $SINGKONG $PROGRAM
+    $JAVA -DSINGKONG=0 -jar $SINGKONG $PROGRAM
 
 - index.bat
     @echo off
@@ -3689,7 +3692,7 @@ file)
     set SINGKONG=c:\singkong\Singkong.jar
     set PROGRAM=c:\singkong\index.singkong
 
-    %JAVA% -jar %SINGKONG% %PROGRAM%
+    %JAVA% -DSINGKONG=0 -jar %SINGKONG% %PROGRAM%
 
 Singkong program: index.singkong
     var e = env()
@@ -3724,7 +3727,7 @@ file)
     SINGKONG=/home/user/singkong/Singkong.jar
     PROGRAM=/home/user/singkong/random.singkong
 
-    $JAVA -jar $SINGKONG $PROGRAM
+    $JAVA -DSINGKONG=0 -jar $SINGKONG $PROGRAM
 
 - random.bat
     @echo off
@@ -3736,7 +3739,7 @@ file)
     set SINGKONG=c:\singkong\Singkong.jar
     set PROGRAM=c:\singkong\random.singkong
 
-    %JAVA% -jar %SINGKONG% %PROGRAM%
+    %JAVA% -DSINGKONG=0 -jar %SINGKONG% %PROGRAM%
 
 Singkong program: random.singkong
     var h = {"Content-Type": "application/json"}
@@ -3770,7 +3773,7 @@ file)
     SINGKONG=/home/user/singkong/Singkong.jar
     PROGRAM=/home/user/singkong/auth.singkong
 
-    $JAVA -jar $SINGKONG $PROGRAM
+    $JAVA -DSINGKONG=0 -jar $SINGKONG $PROGRAM
 
 - auth.bat
     @echo off
@@ -3782,7 +3785,7 @@ file)
     set SINGKONG=c:\singkong\Singkong.jar
     set PROGRAM=c:\singkong\auth.singkong
 
-    %JAVA% -jar %SINGKONG% %PROGRAM%
+    %JAVA% -DSINGKONG=0 -jar %SINGKONG% %PROGRAM%
 
 Singkong program: auth.singkong
     var h = {"Content-Type": "application/json"}
