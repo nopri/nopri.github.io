@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2023
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 7.8 (2023-October-10 +07:00)
+Version: 7.9 (2023-October-14 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 7.8
+        Singkong 7.9
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -467,6 +467,26 @@ hash, print, println, puts, string, type, types, variables
   - diff (using array_diff function from util module):
         >  array_diff([1,2,3,4,5], [1,3,5])
         [2, 4]
+  - From STRING to ARRAY: parse_array
+        using default mode (eval expression):
+            >  parse_array("[1+2]", true)
+            [3]
+            >  parse_array("[1+2]", true, 0)
+            [3]
+            >  parse_array("[1+2, fn(){true}()]", true)
+            [3, true]
+
+        alternative: parse only ARRAY, BOOLEAN, HASH (uses strings for keys), 
+        NULL, NUMBER, other types: STRING representation
+        (pass 1 as third argument):
+            >  parse_array("[1+2]", true, 1)
+            ["(1 + 2)"]
+            >  parse_array("[1+2, fn(){true}()]", true, 1)
+            ["(1 + 2)", "fn()
+            {
+            true;
+            }
+            ()"]            
   - set related functions: please use functions from set_util module:
         create_relation_from_array
         create_set_from_array
@@ -537,6 +557,27 @@ hash, print, println, puts, string, type, types, variables
         var b = hash_copy(a)
         set(a, "hello", "hello world")
         println(a, b)    
+  - From STRING to HASH: parse_hash
+        using default mode (eval expression):
+            >  parse_hash("{1: 2+3}", true)
+            {1: 5}
+            >  parse_hash("{1: 2+3}", true, 0)
+            {1: 5}
+            >  parse_hash("{1: 2+3, true: fn(){true}()}", true)
+            {1: 5, true: true}
+
+        alternative: uses strings for keys, 
+        parse only ARRAY, BOOLEAN, HASH, NULL, NUMBER, 
+        other types: STRING representation
+        (pass 1 as third argument):
+            >  parse_hash("{1: 2+3}", true, 1)
+            {"1": "(2 + 3)"}
+            >  parse_hash("{1: 2+3, true: fn(){true}()}", true, 1)
+            {"1": "(2 + 3)", "true": "fn()
+            {
+            true;
+            }
+            ()"}
 - DATE
   - @ @Y @YY @YYY @YYYY @YYYYM @YYYYMM @YYYYMMD @YYYYMMDD @YYYYMMDDh 
     @YYYYMMDDhh @YYYYMMDDhhm @YYYYMMDDhhmm @YYYYMMDDhhmms @YYYYMMDDhhmmss
@@ -2509,8 +2550,12 @@ Singkong comes with simple HTTP client.
   - JSON is not explicitly supported in Singkong. However, ARRAY or HASH probably can be used.
   - To convert from ARRAY, HASH, or another types to STRING, please use built-in function string.
   - To make sure that strings are used for keys (HASH), pass true as second argument to string.
-  - To convert from STRING to ARRAY, please use built-in function parse_array.  
+  - To convert from STRING to ARRAY, please use built-in function parse_array.
+    To parse only ARRAY, BOOLEAN, HASH (uses strings for keys), NULL, NUMBER, 
+    other types: STRING representation: pass 1 as third argument to parse_array.   
   - To convert from STRING to HASH, please use built-in function parse_hash.  
+    To parse only ARRAY, BOOLEAN, HASH (uses strings for keys), NULL, NUMBER, 
+    other types: STRING representation: pass 1 as third argument to parse_hash. 
 - Additional built-in functions:
   - http_response_ok: on successful HTTP request (returns ARRAY (headers, 
     response code, data)), if the response status code is 200, returns the data. 
