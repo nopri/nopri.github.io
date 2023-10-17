@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2023
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 8.0 (2023-October-17 +07:00)
+Version: 8.1 (2023-October-18 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 8.0
+        Singkong 8.1
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -300,7 +300,7 @@ hash, print, println, puts, string, type, types, variables
   - related functions: array_string, base64_decode, base64_encode, call, center, 
     count, cr, crlf, dir, empty, endswith, equals, eval, in, index, isalnum, isalpha,
     isdigit, islower, isupper, join, left, len, 
-    lf, lower, matches, md5, md5_file, newline, ord, quote, random_string, replace, right, 
+    lf, lower, matches, md5, md5_file, newline, ord, parse_string, quote, random_string, replace, right, 
     set, sha1, sha1_file, sha256, sha256_file, sha384, sha384_file, sha512, sha512_file, 
     slice, sort_string, split, startswith, 
     stat, tab, trim, upper
@@ -488,7 +488,7 @@ hash, print, println, puts, string, type, types, variables
             [3, true]
 
         alternative 1: parse only ARRAY, BOOLEAN, HASH (uses strings for keys), 
-        NULL, NUMBER, other types: STRING representation
+        NULL, NUMBER, STRING, other types: STRING representation
         (pass 1 as third argument):
             >  parse_array("[1+2]", true, 1)
             ["(1 + 2)"]
@@ -499,8 +499,8 @@ hash, print, println, puts, string, type, types, variables
             }
             ()"]            
 
-        alternative 2: parse only ARRAY, BOOLEAN, HASH (uses strings for keys), 
-        NULL, NUMBER, other types: NULL (or empty ARRAY)
+        alternative 2: parse only ARRAY, BOOLEAN, HASH (keys must be strings), 
+        NULL, NUMBER, STRING, other types: returns NULL (or empty ARRAY)
         (pass 2 as third argument):
             >  type(parse_array("[1+2]", true, 2))
             "NULL"
@@ -588,7 +588,7 @@ hash, print, println, puts, string, type, types, variables
             {1: 5, true: true}
 
         alternative 1: uses strings for keys, 
-        parse only ARRAY, BOOLEAN, HASH, NULL, NUMBER, 
+        parse only ARRAY, BOOLEAN, HASH, NULL, NUMBER, STRING, 
         other types: STRING representation
         (pass 1 as third argument):
             >  parse_hash("{1: 2+3}", true, 1)
@@ -599,17 +599,31 @@ hash, print, println, puts, string, type, types, variables
             true;
             }
             ()"}
+            >  parse_hash("{1: 2}", true, 1)
+            {"1": 2}
+            >  parse_hash("{true: true}", true, 1)
+            {"true": true}
+            >  parse_hash(string({"1": 2}, true), true, 1)
+            {"1": 2}
+            >  parse_hash(string({1: 2}), true, 1)
+            {"1": 2}
 
-        alternative 2: uses strings for keys, 
-        parse only ARRAY, BOOLEAN, HASH, NULL, NUMBER, 
+        alternative 2: parse only ARRAY, BOOLEAN, HASH (keys must be strings),
+        NULL, NUMBER, STRING,
         other types: NULL (or empty HASH)
         (pass 2 as third argument):
             >  type(parse_hash("{1: 2+3}", true, 2))
             "NULL"
             >  parse_hash("{1: 2+3}", false, 2)
             {}
-            >  parse_hash("{1: 2}", true, 2)
+            >  type(parse_hash("{1: 2}", true, 2))
+            "NULL"
+            >  type(parse_hash("{true: true}", true, 2))
+            "NULL"
+            >  parse_hash(string({"1": 2}, true), true, 2)
             {"1": 2}
+            >  type(parse_hash(string({1: 2}), true, 2))
+            "NULL"
 - DATE
   - @ @Y @YY @YYY @YYYY @YYYYM @YYYYMM @YYYYMMD @YYYYMMDD @YYYYMMDDh 
     @YYYYMMDDhh @YYYYMMDDhhm @YYYYMMDDhhmm @YYYYMMDDhhmms @YYYYMMDDhhmmss
@@ -841,8 +855,8 @@ To get a list of built-in functions, please call builtins()
 "NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_NOT", "NUMBER_OR", 
 "NUMBER_SCALE", "NUMBER_TO_BYTE", "NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", 
 "ORD", "PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
-"PARSE_ARRAY", "PARSE_HASH", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", 
-"POPUP_COMPONENT", "POPUP_HIDE", "POPUP_SHOW", "PRINT", "PRINTER", "PRINTLN", 
+"PARSE_ARRAY", "PARSE_HASH", "PARSE_STRING", "PART", "PARTS", "PASSWORD", "PLAY_SOUND",  
+"POP", "POPUP_COMPONENT", "POPUP_HIDE", "POPUP_SHOW", "PRINT", "PRINTER", "PRINTLN", 
 "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
 "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "READ_BYTE", 
 "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", 
@@ -867,7 +881,7 @@ To get a list of built-in functions, please call builtins()
 "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-340
+341
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -2601,9 +2615,15 @@ Singkong comes with simple HTTP client.
         >  json_parse("[null, true, 1.23, {}]")
         [null, true, 1.2300, {}]
         >  json_parse("{1: 2, true: []}")
+        ""
+        >  json_parse(string({1: 2, true: []}))
+        ""
+        >  json_parse(json_string({1: 2, true: []}))
         {"1": 2, "true": []}
         >  json_parse("test")
         ""
+        >  json_parse(json_string("test"))
+        "test"
   - To convert to JSON STRING, please use function json_string from json module.
         >  json_string({1: [null, true, {}], 2: 3})
         "{"1": [null, true, {}], "2": 3}"

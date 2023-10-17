@@ -13,13 +13,13 @@
     load_module("json")
 ;
 
-require(8.0)
+require(8.1)
 
 var json_parse_ = fn(s, m) 
 "
-[json] function: json_parse_: returns ARRAY, BOOLEAN, HASH, NULL, or NUMBER from JSON STRING.
+[json] function: json_parse_: returns ARRAY, BOOLEAN, HASH, NULL, NUMBER, STRING from JSON STRING.
 arguments: 2: STRING (JSON) and NUMBER (mode)
-return value: ARRAY, BOOLEAN, HASH, NULL, NUMBER or EMPTY STRING (error)
+return value: ARRAY, BOOLEAN, HASH, NULL, NUMBER, STRING or empty STRING (error)
 " 
 {
     if (!is(s, "STRING")) {
@@ -67,14 +67,23 @@ return value: ARRAY, BOOLEAN, HASH, NULL, NUMBER or EMPTY STRING (error)
         return p
     }
 
+    #STRING;
+    if ( (startswith(s, quote()) == true) & (endswith(s, quote()) == true) ) {
+        var p = parse_string(s)
+        if (p == null) {
+            return ""
+        }
+        return p
+    }
+
     return ""
 }
 
 var json_parse = fn(s) 
 "
-[json] function: json_parse: returns ARRAY, BOOLEAN, HASH, NULL, or NUMBER from JSON STRING.
+[json] function: json_parse: returns ARRAY, BOOLEAN, HASH, NULL, NUMBER, STRING from JSON STRING.
 arguments: 1: STRING (JSON) 
-return value: ARRAY, BOOLEAN, HASH, NULL, NUMBER or EMPTY STRING (error)
+return value: ARRAY, BOOLEAN, HASH, NULL, NUMBER, STRING or empty STRING (error)
 " 
 {
     return json_parse_(s, 2)
