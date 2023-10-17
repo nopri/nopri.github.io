@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2023
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 7.9 (2023-October-14 +07:00)
+Version: 8.0 (2023-October-17 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 7.9
+        Singkong 8.0
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -245,6 +245,17 @@ hash, print, println, puts, string, type, types, variables
         true
         >  _pi()
         3.1415926535897930
+  - From STRING to NUMBER: number:
+        >  number("1.23")
+        1.2300
+        >  number("a")
+        0
+        >  number("a", -1)
+        -1
+        >  number("a", 0, false)
+        0
+        >  type(number("a", 0, true))
+        "NULL"
   - mean, median, mode, range (using util module):
         >  load_module("util")
         >  var a = [0, 1, 2, 3, 4, 3, 2, 1, 0, 0]
@@ -476,7 +487,7 @@ hash, print, println, puts, string, type, types, variables
             >  parse_array("[1+2, fn(){true}()]", true)
             [3, true]
 
-        alternative: parse only ARRAY, BOOLEAN, HASH (uses strings for keys), 
+        alternative 1: parse only ARRAY, BOOLEAN, HASH (uses strings for keys), 
         NULL, NUMBER, other types: STRING representation
         (pass 1 as third argument):
             >  parse_array("[1+2]", true, 1)
@@ -487,6 +498,16 @@ hash, print, println, puts, string, type, types, variables
             true;
             }
             ()"]            
+
+        alternative 2: parse only ARRAY, BOOLEAN, HASH (uses strings for keys), 
+        NULL, NUMBER, other types: NULL (or empty ARRAY)
+        (pass 2 as third argument):
+            >  type(parse_array("[1+2]", true, 2))
+            "NULL"
+            >  parse_array("[1+2]", false, 2)
+            []
+            >  parse_array("[1, 2]", true, 2)
+            [1, 2]
   - set related functions: please use functions from set_util module:
         create_relation_from_array
         create_set_from_array
@@ -566,7 +587,7 @@ hash, print, println, puts, string, type, types, variables
             >  parse_hash("{1: 2+3, true: fn(){true}()}", true)
             {1: 5, true: true}
 
-        alternative: uses strings for keys, 
+        alternative 1: uses strings for keys, 
         parse only ARRAY, BOOLEAN, HASH, NULL, NUMBER, 
         other types: STRING representation
         (pass 1 as third argument):
@@ -578,6 +599,17 @@ hash, print, println, puts, string, type, types, variables
             true;
             }
             ()"}
+
+        alternative 2: uses strings for keys, 
+        parse only ARRAY, BOOLEAN, HASH, NULL, NUMBER, 
+        other types: NULL (or empty HASH)
+        (pass 2 as third argument):
+            >  type(parse_hash("{1: 2+3}", true, 2))
+            "NULL"
+            >  parse_hash("{1: 2+3}", false, 2)
+            {}
+            >  parse_hash("{1: 2}", true, 2)
+            {"1": 2}
 - DATE
   - @ @Y @YY @YYY @YYYY @YYYYM @YYYYMM @YYYYMMD @YYYYMMDD @YYYYMMDDh 
     @YYYYMMDDhh @YYYYMMDDhhm @YYYYMMDDhhmm @YYYYMMDDhhmms @YYYYMMDDhhmmss
@@ -585,6 +617,9 @@ hash, print, println, puts, string, type, types, variables
     format_datetime, format_diff, format_time, hour, is_leap_year, minute, 
     month, part, second, sort_date, year
   - file related functions: stat
+  - From DATE to NUMBER: number:
+        >  number(@2023)
+        1672506000180
   - sorting: before/after
 - FUNCTION
   - fn()
@@ -850,16 +885,17 @@ return value: <any type>
 
 To get a list of built-in modules, please call modules()
 >  modules()
-["csv", "db_util", "rect_array_util", "set_util", "ui_util", "ui_calendar", "util"]
+["csv", "db_util", "json", "rect_array_util", "set_util", "ui_calendar", "ui_util", "util"]
 
 To load a built-in module, please use built-in function load_module, 
 for example:
 >  load_module("csv")
 >  load_module("db_util")
+>  load_module("json")
 >  load_module("rect_array_util")
 >  load_module("set_util")
->  load_module("ui_util")
 >  load_module("ui_calendar")
+>  load_module("ui_util")
 >  load_module("util")
 
 Note: reusing function name from built-in modules as identifier is allowed:
@@ -893,6 +929,9 @@ Functions in module: db_util:
 "DB_SELECT_POSTGRESQL", "DB_SELECT_POSTGRESQL_", "DB_UPDATE", "DB_UPDATE_", 
 "QUERY_RESULT"]
 
+Functions in module: json: 
+["JSON_PARSE", "JSON_PARSE_", "JSON_STRING"]
+
 Functions in module: rect_array_util:
 ["ADD_RECT_ARRAY_OF", "ADD_RECT_ARRAY_OF_NUMBER", 
 "CROSS_PRODUCT_3D_RECT_ARRAY_COLUMN_OF", 
@@ -925,14 +964,14 @@ Functions in module: set_util:
 "IS_TRANSITIVE_RELATION_SET", "SET_DIFF", "SET_INTERSECTION", "SET_POWER", 
 "SET_PRODUCT", "SET_UNION"]
 
+Functions in module: ui_calendar:
+["CREATE_CALENDAR", "CREATE_CALENDAR_BASIC", "CREATE_CALENDAR_BASIC_COMPACT", 
+"CREATE_CALENDAR_SIMPLE", "CREATE_CALENDAR_SIMPLE_COMPACT"]
+
 Functions in module: ui_util:
 ["TABLE_ADD_FILL", "TABLE_ADD_ROW_FILL", "TABLE_FILL", "TABLE_GET_ARRAY_", 
 "TABLE_GET_ARRAY_NUMBER", "TABLE_GET_ARRAY_STRING", "TABLE_TO_HTML", 
 "TABLE_TO_TEXT"]
-
-Functions in module: ui_calendar:
-["CREATE_CALENDAR", "CREATE_CALENDAR_BASIC", "CREATE_CALENDAR_BASIC_COMPACT", 
-"CREATE_CALENDAR_SIMPLE", "CREATE_CALENDAR_SIMPLE_COMPACT"]
 
 Functions in module: util:
 ["ARRAY_COPY", "ARRAY_DIFF", "BINOMIAL_COEFFICIENT", "BINOMIAL_DISTRIBUTION", 
@@ -2547,15 +2586,27 @@ Singkong comes with simple HTTP client.
   - If the server supports X-HTTP-Method-Override, http_post_override probably
     can be used (for example, with PATCH request method)
 - Working with JSON
-  - JSON is not explicitly supported in Singkong. However, ARRAY or HASH probably can be used.
-  - To convert from ARRAY, HASH, or another types to STRING, please use built-in function string.
-  - To make sure that strings are used for keys (HASH), pass true as second argument to string.
-  - To convert from STRING to ARRAY, please use built-in function parse_array.
-    To parse only ARRAY, BOOLEAN, HASH (uses strings for keys), NULL, NUMBER, 
-    other types: STRING representation: pass 1 as third argument to parse_array.   
-  - To convert from STRING to HASH, please use built-in function parse_hash.  
-    To parse only ARRAY, BOOLEAN, HASH (uses strings for keys), NULL, NUMBER, 
-    other types: STRING representation: pass 1 as third argument to parse_hash. 
+  - Please use json built-in module.
+        >  load_module("json")
+  - For JSON parsing, please use function json_parse from json module
+    (returns empty STRING on error):
+        >  type(json_parse("null"))
+        "NULL"
+        >  json_parse("true")
+        true    
+        >  json_parse("false")
+        false
+        >  json_parse("1.23")
+        1.2300
+        >  json_parse("[null, true, 1.23, {}]")
+        [null, true, 1.2300, {}]
+        >  json_parse("{1: 2, true: []}")
+        {"1": 2, "true": []}
+        >  json_parse("test")
+        ""
+  - To convert to JSON STRING, please use function json_string from json module.
+        >  json_string({1: [null, true, {}], 2: 3})
+        "{"1": [null, true, {}], "2": 3}"
 - Additional built-in functions:
   - http_response_ok: on successful HTTP request (returns ARRAY (headers, 
     response code, data)), if the response status code is 200, returns the data. 

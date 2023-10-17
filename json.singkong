@@ -1,0 +1,91 @@
+#
+    JSON
+    json.singkong
+
+    Part of Singkong Programming Language Interpreter
+    (c) Noprianto <nop@noprianto.com>
+
+    More information: https://nopri.github.io/singkong.html
+    Download Singkong: https://nopri.github.io/Singkong.jar
+    (License: Free to use or redistribute, no warranty)
+
+    To use this module:
+    load_module("json")
+;
+
+require(8.0)
+
+var json_parse_ = fn(s, m) 
+"
+[json] function: json_parse_: returns ARRAY, BOOLEAN, HASH, NULL, or NUMBER from JSON STRING.
+arguments: 2: STRING (JSON) and NUMBER (mode)
+return value: ARRAY, BOOLEAN, HASH, NULL, NUMBER or EMPTY STRING (error)
+" 
+{
+    if (!is(s, "STRING")) {
+        return ""
+    }
+    if (!is(m, "NUMBER")) {
+        return ""
+    }
+    var s = trim(s)
+
+    #NULL;
+    if (s == "null") {
+        return null
+    }
+
+    #BOOLEAN;
+    if (s == "true") {
+        return true
+    }
+    if (s == "false") {
+        return false
+    }
+
+    #NUMBER;
+    var n = number(s, 0, true)
+    if (is(n, "NUMBER")) {
+        return n
+    }
+
+    #ARRAY;
+    if ( (startswith(s, "[") == true) & (endswith(s, "]") == true) ) {
+        var p = parse_array(s, true, m)
+        if (p == null) {
+            return ""
+        }
+        return p
+    }
+
+    #HASH;
+    if ( (startswith(s, "{") == true) & (endswith(s, "}") == true) ) {
+        var p = parse_hash(s, true, m)
+        if (p == null) {
+            return ""
+        }
+        return p
+    }
+
+    return ""
+}
+
+var json_parse = fn(s) 
+"
+[json] function: json_parse: returns ARRAY, BOOLEAN, HASH, NULL, or NUMBER from JSON STRING.
+arguments: 1: STRING (JSON) 
+return value: ARRAY, BOOLEAN, HASH, NULL, NUMBER or EMPTY STRING (error)
+" 
+{
+    return json_parse_(s, 2)
+}
+
+var json_string = fn(a) 
+"
+[json] function: json_string: returns JSON STRING.
+arguments: 1: <any type>
+return value: STRING
+" 
+{
+    return string(a, true)
+}
