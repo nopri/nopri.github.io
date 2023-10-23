@@ -13,7 +13,7 @@
     load_module("json")
 ;
 
-require(8.1)
+require(8.2)
 
 var json_parse_ = fn(s, m) 
 "

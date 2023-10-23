@@ -3,7 +3,7 @@
     ui_calendar.singkong
 
     Part of Singkong Programming Language Interpreter
-    (c) Noprianto <nopri.anto@icloud.com>
+    (c) Noprianto <nop@noprianto.com>
 
     More information: https://nopri.github.io/singkong.html
     Download Singkong: https://nopri.github.io/Singkong.jar
@@ -13,7 +13,7 @@
     load_module("ui_calendar")
 ;
 
-require(7.2)
+require(8.2)
 
 var create_calendar = fn(year, month, data) 
 "
@@ -51,6 +51,13 @@ return value: COMPONENT (grid)
 "
 {
     var c = component("grid", "")
+    if (!is(year, "NUMBER")) {
+        return c
+    }
+    if (!is(month, "NUMBER")) {
+        return c
+    }
+
     var days = days_of_month(year, month)
     if (empty(days)) {
         return c
@@ -346,4 +353,124 @@ arguments: 2: NUMBER (year), NUMBER (month)
         "weekend_header_foreground": "black"
     }
     return create_calendar(year, month, data)
+}
+
+var create_date_picker_ = fn(year, month, data, button_label, button_label_close, rows) 
+"
+[ui_calendar] function: create_date_picker_: creates a date picker (grid).
+arguments: 6: NUMBER (year), NUMBER (month), HASH (data), STRING (button label), STRING (button label (close)), NUMBER (integer, rows)
+keys (data, type: STRING):
+    format: STRING (date format, default: yyyy-MM-dd)
+    label: ARRAY of STRING (days, default: [Sun, Mon, Tue, Wed, Thu, Fri, Sat])
+    margin: ARRAY of NUMBER (button margins)
+    background: STRING (background color)
+    foreground: STRING (foreground color)
+    header_background: STRING (header background color)
+    header_foreground: STRING (header foreground color)
+    prev_background: STRING (prev month background color)
+    prev_foreground: STRING (prev month foreground color)
+    next_background: STRING (next month background color)
+    next_foreground: STRING (next month foreground color)
+    today_background: STRING (today background color)
+    today_foreground: STRING (today foreground color)
+    weekend_days: ARRAY of NUMBER (1=Sunday)
+    weekend_background: STRING (weekend background color)
+    weekend_foreground: STRING (weekend foreground color)
+    weekend_header_background: STRING (weekend header background color)
+    weekend_header_foreground: STRING (weekend header foreground color)
+    default_font: ARRAY (default font)
+    header_font: ARRAY (header font)
+    prev_font: ARRAY (prev month font)
+    next_font: ARRAY (next month font)
+    today_font: ARRAY (today font)
+    weekend_font: ARRAY (weekend font)
+return value: COMPONENT (grid)
+"
+{
+    var g = component("grid", "")
+    if ((!is(year, "NUMBER")) | (!is(month, "NUMBER")) | (!is(rows, "NUMBER"))) {
+        return g
+    }
+    if (!is(data, "HASH")) {
+        var data = {}
+    }
+    var rows = integer(rows)
+
+    var dd = [year, month]
+    var t = component("text", "", true)
+    var b = component("button", string(button_label))
+    grid_add(g, t, 0, 0, 1, 1, 1, 1, 3, 0)
+    grid_add(g, b, 1, 0, 1, 1, 0, 1, 0, 1)
+    event(b, fn() {
+        var dr = [-1]
+        var dh = fn(d, s, dow) {
+            config(t, "contents", s)
+            popup_hide(dr[0])
+            config(b, "enabled", true)
+        }
+        var dc = data
+        set(dc, "handler", dh)
+        set(dc, "prev_handler", dh)
+        set(dc, "next_handler", dh)
+        set(dc, "margin", [0, 0, 0, 0])
+
+        var ca = [null]
+        var cc = create_calendar(dd[0], dd[1], dc)
+        set(ca, 0, cc)
+        
+        var cx = component("grid", "")
+        var hg = component("grid", "")
+        grid_add(cx, ca[0], 0, 1, 1, 1, 1, 1, 3, 0)
+        
+        var hb = component("button", string(button_label_close))
+        event(hb, fn() {
+            popup_hide(dr[0])
+            config(b, "enabled", true)
+        })
+        grid_add(hg, hb, 1, 0, 1, 1, 0, 1, 0, 1)
+        var hd = component("date", "MMMM-yyyy")
+        event(hd, fn() {
+            var gd = get(hd, "contents")
+            var xd = part(gd)
+            grid_remove(cx, ca[0])
+            var cc = create_calendar (xd[0], xd[1], dc)
+            set(ca, 0, cc)
+            grid_add(cx, ca[0], 0, 1, 1, 1, 1, 1, 3, 0)
+        })
+        grid_add(hg, hd, 0, 0, 1, 1, 1, 1, 3, 0)
+        grid_add(cx, hg, 0, 0, 1, 1, 1, 0, 3, 0)
+
+        var ci = component_info(t)
+        var dx = popup_component(cx, t, ci[4], ci[5] * rows, 0, ci[5])
+        set(dr, 0, dx)
+        config(b, "enabled", false)
+    })
+    return g
+}
+
+var create_date_picker = fn(year, month) 
+"
+[ui_calendar] function: create_date_picker: creates a date picker (grid).
+arguments: 2: NUMBER (year), NUMBER (month)
+return value: COMPONENT (grid)
+"
+{
+    var data = {
+        "background": "white", 
+        "foreground": "black", 
+        "header_background": "white", 
+        "header_foreground": "black", 
+        "prev_background": "white", 
+        "prev_foreground": "gray", 
+        "next_background": "white", 
+        "next_foreground": "gray", 
+        "today_background": "white", 
+        "today_foreground": "blue", 
+        "weekend_days": [1], 
+        "weekend_background": "white", 
+        "weekend_foreground": "red",
+        "weekend_header_background": "white", 
+        "weekend_header_foreground": "black"
+    }
+    return create_date_picker_(year, month, data, "...", "x", 12)
 }

@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2023
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 8.1 (2023-October-18 +07:00)
+Version: 8.2 (2023-October-23 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 8.1
+        Singkong 8.2
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -980,7 +980,8 @@ Functions in module: set_util:
 
 Functions in module: ui_calendar:
 ["CREATE_CALENDAR", "CREATE_CALENDAR_BASIC", "CREATE_CALENDAR_BASIC_COMPACT", 
-"CREATE_CALENDAR_SIMPLE", "CREATE_CALENDAR_SIMPLE_COMPACT"]
+"CREATE_CALENDAR_SIMPLE", "CREATE_CALENDAR_SIMPLE_COMPACT", "CREATE_DATE_PICKER",
+"CREATE_DATE_PICKER_"]
 
 Functions in module: ui_util:
 ["TABLE_ADD_FILL", "TABLE_ADD_ROW_FILL", "TABLE_FILL", "TABLE_GET_ARRAY_", 
@@ -1950,6 +1951,15 @@ To keep it as simple as possible:
         add(g)
         show()
     - For more information, please read documentation of create_calendar.
+- Date picker
+  (Using ui_calendar module)
+        load_module("ui_calendar")
+
+        reset()
+        var p = part(@)
+        var d = create_date_picker(p[0], p[1])
+        add_n(d)
+        show()
 
 
 -----------------------------------------------------------------------------
@@ -2531,7 +2541,8 @@ Interface (CGI).
 - To get body (x-www-form-urlencoded) of HTTP POST request as HASH 
   (decoded keys/values), please use built-in function cgi_post.
 - To get body (x-www-form-urlencoded) of HTTP POST (STRING of HASH) request as 
-  HASH (decoded keys/values), please use built-in function cgi_post_hash.
+  HASH (decoded keys (in strings)/values), please use built-in function cgi_post_hash.
+  As an alternative, please use json module.
 - Using HTTP server with CGI support:
   - Contents of CGI script (Singkong program) may be saved as separate file
     (for example: index.singkong). This file should be placed outside of the 
@@ -3867,8 +3878,10 @@ file)
     %JAVA% -DSINGKONG=0 -jar %SINGKONG% %PROGRAM%
 
 Singkong program: random.singkong
+    load_module("json")
+
     var h = {"Content-Type": "application/json"}
-    var r = {"random": ""}
+    var r = {"random": null}
     var p = cgi_get()
     var x = p["min"]
     var y = p["max"] 
@@ -3876,12 +3889,12 @@ Singkong program: random.singkong
     if (is(x, "STRING") & is(y, "STRING")) {
         var z = random(number(x), number(y))
         if (z != null) {
-            set(r, "random", string(z))
+            set(r, "random", z)
         }
     }
 
     cgi_header(h)
-    println(r)
+    println(json_string(r))
 
 
 Example 3: POST request (body: username=<string>&password=<string>; 
@@ -3913,6 +3926,8 @@ file)
     %JAVA% -DSINGKONG=0 -jar %SINGKONG% %PROGRAM%
 
 Singkong program: auth.singkong
+    load_module("json")
+
     var h = {"Content-Type": "application/json"}
     var r = {"result": false}
     var p = cgi_post()
@@ -3924,9 +3939,11 @@ Singkong program: auth.singkong
     }
 
     cgi_header(h)
-    println(r)
+    println(json_string(r))
 
 Singkong program (HTTP client): login.singkong 
+    load_module("json")
+
     var url = trim(input("URL", "Login"))
     if (!startswith(url, "http")) {
         exit()
@@ -3941,7 +3958,7 @@ Singkong program (HTTP client): login.singkong
         if (res != null) {
             if (is(res, "ARRAY")) {
                 if (len(res) == 3) {
-                    var r = parse_hash(res[2])
+                    var r = json_parse(res[2])
                     message(r["result"])
                 }
             }
