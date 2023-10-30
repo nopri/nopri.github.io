@@ -13,7 +13,7 @@
     load_module("ui_calendar")
 ;
 
-require(8.2)
+require(8.3)
 
 var create_calendar = fn(year, month, data) 
 "
@@ -384,10 +384,10 @@ keys (data, type: STRING):
     next_font: ARRAY (next month font)
     today_font: ARRAY (today font)
     weekend_font: ARRAY (weekend font)
-return value: COMPONENT (grid)
+return value: ARRAY [COMPONENT (grid), COMPONENT (text), COMPONENT (button)]
 "
 {
-    var g = component("grid", "")
+    var g = component("grid", "ui_calendar__date_picker")
     if ((!is(year, "NUMBER")) | (!is(month, "NUMBER")) | (!is(rows, "NUMBER"))) {
         return g
     }
@@ -429,6 +429,7 @@ return value: COMPONENT (grid)
         })
         grid_add(hg, hb, 1, 0, 1, 1, 0, 1, 0, 1)
         var hd = component("date", "MMMM-yyyy")
+        config(hd, "contents", date([year, month, 1]))
         event(hd, fn() {
             var gd = get(hd, "contents")
             var xd = part(gd)
@@ -445,14 +446,14 @@ return value: COMPONENT (grid)
         set(dr, 0, dx)
         config(b, "enabled", false)
     })
-    return g
+    return [g, t, b]
 }
 
 var create_date_picker = fn(year, month) 
 "
 [ui_calendar] function: create_date_picker: creates a date picker (grid).
 arguments: 2: NUMBER (year), NUMBER (month)
-return value: COMPONENT (grid)
+return value: ARRAY [COMPONENT (grid), COMPONENT (text), COMPONENT (button)]
 "
 {
     var data = {
