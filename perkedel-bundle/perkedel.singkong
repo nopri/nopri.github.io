@@ -36,7 +36,8 @@ var about = name + lf() +
     " ECJ (Eclipse)" + lf() +
     " MinGW (Code::Blocks)" + lf() +
     " Tcl/Tk (cross compiled from source)" + lf() + 
-    " Python (python.org, pip, 2.7 (ReportLab, web.py, PyOTP, psycopg2 (binary), SQLiteBoy), 3.5)" + lf() +    
+    " Python 2.7 (python.org; pip, ReportLab, web.py, PyOTP, psycopg2 (binary), et_xmlfile, jdcal, openpyxl, XlsxWriter, SQLiteBoy)" + lf() +    
+    " Python 3.5 (python.org)" + lf() + 
     " CHICKEN Scheme (compiled from source)" + lf() +
     " PostgreSQL (cross compiled from source)" + lf() + 
     " Singkong.jar" + lf() + lf() +
