@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2023
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 8.5 (2023-November-13 +07:00)
+Version: 8.6 (2023-November-26 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 8.5
+        Singkong 8.6
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -761,7 +761,8 @@ hash, print, println, puts, string, type, types, variables
 - COMPONENT
   - Please read: GUI application development
   - related functions: add, add_e, add_n, add_s, add_w, button_image, clear, closing, 
-    component, component_info, component_type, components, config, event, event_focus,  
+    component, component_info, component_type, components, config, 
+    custom_dialog_close, event, event_focus,  
     event_frame, event_keyboard_frame, event_mouse, event_mouse_frame, fonts, frame, 
     frame_close, frame_location, frame_top, get, grid_add, grid_clear, grid_remove,
     gui, hide, menubar, panel_add, panel_clear, panel_remove, popup_component, 
@@ -776,7 +777,7 @@ hash, print, println, puts, string, type, types, variables
   - GUI input/output functions: confirm, directory, input, open, message, 
     password, save
     (if GUI is not available: simpler text-based version)
-  - GUI dialogs: color_chooser, login_dialog, panel_dialog
+  - GUI dialogs: color_chooser, custom_dialog, login_dialog, panel_dialog
   - Drawing: draw_width, draw_rect, fill_rect, draw_arc, fill_arc, draw_oval, 
     fill_oval, draw_round_rect, fill_round_rect, draw_string, draw_line, 
     draw_polygon, fill_polygon, draw_polyline, draw_read, draw_write_png, 
@@ -857,19 +858,20 @@ To get a list of built-in functions, please call builtins()
 "CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", "CHR", "CLEAR", 
 "CLIPBOARD_GET", "CLIPBOARD_SET", "CLOSING", "COLOR_CHOOSER", "COMPONENT", 
 "COMPONENT_INFO", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY", 
-"COPY_RESOURCE", "COS", "COSH", "COUNT", "CR", "CRLF", "CWD", "DATABASE", 
-"DATABASE_CONNECTED", "DATABASE_METADATA", "DATE", "DATETIME", "DAY", 
-"DAYS_OF_MONTH", "DELAY", "DELETE", "DIFF", "DIR", "DIRECTORY", "DISABLED", 
-"DO", "DRAW_ARC", "DRAW_GET_PIXEL", "DRAW_LINE", "DRAW_OVAL", "DRAW_POLYGON", 
-"DRAW_POLYLINE", "DRAW_READ", "DRAW_RECT", "DRAW_ROUND_RECT", "DRAW_SET_PIXEL", 
-"DRAW_STRING", "DRAW_WIDTH", "DRAW_WRITE_BMP", "DRAW_WRITE_JPG", 
-"DRAW_WRITE_PNG", "EACH", "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", 
-"EVENT_FOCUS", "EVENT_FRAME", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", 
-"EVENT_MOUSE_FRAME", "EXIT", "EXP", "FILL_ARC", "FILL_OVAL", "FILL_POLYGON", 
-"FILL_RECT", "FILL_ROUND_RECT", "FIRST", "FONTS", "FORMAT_DATE", 
-"FORMAT_DATETIME", "FORMAT_DIFF", "FORMAT_TIME", "FRAME", "FRAME_CLOSE", 
-"FRAME_LOCATION", "FRAME_TOP", "FROM_BIN", "FROM_HEX", "FROM_OCT", "GET", 
-"GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", "HOUR", 
+"COPY_RESOURCE", "COS", "COSH", "COUNT", "CR", "CRLF", "CUSTOM_DIALOG", 
+"CUSTOM_DIALOG_CLOSE", "CWD", "DATABASE", "DATABASE_CONNECTED", 
+"DATABASE_METADATA", "DATE", "DATETIME", "DAY", "DAYS_OF_MONTH", "DELAY", 
+"DELETE", "DIFF", "DIR", "DIRECTORY", "DISABLED", "DO", "DRAW_ARC", 
+"DRAW_GET_PIXEL", "DRAW_LINE", "DRAW_OVAL", "DRAW_POLYGON", "DRAW_POLYLINE", 
+"DRAW_READ", "DRAW_RECT", "DRAW_ROUND_RECT", "DRAW_SET_PIXEL", "DRAW_STRING", 
+"DRAW_WIDTH", "DRAW_WRITE_BMP", "DRAW_WRITE_JPG", "DRAW_WRITE_PNG", "EACH", 
+"EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FOCUS", 
+"EVENT_FRAME", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", 
+"EXIT", "EXP", "FILL_ARC", "FILL_OVAL", "FILL_POLYGON", "FILL_RECT", 
+"FILL_ROUND_RECT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
+"FORMAT_DIFF", "FORMAT_TIME", "FRAME", "FRAME_CLOSE", "FRAME_LOCATION", 
+"FRAME_TOP", "FROM_BIN", "FROM_HEX", "FROM_OCT", "GET", "GRID_ADD", 
+"GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", "HOUR", 
 "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
 "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IN", "INDEX", 
 "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTEGER_GCD", 
@@ -883,33 +885,33 @@ To get a list of built-in functions, please call builtins()
 "NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_NOT", "NUMBER_OR", 
 "NUMBER_SCALE", "NUMBER_TO_BYTE", "NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", 
 "ORD", "PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
-"PARSE_ARRAY", "PARSE_HASH", "PARSE_STRING", "PART", "PARTS", "PASSWORD", "PLAY_SOUND",  
-"POP", "POPUP_COMPONENT", "POPUP_HIDE", "POPUP_SHOW", "PRINT", "PRINTER", "PRINTLN", 
-"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
-"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "READ_BYTE", 
-"RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", 
-"REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", 
-"REST", "REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", "RUNTIME_VERSION", "SAVE", 
-"SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", 
-"SHA256_FILE", "SHA384", "SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", 
-"SHUFFLE", "SIN", "SINGKONG", "SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", 
-"SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", 
-"SORT_STRING", "SPLIT", "SQRT", "START", "START_TIMER", "STARTSWITH", "STAT", 
-"STATUSBAR", "STDIN", "STOP", "STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", 
-"STRING_TO_BYTE_ARRAY", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", 
-"TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", 
-"TABLE_COLUMN_COUNT", "TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", 
-"TABLE_GET_VALUE", "TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", 
-"TABLE_RIGHT", "TABLE_ROW_COUNT", "TABLE_SCROLL", "TABLE_SET_VALUE", 
-"TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", "THREAD_ALIVE", 
-"THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", "TO_DEGREES", 
-"TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
+"PARSE_ARRAY", "PARSE_HASH", "PARSE_STRING", "PART", "PARTS", "PASSWORD", 
+"PLAY_SOUND", "POP", "POPUP_COMPONENT", "POPUP_HIDE", "POPUP_SHOW", "PRINT", 
+"PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", 
+"QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", 
+"READ_BYTE", "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", 
+"REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", 
+"RESIZABLE", "REST", "REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", 
+"RUNTIME_VERSION", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
+"SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", "SHA512", 
+"SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", "SINGKONG_INTERPRETER", 
+"SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", 
+"SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", "START", "START_TIMER", 
+"STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", "STOP_TIMER", "STRING", 
+"STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", "SUM", "SYSTEM", "TAB", 
+"TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", 
+"TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", "TABLE_COLUMN_INFO", 
+"TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", "TABLE_MIDDLE", 
+"TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", "TABLE_SCROLL", 
+"TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", 
+"THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", 
+"TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
 "UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "USERHOME", 
 "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", 
 "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-341
+343
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -1123,7 +1125,8 @@ To keep it as simple as possible:
   can be created (using Singkong code). 
   To show common dialogs, please use related built-in functions (confirm, 
   directory, input, open, message, password, save, login_dialog, color_chooser).
-  To create custom panel or grid dialogs, please use built-in function panel_dialog.
+  To create custom panel or grid dialogs, please use built-in function 
+  panel_dialog (modal) or custom_dialog (modal, modeless).
   To create more advanced dialogs, please use Java method.
   To set frame title, please use built-in function title.
   To set frame size, please use built-in function size (this might not work on 
@@ -1266,7 +1269,8 @@ To keep it as simple as possible:
 
         add(t)
         show()
-- To create custom panel or grid dialog, please use built-in function panel_dialog:
+- To create custom panel or grid dialog, please use built-in function 
+  panel_dialog (modal) or custom_dialog (modal, modeless):
   - using panel:
         reset()
         var e = component("edit", "")
@@ -1295,6 +1299,54 @@ To keep it as simple as possible:
         } else {
           message("Cancel")
         }  
+  - modeless dialog using custom_dialog:
+        reset()
+        add_n(component("text", "Edit me while dialog is open"))
+        show()
+        var e = component("edit", "")
+        var c = component("checkbox", "Singkong?")
+        var b = component("button", "Close")
+        var g = component("grid", "")
+        grid_add(g, e, 0, 0, 1, 1, 1, 1, 3, 0, 5, 5, 5, 5)
+        grid_add(g, c, 0, 1, 1, 1, 0, 0, 3, 0, 5, 5, 5, 5)
+        grid_add(g, b, 0, 2, 1, 1, 0, 0, 0, 2)
+        
+        event(c, fn() {
+            var ec = get(e, "contents")
+            var cc = get(c, "active")
+            var nc = ec + lf() + cc
+            config(e, "contents", nc)
+        })
+
+        var r = []
+        event(b, fn() {
+            custom_dialog_close(last(r))
+        })
+        custom_dialog(g, "Form", 600, 400, false, r)
+  - modal dialog using custom_dialog:
+        reset()
+        add_n(component("text", "Can't edit me while dialog is open"))
+        show()
+        var e = component("edit", "")
+        var c = component("checkbox", "Singkong?")
+        var b = component("button", "Close")
+        var g = component("grid", "")
+        grid_add(g, e, 0, 0, 1, 1, 1, 1, 3, 0, 5, 5, 5, 5)
+        grid_add(g, c, 0, 1, 1, 1, 0, 0, 3, 0, 5, 5, 5, 5)
+        grid_add(g, b, 0, 2, 1, 1, 0, 0, 0, 2)
+        
+        event(c, fn() {
+            var ec = get(e, "contents")
+            var cc = get(c, "active")
+            var nc = ec + lf() + cc
+            config(e, "contents", nc)
+        })
+
+        var r = []
+        event(b, fn() {
+            custom_dialog_close(last(r))
+        })
+        custom_dialog(g, "Form", 600, 400, true, r)
 - To configure a COMPONENT, please use built-in function config. This function
   accepts three arguments: COMPONENT, STRING (key), and <any type> (value). 
   If optional fourth argument (BOOLEAN) is true (default: false) and 
@@ -1484,6 +1536,8 @@ To keep it as simple as possible:
 - Popup:
   - Not to be confused with popup menu.
   - To show a popup, please use built-in function popup_show.
+  - To make a popup modeless (default: modal), please pass false as optional 
+    seventh argument of popup_show or popup_component.
     - Using panel
         reset()
         var t = component("text", "")
@@ -4000,7 +4054,7 @@ Singkong program (HTTP client): login.singkong
 
 26. Example: Java: custom dialog
 For simpler (but easier) custom dialog using only Singkong code, please use 
-built-in function panel_dialog.
+built-in function panel_dialog (modal) or custom_dialog (modal, modeless).
 Please read: Calling Java method. 
 The following file is saved in examples directory, 
 relative to current working directory.

@@ -13,7 +13,7 @@
     load_module("ui_calendar")
 ;
 
-require(8.3)
+require(8.6)
 
 var create_calendar = fn(year, month, data) 
 "
@@ -355,10 +355,10 @@ arguments: 2: NUMBER (year), NUMBER (month)
     return create_calendar(year, month, data)
 }
 
-var create_date_picker_ = fn(year, month, data, button_label, button_label_close, rows) 
+var create_date_picker_ = fn(year, month, data, button_label, button_label_close, rows, modal) 
 "
 [ui_calendar] function: create_date_picker_: creates a date picker (grid).
-arguments: 6: NUMBER (year), NUMBER (month), HASH (data), STRING (button label), STRING (button label (close)), NUMBER (integer, rows)
+arguments: 7: NUMBER (year), NUMBER (month), HASH (data), STRING (button label), STRING (button label (close)), NUMBER (integer, rows), BOOLEAN (modal)
 keys (data, type: STRING):
     format: STRING (date format, default: yyyy-MM-dd)
     label: ARRAY of STRING (days, default: [Sun, Mon, Tue, Wed, Thu, Fri, Sat])
@@ -442,9 +442,12 @@ return value: ARRAY [COMPONENT (grid), COMPONENT (text), COMPONENT (button)]
         grid_add(cx, hg, 0, 0, 1, 1, 1, 0, 3, 0)
 
         var ci = component_info(t)
-        var dx = popup_component(cx, t, ci[4], ci[5] * rows, 0, ci[5])
+        var dx = popup_component(cx, t, ci[4], ci[5] * rows, 0, ci[5], modal)
         set(dr, 0, dx)
-        config(b, "enabled", false)
+
+        if (modal) {
+            config(b, "enabled", false)
+        }
     })
     return [g, t, b]
 }
@@ -473,5 +476,5 @@ return value: ARRAY [COMPONENT (grid), COMPONENT (text), COMPONENT (button)]
         "weekend_header_background": "white", 
         "weekend_header_foreground": "black"
     }
-    return create_date_picker_(year, month, data, "...", "x", 12)
+    return create_date_picker_(year, month, data, "...", "x", 12, false)
 }
