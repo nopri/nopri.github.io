@@ -3,7 +3,7 @@
     db_util.singkong
 
     Part of Singkong Programming Language Interpreter
-    (c) Noprianto <nopri.anto@icloud.com>
+    (c) Noprianto <nop@noprianto.com>
 
     More information: https://nopri.github.io/singkong.html
     Download Singkong: https://nopri.github.io/Singkong.jar
@@ -13,7 +13,7 @@
     load_module("db_util")
 ;
 
-require(6.4)
+require(8.7)
 
 var db_driver = fn(a) 
 "
@@ -42,7 +42,7 @@ return value: ARRAY or NULL
     }
     var d_derby = {
         "id": "integer not null generated always as identity (start with 1, increment by 1)", 
-        "id.": "integer not null generated always as identity (start with 1, increment by 1)", 
+        "id.": "integer not null generated always as identity (start with 1, increment by 1) unique", 
         "varchar": "varchar (32672)", 
         "varchar.": "varchar (32672) default ''", 
         "text": "clob", 
