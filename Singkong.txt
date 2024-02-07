@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2023
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 8.7 (2023-December-11 +07:00)
+Version: 8.8 (2024-February-07 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 8.7
+        Singkong 8.8
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -2625,6 +2625,9 @@ Interface (CGI).
 - To output text contents (for example, HTML), built-in function cgi_contents 
   may be used. Manually printing to standard output using built-in function
   println (or print) is also supported.
+  For example:
+    cgi_header()
+    print("Test")
 - To get QUERY_STRING (x-www-form-urlencoded) from HTTP GET request as HASH 
   (decoded keys/values), please use built-in function cgi_get.
 - To get body (x-www-form-urlencoded) of HTTP POST request as HASH 
@@ -2632,14 +2635,45 @@ Interface (CGI).
 - To get body (x-www-form-urlencoded) of HTTP POST (STRING of HASH) request as 
   HASH (decoded keys (in strings)/values), please use built-in function cgi_post_hash.
   As an alternative, please use json module.
+- Both cgi_post and cgi_post_hash read up to HTTP server variable CONTENT_LENGTH, if set.
 - Using HTTP server with CGI support:
-  - Contents of CGI script (Singkong program) may be saved as separate file
-    (for example: index.singkong). This file should be placed outside of the 
-    CGI-enabled directories. 
-  - To handle HTTP request, shell script or batch file (depending on the 
-    operating system) may be used (which in turn, runs Singkong interpreter 
-    and Singkong program, for example "java -DSINGKONG=0 -jar Singkong.jar index.singkong").
-    - Command echoing feature, if any, should be turned off.
+  - It is preferred to use .web filename extension (rather than .singkong) for Singkong
+    CGI application (shorter to type, allows .singkong files to be downloaded). 
+  - Singkong CGI (.web files) may be placed inside document root or web application root, 
+    not in dedicated cgi-bin directory, and accessible as, for example: 
+    - http://<server_name>/test.web
+    - http://<server_name>/example/test.web
+  - Apache HTTP Server:
+    - Required modules:
+      - cgi or cgid (depending on used multi-processing module)
+      - actions
+    - Add handler for .web files as SingkongWeb, then activate a CGI script:
+      (please add these lines to configuration file, for example, httpd.conf)
+        AddHandler SingkongWeb .web
+        Action SingkongWeb "/cgi-bin/singkongweb.cgi"
+    - Example of singkongweb.cgi file:
+      (please place this file in configured directory for serving cgi-bin, then set execute bit)
+      (Singkong.jar is assumed to be installed in /opt)
+       
+        #!/bin/bash
+
+        if [ -z "$PATH_TRANSLATED" ];
+        then
+          printf "Status: 404 Not Found\n"
+          printf "Content-type: text/plain\n\n"
+          printf "not found\n"
+        else
+          java -DSINGKONG=0 -jar /opt/Singkong.jar "$PATH_TRANSLATED"
+        fi
+  - Internet Information Services (IIS):
+    - Required application development features:
+      - CGI
+      - ISAPI Extensions
+    - In Handler Mappings, Add Script Map...:
+      - Request path: *.web
+      - Executable: <path to java.exe> -DSINGKONG=0 -jar <path to Singkong.jar> %s
+      - Name: SingkongWeb
+      (then allow this ISAPI extension)
 - Query string handling examples:
     a                       : {"a": ""}
     a&b                     : {"a": "", "b": ""}
@@ -3883,43 +3917,9 @@ Using SQL command directly:
 -----------------------------------------------------------------------------
 
 25. Example: Web: variables, GET, POST, JSON
-Note: the following examples require a HTTP server with CGI support. Please
-make sure that the CGI support has been enabled and configured. All of the 
-following CGI scripts are saved in a CGI-enabled directory and accessed from
-/cgi-bin/<SCRIPT> URL (for example: http://localhost/cgi-bin/index.sh or 
-http://localhost/cgi-bin/index.bat). All required file system permissions 
-should be set (for example, make the CGI scripts executable on supported 
-systems). Singkong programs called by those CGI scripts may be saved in any 
-directory accessible by user running the HTTP server.  
-
 Example 1: environment variables
-CGI script: index.sh (if you are using Bash) or index.bat (if you using batch
-file)
-- index.sh
-    #!/bin/bash
+index.web
 
-    # Please put this file in CGI-enabled directory of the web server
-
-    # Please adjust the variables appropriately   
-    JAVA=java
-    SINGKONG=/home/user/singkong/Singkong.jar
-    PROGRAM=/home/user/singkong/index.singkong
-
-    $JAVA -DSINGKONG=0 -jar $SINGKONG $PROGRAM
-
-- index.bat
-    @echo off
-
-    REM Please put this file in CGI-enabled directory of the web server
-
-    REM Please adjust the variables appropriately   
-    set JAVA=java
-    set SINGKONG=c:\singkong\Singkong.jar
-    set PROGRAM=c:\singkong\index.singkong
-
-    %JAVA% -DSINGKONG=0 -jar %SINGKONG% %PROGRAM%
-
-Singkong program: index.singkong
     var e = env()
     var c = [
         "<!DOCTYPE html>
@@ -3940,33 +3940,8 @@ Singkong program: index.singkong
 
 
 Example 2: GET request (query string: min=<number>&max=<number>; response: JSON)
-CGI script: random.sh (if you are using Bash) or random.bat (if you using batch
-file)
-- random.sh
-    #!/bin/bash
+random.web
 
-    # Please put this file in CGI-enabled directory of the web server
-
-    # Please adjust the variables appropriately   
-    JAVA=java
-    SINGKONG=/home/user/singkong/Singkong.jar
-    PROGRAM=/home/user/singkong/random.singkong
-
-    $JAVA -DSINGKONG=0 -jar $SINGKONG $PROGRAM
-
-- random.bat
-    @echo off
-
-    REM Please put this file in CGI-enabled directory of the web server
-
-    REM Please adjust the variables appropriately   
-    set JAVA=java
-    set SINGKONG=c:\singkong\Singkong.jar
-    set PROGRAM=c:\singkong\random.singkong
-
-    %JAVA% -DSINGKONG=0 -jar %SINGKONG% %PROGRAM%
-
-Singkong program: random.singkong
     load_module("json")
 
     var h = {"Content-Type": "application/json"}
@@ -3988,33 +3963,8 @@ Singkong program: random.singkong
 
 Example 3: POST request (body: username=<string>&password=<string>; 
 response: JSON)
-CGI script: auth.sh (if you are using Bash) or auth.bat (if you using batch
-file)
-- auth.sh
-    #!/bin/bash
+auth.web
 
-    # Please put this file in CGI-enabled directory of the web server
-
-    # Please adjust the variables appropriately   
-    JAVA=java
-    SINGKONG=/home/user/singkong/Singkong.jar
-    PROGRAM=/home/user/singkong/auth.singkong
-
-    $JAVA -DSINGKONG=0 -jar $SINGKONG $PROGRAM
-
-- auth.bat
-    @echo off
-
-    REM Please put this file in CGI-enabled directory of the web server
-
-    REM Please adjust the variables appropriately   
-    set JAVA=java
-    set SINGKONG=c:\singkong\Singkong.jar
-    set PROGRAM=c:\singkong\auth.singkong
-
-    %JAVA% -DSINGKONG=0 -jar %SINGKONG% %PROGRAM%
-
-Singkong program: auth.singkong
     load_module("json")
 
     var h = {"Content-Type": "application/json"}
@@ -4030,7 +3980,8 @@ Singkong program: auth.singkong
     cgi_header(h)
     println(json_string(r))
 
-Singkong program (HTTP client): login.singkong 
+HTTP client: login.singkong 
+
     load_module("json")
 
     var url = trim(input("URL", "Login"))
