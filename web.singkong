@@ -1,0 +1,282 @@
+#
+    web
+    web.singkong
+
+    Part of Singkong Programming Language Interpreter
+    (c) Noprianto <nop@noprianto.com>
+
+    More information: https://nopri.github.io/singkong.html
+    Download Singkong: https://nopri.github.io/Singkong.jar
+    (License: Free to use or redistribute, no warranty)
+
+    To use this module:
+    load_module("web")
+;
+
+require(8.9)
+
+load_module("json")
+
+var session_file_get_ = fn(d, n) 
+"
+[web] function: session_file_get_: returns file-based session data.
+arguments: 2: STRING (directory) and STRING (cookie name)
+return value: HASH (empty HASH on error)
+" 
+{
+    var res = [{}]
+
+    if (!is(d, "STRING") | !is(n, "STRING")) {
+        return res[0]
+    }
+
+    var en = env()
+    var cookie = en["HTTP_COOKIE"]
+    if (cookie == null) {
+        return res[0]
+    }
+
+    var cookies = split(cookie, ";")
+    each(cookies, fn(e, i) {
+        var temp = split(trim(e), "=")
+        if (temp[0] == n) {
+            var v = trim(temp[1])
+            var f = d + separator() + v + ".txt"
+            var f = abs(f)
+            var o = read(f)
+            if (o != null) {
+                var j = json_parse(o)
+                if (is(j, "HASH")) {
+                    set(j, "session", v)
+                    set(res, 0, j)
+                }
+            }
+        }    
+    })
+    return res[0]
+}
+
+var session_file_get = fn(d) 
+"
+[web] function: session_file_get: returns file-based session data (using default cookie name: session).
+arguments: 1: STRING (directory)
+return value: HASH (empty HASH on error)
+" 
+{
+    return session_file_get_(d, "session")
+}
+
+var session_new = fn() 
+"
+[web] function: session_new: creates new session data.
+arguments: 
+return value: HASH (empty HASH on error)
+" 
+{
+    var v = md5(
+        @ + "-" + 
+        random() + "-" + 
+        random_string(16, 16)
+    )
+    if (v == null) {
+        return {}
+    }
+    return {
+        "session": v
+    }
+}
+
+var session_file_set = fn(d, s) 
+"
+[web] function: session_file_set: updates file-based session data.
+arguments: 2: STRING (directory) and HASH (session data)
+return value: BOOLEAN (write function) or NULL (error)
+" 
+{
+    if (!is(d, "STRING") | !is(s, "HASH")) {
+        return null
+    }
+
+    var v = s["session"]
+    if (v == null) {
+        return null
+    }
+
+    var v = trim(v)
+
+    if (!isalnum(v)) {
+        return null
+    }
+
+    var f = d + separator() + v + ".txt"
+    var f = abs(f)
+
+    var j = json_string(s)
+    return write(f, j)
+}
+
+var session_file_delete = fn(d, s) 
+"
+[web] function: session_file_delete: deletes file-based session data.
+arguments: 2: STRING (directory) and HASH (session data)
+return value: BOOLEAN (delete function) or NULL (error)
+" 
+{
+    if (!is(d, "STRING") | !is(s, "HASH")) {
+        return null
+    }
+
+    var v = s["session"]
+    if (v == null) {
+        return null
+    }
+    
+    var v = trim(v)
+
+    if (!isalnum(v)) {
+        return null
+    }
+
+    var f = d + separator() + v + ".txt"
+    var f = abs(f)
+    if (stat(f)["exists"] == false) {
+        return null
+    }
+
+    return delete(f)
+}
+
+var header_session_ = fn(n, p, s) 
+"
+[web] function: header_session_: creates a Set-Cookie header.
+arguments: 3: STRING (cookie name), ARRAY (parameter), and HASH (session data)
+return value: HASH (empty HASH on error)
+" 
+{
+    if (
+        !is(n, "STRING") | 
+        !is(p, "ARRAY") | 
+        !is(s, "HASH")
+        ) {
+            return {}
+    }    
+    
+    var v = s["session"]
+    if (v == null) {
+        return {}
+    }
+
+    var a = array_extend([
+        n + "=" + v
+    ], p)
+    
+    return {
+        "Set-Cookie": join(";", a)  
+    }
+}
+
+var header_session = fn(s) 
+"
+[web] function: header_session: creates a Set-Cookie header (default, using default cookie name: session).
+arguments: 1: HASH (session data)
+return value: HASH (empty HASH on error)
+" 
+{
+    return header_session_(
+        "session", 
+        [
+        ],
+        s
+    )
+}
+
+var header_session_secure = fn(s) 
+"
+[web] function: header_session_secure: creates a Set-Cookie header (Secure, HttpOnly, using default cookie name: session).
+arguments: 1: HASH (session data)
+return value: HASH (empty HASH on error)
+" 
+{
+    return header_session_(
+        "session", 
+        [
+            "Secure",
+            "HttpOnly"
+        ],
+        s
+    )
+}
+
+var header_session_delete_ = fn(n, p, s) 
+"
+[web] function: header_session_delete_: deletes a cookie (creates a Set-Cookie header with Max-Age=0).
+arguments: 3: STRING (cookie name), ARRAY (parameter), and HASH (session data)
+return value: HASH (empty HASH on error)
+" 
+{
+    if (
+        !is(n, "STRING") | 
+        !is(p, "ARRAY") | 
+        !is(s, "HASH")
+        ) {
+            return {}
+    }    
+    
+    var v = s["session"]
+    if (v == null) {
+        return {}
+    }
+
+    var a = array_extend([
+        n + "=logout",
+        "Max-Age=0"
+    ], p)
+    
+    return {
+        "Set-Cookie": join(";", a)  
+    }
+}
+
+var header_session_delete = fn(s) 
+"
+[web] function: header_session_delete: deletes a cookie (creates a Set-Cookie header with Max-Age=0, using default cookie name: session).
+arguments: 1: HASH (session data)
+return value: HASH (empty HASH on error)
+" 
+{
+    return header_session_delete_(
+        "session", 
+        [
+        ],
+        s
+    )
+}
+
+var header_location = fn(r) 
+"
+[web] function: header_location: creates a Location header.
+arguments: 1: STRING (location)
+return value: HASH (empty HASH on error)
+" 
+{
+    if (!is(r, "STRING")) {
+        return {}
+    }
+    return {"Location": r}
+}
+
+var request_method = fn() 
+"
+[web] function: request_method: returns request method.
+arguments: 
+return value: STRING (in uppercase) or NULL (error)
+" 
+{
+    var m = env()["REQUEST_METHOD"]
+    if (m == null) {
+        return null
+    }
+    return upper(string(m))
+}
+
+

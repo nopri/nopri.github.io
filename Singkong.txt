@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2023
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 8.8 (2024-February-07 +07:00)
+Version: 8.9 (2024-February-13 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 8.8
+        Singkong 8.9
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -929,7 +929,7 @@ return value: <any type>
 
 To get a list of built-in modules, please call modules()
 >  modules()
-["csv", "db_util", "json", "rect_array_util", "set_util", "ui_calendar", "ui_util", "util"]
+["csv", "db_util", "json", "rect_array_util", "set_util", "ui_calendar", "ui_util", "util", "web"]
 
 To load a built-in module, please use built-in function load_module, 
 for example:
@@ -941,6 +941,7 @@ for example:
 >  load_module("ui_calendar")
 >  load_module("ui_util")
 >  load_module("util")
+>  load_module("web")
 
 Note: reusing function name from built-in modules as identifier is allowed:
 >  var len = "hello, world"
@@ -1027,6 +1028,12 @@ Functions in module: util:
 "SIMPLE_STRING_ENCRYPT", "SORT_RECT_ARRAY_OF_NUMBER_BY_INDEX", 
 "STANDARD_DEVIATION", "STANDARD_DEVIATION_", "STANDARD_DEVIATION_SAMPLE", 
 "VARIANCE", "VARIANCE_", "VARIANCE_SAMPLE", "_NON_EMPTY_ARRAY_OF_NUMBER"]
+
+Functions in module: web:
+["HEADER_LOCATION", "HEADER_SESSION", "HEADER_SESSION_", "HEADER_SESSION_DELETE", 
+"HEADER_SESSION_DELETE_", "HEADER_SESSION_SECURE", "REQUEST_METHOD", 
+"SESSION_FILE_DELETE", "SESSION_FILE_GET", "SESSION_FILE_GET_", 
+"SESSION_FILE_SET", "SESSION_NEW"]
 
 
 -----------------------------------------------------------------------------
@@ -2636,6 +2643,8 @@ Interface (CGI).
   HASH (decoded keys (in strings)/values), please use built-in function cgi_post_hash.
   As an alternative, please use json module.
 - Both cgi_post and cgi_post_hash read up to HTTP server variable CONTENT_LENGTH, if set.
+  Optional charset (supported by Java) may be passed, for example:
+  US-ASCII, ISO-8859-1 (default, when CONTENT_LENGTH is set), UTF-8, UTF-16BE, UTF-16LE, UTF-16 
 - Using HTTP server with CGI support:
   - It is preferred to use .web filename extension (rather than .singkong) for Singkong
     CGI application (shorter to type, allows .singkong files to be downloaded). 
@@ -2683,6 +2692,126 @@ Interface (CGI).
     a=1&a=2&A&b=1&b=2&b&c   : {"a": ["1", "2"], "A": "", "b": ["1", "2", ""], "c": ""}
     a=hello+world           : {"a": "hello world"}
     a=hello%20world!        : {"a": "hello world!"}
+- Working with session:
+  - Please use built-in module: web
+  - Currently supported storage: file system
+    (for example: "/tmp", "c:\session")
+  - Example:
+    (please adjust sess_path variable, make sure it is writable by web server process)
+
+    - index.web: if authenticated, redirect to home.web
+      otherwise, redirect to login.web
+            load_module("web")
+            var sess_path = "c:\session"
+            var sess = session_file_get(sess_path)
+            if ((sess["user"] != null) & (sess["session"] != null)) {
+                cgi_header(
+                    header_location("home.web")
+                )
+                exit()
+            }
+
+            cgi_header(
+                header_location("login.web")
+            )
+    - login.web: if authenticated, redirect to home.web
+      otherwise:
+      - if request method is GET, show login form
+      - if request method is POST, authenticate and set session
+            load_module("web")
+            var sess_path = "c:\session"
+            var sess = session_file_get(sess_path)
+            if ((sess["user"] != null) & (sess["session"] != null)) {
+                cgi_header(
+                    header_location("home.web")
+                )
+                exit()
+            }
+
+            if (request_method() == "GET") {
+                var g = cgi_get()
+                var error = ""
+                if (g["error"] == "auth") {
+                    var error = "Authentication failed"
+                }
+
+                cgi_header()
+                print("
+                <!DOCTYPE html>
+                <html lang='en'>
+                    <head>
+                        <title>Login</title>
+                    </head>
+                    <body>
+                    "
+                    + error + 
+                    "
+                        <form action='login.web' method='post'>
+                            Username: 
+                            <input type='text' name='u'>
+                            Password: 
+                            <input type='password' name='p'>
+                            <input type='submit' value='login'>
+                        </form>
+                    </body>
+                </html>
+                ")
+                exit()
+            }
+
+            if (request_method() == "POST") {
+                var form = cgi_post()
+                var u = form["u"]
+                var p = form["p"]
+                if (u == "admin" & p == "admin") {
+                    var sess = session_new()
+                    set(sess, "user", u)
+                    session_file_set(sess_path, sess)
+                    cgi_header(
+                        header_session(sess) + 
+                        header_location("home.web")
+                    )
+                } else {
+                    cgi_header(
+                        header_location("login.web?error=auth")
+                    )
+                }
+                exit()
+            }
+    - home.web: if not authenticated, redirect to login.web
+            load_module("web")
+            var sess_path = "c:\session"
+            var sess = session_file_get(sess_path)
+            if ((sess["user"] == null) | (sess["session"] == null)) {
+                cgi_header(
+                    header_location("login.web")
+                )
+                exit()
+            }
+
+            cgi_header()
+            print("
+            <!DOCTYPE html>
+            <html lang='en'>
+                <head>
+                    <title>Home</title>
+                </head>
+                <body>
+                    Hello, " + sess["user"] + "
+                    <a href='logout.web'>logout</a>
+                    <hr>
+                </body>
+            </html>
+            ")
+    - logout.web: delete session and redirect to index.web
+            load_module("web")
+            var sess_path = "c:\session"
+            var sess = session_file_get(sess_path)
+            session_file_delete(sess_path, sess)
+            cgi_header(
+                header_session_delete(sess) + 
+                header_location("login.web")
+            )
 
 
 -----------------------------------------------------------------------------
