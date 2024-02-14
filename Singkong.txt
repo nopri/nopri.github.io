@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2023
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 8.9 (2024-February-13 +07:00)
+Version: 9.0 (2024-February-14 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 8.9
+        Singkong 9.0
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -2696,6 +2696,9 @@ Interface (CGI).
   - Please use built-in module: web
   - Currently supported storage: file system
     (for example: "/tmp", "c:\session")
+  - Session data (HASH) reserved keys (STRING):
+    - session: session id
+    - timestamp: timestamp (save)
   - Example:
     (please adjust sess_path variable, make sure it is writable by web server process)
 

@@ -13,7 +13,7 @@
     load_module("web")
 ;
 
-require(8.9)
+require(9.0)
 
 load_module("json")
 
@@ -107,6 +107,8 @@ return value: BOOLEAN (write function) or NULL (error)
     if (!isalnum(v)) {
         return null
     }
+
+    set(s, "timestamp", number(@))
 
     var f = d + separator() + v + ".txt"
     var f = abs(f)
