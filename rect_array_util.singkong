@@ -3,7 +3,7 @@
     rect_array_util.singkong
 
     Part of Singkong Programming Language Interpreter
-    (c) Noprianto <nopri.anto@icloud.com>
+    (c) Noprianto <nop@noprianto.com>
 
     More information: https://nopri.github.io/singkong.html
     Download Singkong: https://nopri.github.io/Singkong.jar
@@ -13,7 +13,7 @@
     load_module("rect_array_util")
 ;
 
-require(6.3)
+require(9.3)
 
 var is_square_rect_array_of = fn(a, t) 
 "

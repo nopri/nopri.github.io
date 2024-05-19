@@ -3,7 +3,7 @@
     set_util.singkong
 
     Part of Singkong Programming Language Interpreter
-    (c) Noprianto <nopri.anto@icloud.com>
+    (c) Noprianto <nop@noprianto.com>
 
     More information: https://nopri.github.io/singkong.html
     Download Singkong: https://nopri.github.io/Singkong.jar
@@ -13,13 +13,13 @@
     load_module("set_util")
 ;
 
-require(5.7)
+require(9.3)
 
 load_module("util")
 
 var create_set_from_array = fn(x) 
 "
-[util] function: create_set_from_array: creates a set (ARRAY) from ARRAY.
+[set_util] function: create_set_from_array: creates a set (ARRAY) from ARRAY.
 arguments: 1: ARRAY
 return value: ARRAY or NULL
 " 
@@ -38,7 +38,7 @@ return value: ARRAY or NULL
 
 var create_relation_from_array = fn(x) 
 "
-[util] function: create_relation_from_array: creates a relation (ARRAY) from ARRAY.
+[set_util] function: create_relation_from_array: creates a relation (ARRAY) from ARRAY.
 arguments: 1: ARRAY
 return value: ARRAY or NULL
 " 
@@ -62,7 +62,7 @@ return value: ARRAY or NULL
 
 var is_relation = fn(x) 
 "
-[util] function: is_relation: returns whether an ARRAY is a relation.
+[set_util] function: is_relation: returns whether an ARRAY is a relation.
 arguments: 1: ARRAY
 return value: BOOLEAN or NULL
 " 
@@ -75,7 +75,7 @@ return value: BOOLEAN or NULL
 
 var is_same_set = fn(x, y) 
 "
-[util] function: is_same_set: returns whether two sets are the same.
+[set_util] function: is_same_set: returns whether two sets are the same.
 arguments: 2: ARRAY and ARRAY
 return value: BOOLEAN or NULL
 " 
@@ -90,7 +90,7 @@ return value: BOOLEAN or NULL
 
 var is_sub_set = fn(x, y) 
 "
-[util] function: is_sub_set: returns whether a set is a subset of another set.
+[set_util] function: is_sub_set: returns whether a set is a subset of another set.
 arguments: 2: ARRAY and ARRAY
 return value: BOOLEAN or NULL
 " 
@@ -117,7 +117,7 @@ return value: BOOLEAN or NULL
 
 var set_intersection = fn(x, y) 
 "
-[util] function: set_intersection: returns the intersection of two sets.
+[set_util] function: set_intersection: returns the intersection of two sets.
 arguments: 2: ARRAY and ARRAY
 return value: ARRAY or NULL
 " 
@@ -143,7 +143,7 @@ return value: ARRAY or NULL
 
 var set_union = fn(x, y) 
 "
-[util] function: set_union: returns the union of two sets.
+[set_util] function: set_union: returns the union of two sets.
 arguments: 2: ARRAY and ARRAY
 return value: ARRAY or NULL
 " 
@@ -158,7 +158,7 @@ return value: ARRAY or NULL
 
 var set_diff = fn(x, y) 
 "
-[util] function: set_diff: returns the difference of two sets.
+[set_util] function: set_diff: returns the difference of two sets.
 arguments: 2: ARRAY and ARRAY
 return value: ARRAY or NULL
 " 
@@ -168,7 +168,7 @@ return value: ARRAY or NULL
 
 var set_product = fn(a, b) 
 "
-[util] function: set_product: returns the product of two sets.
+[set_util] function: set_product: returns the product of two sets.
 arguments: 2: ARRAY and ARRAY
 return value: ARRAY or NULL
 " 
@@ -190,7 +190,7 @@ return value: ARRAY or NULL
 
 var is_relation_set = fn(a, b, c) 
 "
-[util] function: is_relation_set: returns whether a relation is a relation from a specified set to the other set.
+[set_util] function: is_relation_set: returns whether a relation is a relation from a specified set to the other set.
 arguments: 3: ARRAY, ARRAY, and ARRAY
 return value: BOOLEAN or NULL
 " 
@@ -221,7 +221,7 @@ return value: BOOLEAN or NULL
 
 var is_reflexive_relation_set = fn(a, c) 
 "
-[util] function: is_reflexive_relation_set: returns whether a relation is a reflexive relation on a specified set.
+[set_util] function: is_reflexive_relation_set: returns whether a relation is a reflexive relation on a specified set.
 arguments: 2: ARRAY and ARRAY
 return value: BOOLEAN or NULL
 " 
@@ -255,7 +255,7 @@ return value: BOOLEAN or NULL
 
 var is_symmetric_relation_set = fn(a, c) 
 "
-[util] function: is_symmetric_relation_set: returns whether a relation is a symmetric relation on a specified set.
+[set_util] function: is_symmetric_relation_set: returns whether a relation is a symmetric relation on a specified set.
 arguments: 2: ARRAY and ARRAY
 return value: BOOLEAN or NULL
 " 
@@ -292,7 +292,7 @@ return value: BOOLEAN or NULL
 
 var is_antisymmetric_relation_set = fn(a, c) 
 "
-[util] function: is_antisymmetric_relation_set: returns whether a relation is an antisymmetric relation on a specified set.
+[set_util] function: is_antisymmetric_relation_set: returns whether a relation is an antisymmetric relation on a specified set.
 arguments: 2: ARRAY and ARRAY
 return value: BOOLEAN or NULL
 " 
@@ -333,7 +333,7 @@ return value: BOOLEAN or NULL
 
 var get_relation_part = fn(a, x, index_) 
 "
-[util] function: get_relation_part: returns parts of relation, based on index.
+[set_util] function: get_relation_part: returns parts of relation, based on index.
 arguments: 3: ARRAY, <any>, and NUMBER (0, 1)
 return value: ARRAY or NULL
 " 
@@ -357,7 +357,7 @@ return value: ARRAY or NULL
 
 var is_transitive_relation_set = fn(a, c) 
 "
-[util] function: is_transitive_relation_set: returns whether a relation is a transitive relation on a specified set.
+[set_util] function: is_transitive_relation_set: returns whether a relation is a transitive relation on a specified set.
 arguments: 2: ARRAY and ARRAY
 return value: BOOLEAN or NULL
 " 
@@ -400,7 +400,7 @@ return value: BOOLEAN or NULL
 
 var set_power = fn(a) 
 "
-[util] function: set_power: returns the power set of a specified set.
+[set_util] function: set_power: returns the power set of a specified set.
 arguments: 1: ARRAY
 return value: ARRAY or NULL
 " 
@@ -428,7 +428,7 @@ return value: ARRAY or NULL
 
 var is_function_set = fn(a, b, c, partial) 
 "
-[util] function: is_function_set: returns whether a function is a function from a specified set to the other set.
+[set_util] function: is_function_set: returns whether a function is a function from a specified set to the other set.
 arguments: 4: ARRAY, ARRAY, ARRAY, and BOOLEAN (partial function: true or false)
 return value: BOOLEAN or NULL
 " 
@@ -483,7 +483,7 @@ return value: BOOLEAN or NULL
 
 var is_injective_function_set = fn(a, b, c, partial) 
 "
-[util] function: is_injective_function_set: returns whether a function is an injective function from a specified set to the other set.
+[set_util] function: is_injective_function_set: returns whether a function is an injective function from a specified set to the other set.
 arguments: 4: ARRAY, ARRAY, ARRAY, and BOOLEAN (partial function: true or false)
 return value: BOOLEAN or NULL
 " 
@@ -547,7 +547,7 @@ return value: BOOLEAN or NULL
 
 var is_surjective_function_set = fn(a, b, c, partial) 
 "
-[util] function: is_surjective_function_set: returns whether a function is a surjective function from a specified set to the other set.
+[set_util] function: is_surjective_function_set: returns whether a function is a surjective function from a specified set to the other set.
 arguments: 4: ARRAY, ARRAY, ARRAY, and BOOLEAN (partial function: true or false)
 return value: BOOLEAN or NULL
 " 
@@ -612,7 +612,7 @@ return value: BOOLEAN or NULL
 
 var is_bijective_function_set = fn(a, b, c, partial) 
 "
-[util] function: is_bijective_function_set: returns whether a function is a bijective function from a specified set to the other set.
+[set_util] function: is_bijective_function_set: returns whether a function is a bijective function from a specified set to the other set.
 arguments: 4: ARRAY, ARRAY, ARRAY, and BOOLEAN (partial function: true or false)
 return value: BOOLEAN or NULL
 " 
@@ -681,7 +681,7 @@ return value: BOOLEAN or NULL
 
 var inverse_bijective_function_set = fn(a, b, c, partial) 
 "
-[util] function: inverse_bijective_function_set: returns inverse of a bijective function from a specified set to the other set.
+[set_util] function: inverse_bijective_function_set: returns inverse of a bijective function from a specified set to the other set.
 arguments: 4: ARRAY, ARRAY, ARRAY, and BOOLEAN (partial function: true or false)
 return value: ARRAY or NULL
 " 

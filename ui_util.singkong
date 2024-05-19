@@ -3,7 +3,7 @@
     ui_util.singkong
 
     Part of Singkong Programming Language Interpreter
-    (c) Noprianto <nopri.anto@icloud.com>
+    (c) Noprianto <nop@noprianto.com>
 
     More information: https://nopri.github.io/singkong.html
     Download Singkong: https://nopri.github.io/Singkong.jar
@@ -13,7 +13,7 @@
     load_module("ui_util")
 ;
 
-require(6.3)
+require(9.3)
 
 var table_to_text = fn(a, b) 
 "
@@ -255,3 +255,42 @@ return value: ARRAY or NULL
     return table_get_array_(t, number)
 }
 
+var thread_timer_ = fn(delay_time, func, progress, done, intrinsic_lock) 
+"
+[ui_util] function: thread_timer_: calls function in another thread, updates user interface (using timer).
+arguments: 5: NUMBER (delay time, in milliseconds), FUNCTION (function to call, accepts an ARRAY [percent, message, data]), FUNCTION (function updating user interface: progress, accepts an ARRAY), FUNCTION (function updating user interface: done, accepts an ARRAY), and <any> (intrinsic lock). 
+return value: BOOLEAN
+"
+{
+    if (! (is(func, "FUNCTION") & is(progress, "FUNCTION") & is(done, "FUNCTION") & is(delay_time, "NUMBER")) ) {
+        return false
+    }
+
+    var p = [0, "", null]
+
+    var th = thread(fn() {
+        func(p)
+    }, intrinsic_lock)
+
+    var ts = number(@)
+    var tm = timer(delay_time, fn() {
+        var td = number(@) - ts
+        if (thread_alive(th) == false) {
+            done([p, td, ts, @])
+            stop_timer(tm)
+        } else {
+            progress([p, td, ts, @])
+        }
+    })
+    return true
+}
+
+var thread_timer = fn(func, progress, done, intrinsic_lock) 
+"
+[ui_util] function: thread_timer: calls function in another thread, updates user interface (using timer, every 100 milliseconds).
+arguments: 4: FUNCTION (function to call, accepts an ARRAY [percent, message, data]), FUNCTION (function updating user interface: progress, accepts an ARRAY), FUNCTION (function updating user interface: done, accepts an ARRAY), and <any> (intrinsic lock). 
+return value: BOOLEAN
+"
+{
+    return thread_timer_(100, func, progress, done, intrinsic_lock)
+}
