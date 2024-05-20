@@ -13,7 +13,7 @@
     load_module("csv")
 ;
 
-require(9.3)
+require(9.4)
 
 var csv_from_string = fn(sep, s) 
 "

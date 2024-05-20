@@ -13,7 +13,7 @@
     load_module("rect_array_util")
 ;
 
-require(9.3)
+require(9.4)
 
 var is_square_rect_array_of = fn(a, t) 
 "

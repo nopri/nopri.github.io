@@ -13,7 +13,7 @@
     load_module("ui_calendar")
 ;
 
-require(9.3)
+require(9.4)
 
 var create_calendar = fn(year, month, data) 
 "

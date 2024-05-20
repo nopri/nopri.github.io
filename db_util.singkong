@@ -13,7 +13,7 @@
     load_module("db_util")
 ;
 
-require(9.3)
+require(9.4)
 
 var db_driver = fn(a) 
 "

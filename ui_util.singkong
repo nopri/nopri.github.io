@@ -13,7 +13,7 @@
     load_module("ui_util")
 ;
 
-require(9.3)
+require(9.4)
 
 var table_to_text = fn(a, b) 
 "
@@ -259,11 +259,11 @@ var thread_timer_ = fn(delay_time, func, progress, done, intrinsic_lock)
 "
 [ui_util] function: thread_timer_: calls function in another thread, updates user interface (using timer).
 arguments: 5: NUMBER (delay time, in milliseconds), FUNCTION (function to call, accepts an ARRAY [percent, message, data]), FUNCTION (function updating user interface: progress, accepts an ARRAY), FUNCTION (function updating user interface: done, accepts an ARRAY), and <any> (intrinsic lock). 
-return value: BOOLEAN
+return value: NUMBER (thread id) or NULL (error)
 "
 {
     if (! (is(func, "FUNCTION") & is(progress, "FUNCTION") & is(done, "FUNCTION") & is(delay_time, "NUMBER")) ) {
-        return false
+        return null
     }
 
     var p = [0, "", null]
@@ -282,14 +282,14 @@ return value: BOOLEAN
             progress([p, td, ts, @])
         }
     })
-    return true
+    return th
 }
 
 var thread_timer = fn(func, progress, done, intrinsic_lock) 
 "
 [ui_util] function: thread_timer: calls function in another thread, updates user interface (using timer, every 100 milliseconds).
 arguments: 4: FUNCTION (function to call, accepts an ARRAY [percent, message, data]), FUNCTION (function updating user interface: progress, accepts an ARRAY), FUNCTION (function updating user interface: done, accepts an ARRAY), and <any> (intrinsic lock). 
-return value: BOOLEAN
+return value: NUMBER (thread id) or NULL (error)
 "
 {
     return thread_timer_(100, func, progress, done, intrinsic_lock)

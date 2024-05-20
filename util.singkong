@@ -13,7 +13,7 @@
     load_module("util")
 ;
 
-require(9.3)
+require(9.4)
 
 var _non_empty_array_of_number = fn(x) 
 "
