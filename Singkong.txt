@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2024
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 9.5 (2024-May-26 +07:00)
+Version: 9.6 (2024-May-27 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 9.5
+        Singkong 9.6
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -773,8 +773,8 @@ hash, print, println, puts, string, type, types, variables
     table_bottom, table_center, table_column, table_column_count, table_column_info,
     table_column_name, table_get_value, table_left, table_middle, table_print,   
     table_remove, table_right, table_row_count, table_scroll, table_set_color, 
-    table_set_row_height, table_set_value, table_top, timer, timer_running, 
-    title, wait
+    table_set_renderer, table_set_row_height, table_set_value, table_top, timer, 
+    timer_running, title, wait
   - GUI input/output functions: confirm, directory, input, open, message, 
     password, save
     (if GUI is not available: simpler text-based version)
@@ -904,16 +904,16 @@ To get a list of built-in functions, please call builtins()
 "TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", "TABLE_COLUMN_INFO", 
 "TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", "TABLE_MIDDLE", 
 "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", "TABLE_SCROLL", 
-"TABLE_SET_COLOR", "TABLE_SET_ROW_HEIGHT", "TABLE_SET_VALUE", "TABLE_TOP", 
-"TAN", "TANH", "TEMP_FILE", "THREAD", "THREAD_ALIVE", "THREAD_JOIN", "TIMER", 
-"TIMER_RUNNING", "TITLE", "TO_BIN", "TO_DEGREES", "TO_HEX", "TO_OCT", 
-"TO_RADIANS", "TRIM", "TYPE", "TYPES", "UNSIGNED_RIGHT_SHIFT", "UPPER", 
-"URL_DECODE", "URL_ENCODE", "USER", "USERHOME", "VALUES", "VARIABLES", "WAIT", 
-"WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", "X_BASE64_DECODE_FILE", 
-"X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
+"TABLE_SET_COLOR", "TABLE_SET_RENDERER", "TABLE_SET_ROW_HEIGHT", 
+"TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", 
+"THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", 
+"TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
+"UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "USERHOME", 
+"VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", 
+"X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-346
+347
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -1371,15 +1371,17 @@ To keep it as simple as possible:
   - focus (all components, BOOLEAN)
   - foreground/background (all components, STRING (color name or RGB value))
   - font (all components, ARRAY [STRING (font name), NUMBER (0=plain, 1=bold, 2=italic, 3=bold and italic), NUMBER (size)])
-  - text (label of button/checkbox/label/radio, selected item of combobox, 
+  - text (label of button/checkbox/label/progress/radio, selected item of combobox, 
     title of barchart/piechart, STRING)
-  - active (checkbox/radio BOOLEAN, combobox/tab/table NUMBER (selected index), 
-    button NUMBER (mnemonic index), text NUMBER (column, applicable in grid))
+  - active (checkbox/radio BOOLEAN,  progress BOOLEAN (indeterminate), 
+    combobox/tab/table NUMBER (selected index), button NUMBER (mnemonic index), 
+    text NUMBER (column, applicable in grid))
   - contents (contents of edit/mask/password/text/view STRING, 
     file of image STRING, ARRAY of ARRAY (table), 
     ARRAY (combobox), DATE/STRING (date), NUMBER (progress/spin), ARRAY of ARRAY 
     (of [NUMBER (value), STRING (label), STRING (color name or RGB value)], barchart/piechart))
-  - margin (button ARRAY of NUMBER [top, left, bottom, right], applicable in grid)
+  - margin (button ARRAY of NUMBER [top, left, bottom, right] applicable in grid,
+    table ARRAY of NUMBER [horizontal, vertical])
   - align (button/label/mask/password/text, horizontal alignment, NUMBER(0=left, 1=center, 2=right, 3=leading, 4=trailing))
   - border_painted (button, BOOLEAN)
   (configuration may be ignored if it is not applicable -- no errors will be
@@ -1393,13 +1395,15 @@ To keep it as simple as possible:
   - focus (all components, BOOLEAN)
   - foreground/background (all components, STRING (color name or RGB value))
   - font (all components, ARRAY [STRING (font name), NUMBER (0=plain, 1=bold, 2=italic, 3=bold and italic), NUMBER (size)])
-  - text (label of button/checkbox/label/radio, selected item of combobox, 
-    STRING)
-  - active (checkbox/radio BOOLEAN, combobox/tab/table NUMBER, button NUMBER, text NUMBER)
+  - text (label of button/checkbox/label/progress/radio, 
+    selected item of combobox, STRING)
+  - active (checkbox/radio BOOLEAN,  progress BOOLEAN (indeterminate), 
+    combobox/tab/table NUMBER, button NUMBER, text NUMBER)
   - contents (contents of edit/mask/password/text/view STRING, 
     file of image STRING, ARRAY of ARRAY (of STRING, table), 
     ARRAY (of STRING, combobox), DATE (date), NUMBER (progress/spin))
-  - margin (button ARRAY of NUMBER [top, left, bottom, right])
+  - margin (button ARRAY of NUMBER [top, left, bottom, right],
+    table ARRAY of NUMBER [horizontal, vertical])
   - align (button/label/mask/password/text, horizontal alignment, NUMBER(0=left, 1=center, 2=right, 3=leading, 4=trailing))
   - border_painted (button, BOOLEAN)
   (configuration may be ignored if it is not applicable and NULL will be
@@ -1491,6 +1495,61 @@ To keep it as simple as possible:
         set(f, 2, s)
         config(t, "font", f)
         table_set_row_height(t, s * 1.5)
+- table: horizontal and vertical space between cells, please config margin.
+        reset()
+        var t = component("table", "Margin", true)
+        add(t)
+        show()
+
+        config(t, "margin", [40, 8])
+        table_set_row_height(t, 24)
+
+        config(t, "contents", [
+            ["Singkong"], 
+            ["Programming"],
+            ["Language"]
+        ])
+- table: to set custom renderer (COMPONENT), please use built-in function 
+  table_set_renderer.
+    example: set renderer while adding rows:
+        reset()
+        var t = component("table", "Text,Component", true)
+        add(t)
+        show()
+
+        config(t, "margin", [2, 2])
+
+        each(range(0, 5), fn(e, i) {
+            var p = component("progress", "")
+            var v = random(0, 100)
+            config(p, "contents", v)
+            config(p, "text", v + "%")
+
+            table_add(t, [[e, v]])
+            table_set_renderer(t, p, i, 1)
+        })
+    example: set renderer based on specific value
+        reset()
+        var t = component("table", "Value", true)
+        add(t)
+        show()
+
+        var r = ["OK", "ERROR"]
+        each(range(0, 5), fn(e, i) {
+            var v = random(r)
+            table_add(t, [[v]])
+        })
+
+        var v = get(t, "contents")
+        each(v, fn(e, i) {
+            if (e[0] == "OK") {
+                var c = component("checkbox", e[0])
+                config(c, "active", true)
+                table_set_renderer(t, c, i, 0)
+            } else {
+                table_set_color(t, "red", "", i, 0)
+            }
+        })
 - radio: to group an ARRAY of COMPONENT radio buttons (mutual-exclusion set), 
   please use built-in function radio_group.
 - button: to set button's icons, please use built-in function button_image.
@@ -1905,9 +1964,17 @@ To keep it as simple as possible:
   - Number of sections: 8 (0 to 7)
   - To set status bar text and whether or not the text is enabled, for specific 
     section, please use built-in function statusbar.
+        reset()
         each(range(0,8), fn(e, i) {
                 statusbar(e, "Status: " + e, i%2 == 0)
         })
+        show()
+  - Status bar also allows COMPONENT:
+        reset()
+        var p = component("progress", "")
+        config(p, "active", true)
+        statusbar(7, p, true)
+        show()
 - Menu bar:
   - To set menu bar, please use built-in function menubar.
   - This function requires an ARRAY of: [STRING (menu), NUMBER (mnemonic index), 
