@@ -13,7 +13,7 @@
     load_module("web")
 ;
 
-require(9.4)
+require(9.8)
 
 load_module("json")
 
@@ -281,4 +281,53 @@ return value: STRING (in uppercase) or NULL (error)
     return upper(string(m))
 }
 
+var query_string_hash = fn(h) 
+"
+[web] function: query_string_hash: returns URL-encoded query string from HASH.
+arguments: 1: HASH
+return value: STRING (empty: error)
+" 
+{
+    if (!is(h, "HASH")) {
+        return ""
+    }
+    var r = []
+    var k = keys(h)
+    each(k, fn(e, i) {
+        var kk = url_encode(string(e))
+        var v = h[e]
+        var vv = url_encode(string(v))
+        var q = kk + "=" + vv
+        r + q
+    })
+    return join("&", r)
+}
+
+var query_string_array = fn(a) 
+"
+[web] function: query_string_array: returns URL-encoded query string from ARRAY (of ARRAY).
+arguments: 1: ARRAY (of [key, value] or [key])
+return value: STRING (empty: error)
+" 
+{
+    if (!is(a, "ARRAY")) {
+        return ""
+    }
+    if (!is_array_of(a, "ARRAY")) { 
+        return ""       
+    }
+    var r = []
+    each(a, fn(e, i) {
+        if (len(e) > 0) {
+            var kk = url_encode(string(e[0]))
+            var vv = ""
+            if (len(e) > 1) {
+                var vv = url_encode(string(e[1]))
+            }
+            var q = kk + "=" + vv
+            r + q
+        }
+    })
+    return join("&", r)
+}
 

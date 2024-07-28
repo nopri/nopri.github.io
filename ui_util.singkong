@@ -13,7 +13,7 @@
     load_module("ui_util")
 ;
 
-require(9.4)
+require(9.8)
 
 var table_to_text = fn(a, b) 
 "
@@ -294,3 +294,42 @@ return value: NUMBER (thread id) or NULL (error)
 {
     return thread_timer_(100, func, progress, done, intrinsic_lock)
 }
+
+var popup_show_progress_ = fn(w, h, m) 
+"
+[ui_util] function: popup_show_progress_: shows progress popup.
+arguments: 3: NUMBER (width, percent), NUMBER (height, percent), and STRING (message). 
+return value: NUMBER (popup index, >= 0)
+"
+{
+    var p = component("progress", "")
+    config(p, "active", true)
+    var g = component("grid", "")
+    grid_add(g, p, 0, 0, 1, 1, 1, 1, 1, 0)
+    if (!empty(m)) {
+        var lbl = component("label", m)
+        grid_add(g, lbl, 0, 1, 1, 1, 1, 1, 0, 0)
+    }
+    var f = frame()
+    var z = true
+    if (f == null) {
+        var f = screen()
+        var z = false
+    }
+    var ww = integer(f[0] * (abs(w) / 100))
+    var hh = integer(f[1] * (abs(h) / 100))
+    var x = integer((f[0] - ww) / 2)
+    var y = integer((f[1] - hh) / 2)
+    return popup_show(g, ww, hh, x, y, z)
+}
+
+var popup_show_progress = fn() 
+"
+[ui_util] function: popup_show_progress: shows progress popup (default).
+arguments:  
+return value: NUMBER (popup index, >= 0)
+"
+{
+    return popup_show_progress_(20, 10, "")
+}
+

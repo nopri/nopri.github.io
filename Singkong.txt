@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2024
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 9.7 (2024-May-31 +07:00)
+Version: 9.8 (2024-July-28 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 9.7
+        Singkong 9.8
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -881,30 +881,30 @@ To get a list of built-in functions, please call builtins()
 "IS_UPDATE_AVAILABLE", "ISALNUM", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", 
 "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEFT_SHIFT", "LEN", "LF", "LOAD", 
 "LOAD_FILE_OR_RESOURCE", "LOAD_MODULE", "LOAD_RESOURCE", "LOG", "LOG10", 
-"LOGIN_DIALOG", "LOWER", "MATCHES", "MAX", "MD5", "MD5_FILE", "MENUBAR", 
-"MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", "MONTH", "NEWLINE", "NUMBER", 
-"NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_NOT", "NUMBER_OR", 
-"NUMBER_SCALE", "NUMBER_TO_BYTE", "NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", 
-"ORD", "PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", 
-"PARSE_ARRAY", "PARSE_HASH", "PARSE_STRING", "PART", "PARTS", "PASSWORD", 
-"PLAY_SOUND", "POP", "POPUP_COMPONENT", "POPUP_HIDE", "POPUP_SHOW", "PRINT", 
-"PRINTER", "PRINTLN", "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", 
-"QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", 
-"READ_BYTE", "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", 
-"REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "RESET", 
-"RESIZABLE", "REST", "REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", 
-"RUNTIME_VERSION", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
-"SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", "SHA512", 
-"SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", "SINGKONG_INTERPRETER", 
-"SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", 
-"SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", "START", "START_TIMER", 
-"STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", "STOP_TIMER", "STRING", 
-"STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", "SUM", "SYSTEM", "TAB", 
-"TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", 
-"TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", "TABLE_COLUMN_INFO", 
-"TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", "TABLE_MIDDLE", 
-"TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", "TABLE_SCROLL", 
-"TABLE_SET_COLOR", "TABLE_SET_RENDERER", "TABLE_SET_ROW_HEIGHT", 
+"LOGIN_DIALOG", "LOWER", "MAIN_RESOURCE", "MATCHES", "MAX", "MD5", "MD5_FILE", 
+"MENUBAR", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", "MONTH", "NEWLINE", 
+"NUMBER", "NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_NOT", 
+"NUMBER_OR", "NUMBER_SCALE", "NUMBER_TO_BYTE", "NUMBER_TO_BYTE_ARRAY", 
+"NUMBER_XOR", "OPEN", "ORD", "PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", 
+"PANEL_REMOVE", "PARAM", "PARSE_ARRAY", "PARSE_HASH", "PARSE_STRING", "PART", 
+"PARTS", "PASSWORD", "PLAY_SOUND", "POP", "POPUP_COMPONENT", "POPUP_HIDE", 
+"POPUP_SHOW", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
+"PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
+"RANDOM_STRING", "RANGE", "READ", "READ_BYTE", "RECT_ARRAY_SIZE", 
+"RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", 
+"RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", "REST", "REVERSE", 
+"RIGHT", "RIGHT_SHIFT", "ROUND", "RUNTIME_VERSION", "SAVE", "SCREEN", "SECOND", 
+"SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", 
+"SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
+"SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
+"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", 
+"START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", 
+"STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", "SUM", 
+"SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
+"TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", 
+"TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", 
+"TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", 
+"TABLE_SCROLL", "TABLE_SET_COLOR", "TABLE_SET_RENDERER", "TABLE_SET_ROW_HEIGHT", 
 "TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", 
 "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", 
 "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
@@ -913,7 +913,7 @@ To get a list of built-in functions, please call builtins()
 "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-347
+348
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -1033,9 +1033,9 @@ Functions in module: util:
 
 Functions in module: web:
 ["HEADER_LOCATION", "HEADER_SESSION", "HEADER_SESSION_", "HEADER_SESSION_DELETE", 
-"HEADER_SESSION_DELETE_", "HEADER_SESSION_SECURE", "REQUEST_METHOD", 
-"SESSION_FILE_DELETE", "SESSION_FILE_GET", "SESSION_FILE_GET_", 
-"SESSION_FILE_SET", "SESSION_NEW"]
+"HEADER_SESSION_DELETE_", "HEADER_SESSION_SECURE", "QUERY_STRING_ARRAY", 
+"QUERY_STRING_HASH", "REQUEST_METHOD", "SESSION_FILE_DELETE", 
+"SESSION_FILE_GET", "SESSION_FILE_GET_", "SESSION_FILE_SET", "SESSION_NEW"]
 
 
 -----------------------------------------------------------------------------
@@ -1775,6 +1775,18 @@ To keep it as simple as possible:
 
         add_n([t, c])
         show()
+  - To show simple progress popup, please use functions popup_show_progress_ or
+    popup_show_progress from built-in module ui_util.
+    - Using popup_show_progress:
+        load_module("ui_util")
+        reset()
+        show()
+        var p = popup_show_progress()
+    - Using popup_show_progress_:
+        load_module("ui_util")
+        reset()
+        show()
+        var p = popup_show_progress_(20, 10, "Please wait...")
 - Clipboard: to set clipboard contents, please use built-in function 
   clipboard_set. To get clipboard contents, built-in function clipboard_get
   can be used.
@@ -3002,6 +3014,8 @@ Interface (CGI).
 Singkong comes with simple HTTP client. 
 - Default user agent: Singkong <version>
 - Encode or decode: please use built-in functions url_encode or url_decode 
+- URL-encoded query string from ARRAY or HASH: please use functions 
+  query_string_array or query_string_hash from built-in module web.
 - Base64: please use built-in functions base64_decode, base64_encode,
   x_base64_decode_file, or x_base64_encode_file
 - Read timeout can be set for each request (default: 60 seconds)
@@ -3759,6 +3773,8 @@ To bundle application file with Singkong interpreter:
 
 - Singkong.jar must be renamed to another name (which does not contain 
   "Singkong").
+- To get information whether main.singkong was loaded, please use 
+  built-in function main_resource.
 - Optional: another packages (Java class) may be added along with application 
   file
 - Optional: to add resource files:
