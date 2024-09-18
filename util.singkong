@@ -13,7 +13,7 @@
     load_module("util")
 ;
 
-require(9.4)
+require(9.9)
 
 var _non_empty_array_of_number = fn(x) 
 "
@@ -528,5 +528,51 @@ return value: STRING (empty=error)
 "
 {
     return number_group(a, " ", ",")
+}
+
+var replace_array = fn(s, a) 
+"
+[util] function: replace_array: replaces each substring of a string with another string, as defined in an ARRAY of [substring, replacement]. 
+arguments: 2: STRING and ARRAY
+return value: STRING or NULL (error)
+"
+{
+    if ((!is(s, "STRING")) | (!is(a, "ARRAY")))  {
+        return null
+    }
+
+    if (empty(a)) {
+        return s
+    }
+
+    var ret = [s]
+    each(a, fn(e, i) {
+        set(ret, 0, replace(ret[0], e[0], string(e[1])))
+    })
+
+    return ret[0]
+}
+
+var replace_hash = fn(s, h) 
+"
+[util] function: replace_hash: replaces each substring of a string with another string, as defined in a HASH (key: substring, value: replacement). 
+arguments: 2: STRING and HASH
+return value: STRING or NULL (error)
+"
+{
+    if ((!is(s, "STRING")) | (!is(h, "HASH")))  {
+        return null
+    }
+
+    if (empty(h)) {
+        return s
+    }
+
+    var ret = [s]
+    each(keys(h), fn(e, i) {
+        set(ret, 0, replace(ret[0], e, string(h[e])))
+    })
+
+    return ret[0]
 }
 

@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2024
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 9.8 (2024-July-28 +07:00)
+Version: 9.9 (2024-September-18 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -101,7 +101,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 9.8
+        Singkong 9.9
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -148,6 +148,9 @@ built-in functions, please set -DDISABLE=-.
 
 Note: please use built-in function: interactive, to get information whether 
 Singkong program is run in Singkong interactive evaluator/editor. 
+
+Singkong or runtime version requirement: please use built-in function require 
+or require_runtime.
 
 
 -----------------------------------------------------------------------------
@@ -217,7 +220,7 @@ hash, print, println, puts, string, type, types, variables
   - related functions: abs, array_number, chr, integer, integer_gcd, number, number_boolean,
     number_group, number_to_byte, random, round, sort_number, words_en, words_id
   - system related functions: delay
-  - Singkong related functions: require
+  - Singkong related functions: require, require_runtime
   - thread related functions: thread, thread_alive, thread_join
   - trigonometric functions (degrees): sin, cos, tan, asin, acos, atan
   - degrees radians conversion functions: to_degrees, to_radians
@@ -332,6 +335,14 @@ hash, print, println, puts, string, type, types, variables
         var e = simple_file_encrypt(a, b, c)
         var f = simple_file_decrypt(c, b, d)
         println(e, f, md5_file(a) == md5_file(d))
+  - string replacement: replace (built-in), replace_array (util), or replace_hash (util)
+        >  replace("$name", "$name", "Singkong")
+        "Singkong"
+        >  load_module("util")
+        >  replace_array("$name $type", [["$name", "Singkong"], ["$type", "programming language"]])
+        "Singkong programming language"
+        >  replace_hash("$name $type", {"$name": "Singkong", "$type": "programming language"})
+        "Singkong programming language"
 - ARRAY
   - []
   - array of mixed data types
@@ -892,15 +903,15 @@ To get a list of built-in functions, please call builtins()
 "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
 "RANDOM_STRING", "RANGE", "READ", "READ_BYTE", "RECT_ARRAY_SIZE", 
 "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", 
-"RENAME", "REPLACE", "REQUIRE", "RESET", "RESIZABLE", "REST", "REVERSE", 
-"RIGHT", "RIGHT_SHIFT", "ROUND", "RUNTIME_VERSION", "SAVE", "SCREEN", "SECOND", 
-"SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", 
-"SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
-"SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
-"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", 
-"START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", 
-"STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", "SUM", 
-"SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
+"RENAME", "REPLACE", "REQUIRE", "REQUIRE_RUNTIME", "RESET", "RESIZABLE", "REST", 
+"REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", "RUNTIME_VERSION", "SAVE", "SCREEN", 
+"SECOND", "SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", 
+"SHA384", "SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", 
+"SINGKONG", "SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", 
+"SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", 
+"SQRT", "START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", 
+"STOP", "STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", 
+"SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
 "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", 
 "TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", 
 "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", 
@@ -913,7 +924,7 @@ To get a list of built-in functions, please call builtins()
 "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-348
+349
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -1017,19 +1028,21 @@ Functions in module: ui_calendar:
 "CREATE_DATE_PICKER_"]
 
 Functions in module: ui_util:
-["TABLE_ADD_FILL", "TABLE_ADD_ROW_FILL", "TABLE_FILL", "TABLE_GET_ARRAY_", 
-"TABLE_GET_ARRAY_NUMBER", "TABLE_GET_ARRAY_STRING", "TABLE_TO_HTML", 
-"TABLE_TO_TEXT", "THREAD_TIMER", "THREAD_TIMER_"]
+["POPUP_SHOW_PROGRESS", "POPUP_SHOW_PROGRESS_", "TABLE_ADD_FILL", 
+"TABLE_ADD_ROW_FILL", "TABLE_FILL", "TABLE_GET_ARRAY_", "TABLE_GET_ARRAY_NUMBER", 
+"TABLE_GET_ARRAY_STRING", "TABLE_TO_HTML", "TABLE_TO_TEXT", "THREAD_TIMER", 
+"THREAD_TIMER_"]
 
 Functions in module: util:
 ["ARRAY_COPY", "ARRAY_DIFF", "BINOMIAL_COEFFICIENT", "BINOMIAL_DISTRIBUTION", 
 "FACTORIAL", "GEOMETRIC_DISTRIBUTION_FAILURE", "GEOMETRIC_DISTRIBUTION_SUCCESS", 
 "HASH_COPY", "MEAN", "MEDIAN", "MODE", "NUMBER_GROUP_C_P", "NUMBER_GROUP_P_C", 
 "NUMBER_GROUP_S_C", "NUMBER_GROUP_S_P", "POISSON_DISTRIBUTION", "RANGE_", 
-"SIMPLE_FILE_DECRYPT", "SIMPLE_FILE_ENCRYPT", "SIMPLE_STRING_DECRYPT", 
-"SIMPLE_STRING_ENCRYPT", "SORT_RECT_ARRAY_OF_NUMBER_BY_INDEX", 
-"STANDARD_DEVIATION", "STANDARD_DEVIATION_", "STANDARD_DEVIATION_SAMPLE", 
-"VARIANCE", "VARIANCE_", "VARIANCE_SAMPLE", "_NON_EMPTY_ARRAY_OF_NUMBER"]
+"REPLACE_ARRAY", "REPLACE_HASH", "SIMPLE_FILE_DECRYPT", "SIMPLE_FILE_ENCRYPT", 
+"SIMPLE_STRING_DECRYPT", "SIMPLE_STRING_ENCRYPT", 
+"SORT_RECT_ARRAY_OF_NUMBER_BY_INDEX", "STANDARD_DEVIATION", 
+"STANDARD_DEVIATION_", "STANDARD_DEVIATION_SAMPLE", "VARIANCE", "VARIANCE_", 
+"VARIANCE_SAMPLE", "_NON_EMPTY_ARRAY_OF_NUMBER"]
 
 Functions in module: web:
 ["HEADER_LOCATION", "HEADER_SESSION", "HEADER_SESSION_", "HEADER_SESSION_DELETE", 
