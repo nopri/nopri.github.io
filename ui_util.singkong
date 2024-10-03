@@ -13,7 +13,7 @@
     load_module("ui_util")
 ;
 
-require(9.8)
+require(10.0)
 
 var table_to_text = fn(a, b) 
 "
@@ -333,3 +333,50 @@ return value: NUMBER (popup index, >= 0)
     return popup_show_progress_(20, 10, "")
 }
 
+var config_font_size = fn(a, s) 
+"
+[ui_util] function: config_font_size: sets font size of a COMPONENT.
+arguments: 2: COMPONENT and NUMBER
+return value: NULL
+"
+{
+    if ((!is(a, "COMPONENT"))) {
+        return null
+    }
+
+    if ((!is(s, "NUMBER"))) {
+        return null
+    }
+
+    var f = get(a, "font")
+    if (len(f) == 3) {
+        set(f, 2, s)
+        config(a, "font", f)
+    }
+
+    return null
+}
+
+var config_font_size_r = fn(a, s) 
+"
+[ui_util] function: config_font_size_r: sets font size (relative) of a COMPONENT.
+arguments: 2: COMPONENT and NUMBER
+return value: NULL
+"
+{
+    if ((!is(a, "COMPONENT"))) {
+        return null
+    }
+
+    if ((!is(s, "NUMBER"))) {
+        return null
+    }
+
+    var f = get(a, "font")
+    if (len(f) == 3) {
+        set(f, 2, f[2] + s)
+        config(a, "font", f)
+    }
+
+    return null
+}

@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2024
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 9.9 (2024-September-18 +07:00)
+Version: 10.0 (2024-October-03 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -14,6 +14,8 @@ monkey.py is based on code (in Go) in book: Writing an interpreter in Go
 
 Singkong is developed on Java 8 with -source 1.5 -target 1.5, using only
 Java 5.0-compatible application programming interface.
+
+Thank you for using Singkong Programming Language.
 -----------------------------------------------------------------------------
 Bundled JDBC Drivers (compatible with Java 5.0 or later): 
  Apache Derby (Apache License 2.0): Network Server, Driver (Embedded, Client)
@@ -49,6 +51,7 @@ Bundled JDBC Drivers (compatible with Java 5.0 or later):
 27. Example: Monkey programming language interpreter in Singkong
 28. Example: Working with Comma-Separated Values file
 29. Example: Drawing: simple painting program
+30. Changelog
 
 
 -----------------------------------------------------------------------------
@@ -101,7 +104,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 9.9
+        Singkong 10.0
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -237,7 +240,7 @@ hash, print, println, puts, string, type, types, variables
         2.718281828459045
         >  _pi()
         3.141592653589793
-  - number scale setting example (since Singkong version 4.7):
+  - number scale setting example:
         >  _pi()
         3.1416
         >  number_scale(8)
@@ -306,7 +309,7 @@ hash, print, println, puts, string, type, types, variables
     lf, lower, matches, md5, md5_file, newline, ord, parse_string, quote, random_string, replace, right, 
     set, sha1, sha1_file, sha256, sha256_file, sha384, sha384_file, sha512, sha512_file, 
     slice, sort_string, split, startswith, 
-    stat, tab, trim, upper
+    stat, tab, trim, upper, uuid
   - special characters: cr, crlf, lf, newline, quote, tab
   - file related functions: abs, append, copy, copy_resource, delete, mkdir, read, 
     rename, temp_file, write 
@@ -316,6 +319,9 @@ hash, print, println, puts, string, type, types, variables
   - Singkong related functions: load, load_file_or_resource, load_module, load_resource
   - extended: x_base64_decode_file, x_base64_encode_file
   - sorting: lexicographically
+  - UUID: please use built-in function uuid
+    - If no argument is passed, generates a pseudo randomly generated UUID
+    - If optional name is passed, generates named based UUID
   - simple string or file encryption/decryption: 
     please use functions from util module:
     - string:
@@ -480,7 +486,7 @@ hash, print, println, puts, string, type, types, variables
 	})
         set(a, 1, "hello world")
         println(a, b)    
-  - copy (using array_copy function from util module, since Singkong version 4.6):
+  - copy (using array_copy function from util module):
 	load_module("util")
         var a = ["hello", "world"]
         var b = array_copy(a)
@@ -583,7 +589,7 @@ hash, print, println, puts, string, type, types, variables
         var b = {} + a
         set(a, "hello", "hello world")
         println(a, b)    
-  - copy (using hash_copy function from util module, since Singkong version 4.6):
+  - copy (using hash_copy function from util module):
 	load_module("util")
         var a = {"hello": "world"}
         var b = hash_copy(a)
@@ -681,7 +687,7 @@ hash, print, println, puts, string, type, types, variables
   - function definition: var statement
   - function call: function name followed by (, optional comma-separated 
     arguments, and )
-  - documentation string (since Singkong version 4.6):
+  - documentation string:
         without documentation string:
             >  var f = fn(x) {x}
             >  f
@@ -727,7 +733,7 @@ hash, print, println, puts, string, type, types, variables
         b
         c
         d
-  - variable scope in nested function (new in Singkong version 6.0):
+  - variable scope in nested function:
     code:
         var x = "Hello"
         println("X: " + x)
@@ -920,11 +926,12 @@ To get a list of built-in functions, please call builtins()
 "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", 
 "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
 "UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "USERHOME", 
-"VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", 
-"X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", "YEAR"]
+"UUID", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", 
+"WRITE_BYTE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", 
+"YEAR"]
 
 >  len(builtins())
-349
+350
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -1028,10 +1035,10 @@ Functions in module: ui_calendar:
 "CREATE_DATE_PICKER_"]
 
 Functions in module: ui_util:
-["POPUP_SHOW_PROGRESS", "POPUP_SHOW_PROGRESS_", "TABLE_ADD_FILL", 
-"TABLE_ADD_ROW_FILL", "TABLE_FILL", "TABLE_GET_ARRAY_", "TABLE_GET_ARRAY_NUMBER", 
-"TABLE_GET_ARRAY_STRING", "TABLE_TO_HTML", "TABLE_TO_TEXT", "THREAD_TIMER", 
-"THREAD_TIMER_"]
+["CONFIG_FONT_SIZE", "CONFIG_FONT_SIZE_R", "POPUP_SHOW_PROGRESS", 
+"POPUP_SHOW_PROGRESS_", "TABLE_ADD_FILL", "TABLE_ADD_ROW_FILL", "TABLE_FILL", 
+"TABLE_GET_ARRAY_", "TABLE_GET_ARRAY_NUMBER", "TABLE_GET_ARRAY_STRING", 
+"TABLE_TO_HTML", "TABLE_TO_TEXT", "THREAD_TIMER", "THREAD_TIMER_"]
 
 Functions in module: util:
 ["ARRAY_COPY", "ARRAY_DIFF", "BINOMIAL_COEFFICIENT", "BINOMIAL_DISTRIBUTION", 
@@ -1399,6 +1406,8 @@ To keep it as simple as possible:
   - border_painted (button, BOOLEAN)
   (configuration may be ignored if it is not applicable -- no errors will be
    returned).
+- To set only font size of a COMPONENT, config_font_size or config_font_size_r
+  from ui_util can also be used.
 - To get a configuration of a COMPONENT configured using config, please use
   built-in function get. This function accepts two arguments: COMPONENT and 
   STRING (key). 
@@ -2267,7 +2276,7 @@ Singkong supports simple database application development (SQL relational
 database management system). 
 - Every valid connection to a database system is a DATABASE in Singkong.
 - To work with relational database without using SQL command directly, please use
-  db_util module (new in Singkong version 6.1)
+  db_util module
 - To connect to a database system, please use built-in function database. This
   function accepts four arguments:
   - STRING: database driver, Java class found in class path
@@ -2402,7 +2411,7 @@ database management system).
         >  d
         >  type(d)
         "NULL"
-- Using db_util module (new in Singkong version 6.1):
+- Using db_util module:
     Functions in db_util module:
         create_field_from_array
         db_connect
@@ -4446,7 +4455,6 @@ Download monkey.singkong runnable jar: https://nopri.github.io/monkeyinterpreter
 -----------------------------------------------------------------------------
 
 28. Example: Working with Comma-Separated Values file
-(since Singkong version 4.6)
 
 - test.csv in current working directory
     id,name
@@ -4555,12 +4563,13 @@ grid_add(gn, bw, 10, 0, 1, 1, 0.2, 0, 1, 1, 4, 4, 4, 4)
 grid_add(gn, pp, 11, 0, 1, 1, 1, 0, 3, 1, 4, 4, 4, 4)
 var gd = component("grid", "")
 config(gd, "border", "Draw")
+var rb = component("radio", "Brush")
 var rl = component("radio", "Line")
 var rt = component("radio", "Text")
-config(rl, "active", true)
+config(rb, "active", true)
 var rr = component("radio", "Rectangle")
 var ro = component("radio", "Oval")
-radio_group([rl, rt, rr, ro])
+radio_group([rb, rl, rt, rr, ro])
 config(pf, "background", "black")
 config(pb, "background", "white")
 var cf = component("checkbox", "Fill")
@@ -4572,13 +4581,14 @@ config(gt, "border", "Text")
 var co = component("combobox", join(",", fonts()))
 var ts = component("text", "" + font_size)
 var tt = component("text", "")
-grid_add(gd, rl, 0, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
-grid_add(gd, rt, 1, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
-grid_add(gd, rr, 2, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
-grid_add(gd, ro, 3, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
-grid_add(gd, cf, 4, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
-grid_add(gd, cl, 5, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
-grid_add(gd, cw, 6, 0, 1, 1, 1, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, rb, 0, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, rl, 1, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, rt, 2, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, rr, 3, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, ro, 4, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, cf, 5, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, cl, 6, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
+grid_add(gd, cw, 7, 0, 1, 1, 1, 0, 0, 1, 4, 4, 4, 4)
 grid_add(gt, co, 0, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
 grid_add(gt, ts, 1, 0, 1, 1, 0, 0, 0, 1, 4, 4, 4, 4)
 grid_add(gt, tt, 2, 0, 1, 1, 1, 0, 3, 1, 4, 4, 4, 4)
@@ -4657,6 +4667,13 @@ event_mouse(d, fn(a) {
             }
         }
     }
+    if (a[0] == "DRAGGED") {
+        var dw = number(get(cw, "text"))
+        var m = get(rb, "active") 
+        if (m == true) {
+            fill_oval(d, a[1], a[2], dw, dw)
+        }
+    }
 })
 
 event(bx, fn() {
@@ -4707,5 +4724,902 @@ event(bw, fn() {
 show()
 
 
+-----------------------------------------------------------------------------
+
+30. Changelog
+Version: 10.0 (2024-October-03 +07:00)
+- 350 built-in functions
+  new: uuid
+- 9 built-in modules
+- Additional functions in ui_util
+  module (2 new functions)
+- Changelog
+
+Version: 9.9 (2024-September-18 +07:00)
+- 349 built-in functions
+  new: require_runtime
+- 9 built-in modules
+- Support Java version requirement 
+  in runtime, using require_runtime 
+  built-in function
+- Additional functions in util
+  module (2 new functions)
+- string replacement: replace (built-in, 
+  since version 0.4), 
+  replace_array (util), or 
+  replace_hash (util)
+
+Version: 9.8 (2024-July-28 +07:00)
+- 348 built-in functions
+  new: main_resource
+- 9 built-in modules
+- Additional functions in ui_util
+  module (2 new functions)
+- Additional functions in web 
+  module (2 new functions)
+- GUI: simple progress popup
+- web: URL-encoded query string 
+  from ARRAY or HASH
+- get information whether main.singkong 
+  was loaded
+
+Version: 9.7 (2024-May-31 +07:00)
+- 347 built-in functions
+- 9 built-in modules
+
+Version: 9.6 (2024-May-27 +07:00)
+- 347 built-in functions
+  new: table_set_renderer
+- 9 built-in modules
+- GUI: progress: label
+- GUI: progress: indeterminate
+- GUI: component configuration:
+  margin (table, horizontal and 
+  vertical space between cells)
+- GUI: table: set custom renderer 
+  (COMPONENT) 
+- GUI: status bar allows COMPONENT
+
+Version: 9.5 (2024-May-26 +07:00)
+- 346 built-in functions
+  new: table_set_color, 
+  table_set_row_height 
+- 9 built-in modules
+- GUI: table: change foreground or 
+  background color of row and column,
+  set row height
+
+Version: 9.4 (2024-May-21 +07:00)
+- 344 built-in functions
+- 9 built-in modules
+- Update to thread_timer 
+  (and thread_timer_) from ui_util module 
+
+Version: 9.3 (2024-May-20 +07:00)
+- 344 built-in functions
+- 9 built-in modules
+- Additional functions in ui_util
+  module (2 new functions)
+- thread_timer (and thread_timer_) 
+  from ui_util module, 
+  updating user interface in 
+  multithreaded application
+
+Version: 9.2 (2024-February-16 +07:00)
+- 344 built-in functions
+- 9 built-in modules
+
+Version: 9.1 (2024-February-15 +07:00)
+- 344 built-in functions
+- 9 built-in modules
+- Updated cgi_post and cgi_post_hash
+
+Version: 9.0 (2024-February-14 +07:00)
+- 344 built-in functions
+- 9 built-in modules
+- Updated function session_file_set 
+  in web module: 
+  additional reserved keys (STRING)
+  timestamp: timestamp (save)
+
+Version: 8.9 (2024-February-13 +07:00)
+- 344 built-in functions
+- 9 built-in modules
+  new: web
+- Updated cgi_post and cgi_post_hash:
+  optional charset (supported by Java) 
+  may be passed
+- Web application related functions 
+  in web module (12 functions)
+- HTTP session support (web module)
+
+Version: 8.8 (2024-February-07 +07:00)
+- 344 built-in functions
+- 8 built-in modules
+- Updated cgi_post and cgi_post_hash:
+  read up to HTTP server variable 
+  CONTENT_LENGTH, if set
+- Updated documentation for web
+  application development:
+  .web filename extension 
+  (rather than .singkong) for Singkong
+  CGI application (shorter to type, 
+  allows .singkong files to be downloaded)
+- Web server configuration in documentation
+- No longer requires separate shell script
+  or batch file
+
+Version: 8.7 (2023-December-11 +07:00)
+- 344 built-in functions
+  new: frame_image
+- 8 built-in modules
+- Set frame's icon image
+- GUI: new component configuration:
+  border_painted (button) 
+- Updated function db_driver (db_util)
+  for "id." table column
+
+Version: 8.6 (2023-November-26 +07:00)
+- 343 built-in functions
+  new: custom_dialog, custom_dialog_close
+- 8 built-in modules
+- Support modal or modeless dialog using
+  custom_dialog function, in addition to
+  modal dialog using panel_dialog
+- GUI: popup: modeless popup
+  (default: modal)
+
+Version: 8.5 (2023-November-13 +07:00)
+- 341 built-in functions
+- 8 built-in modules
+- GUI: new component configuration:
+  align 
+
+Version: 8.4 (2023-November-10 +07:00)
+- 341 built-in functions
+- 8 built-in modules
+
+Version: 8.3 (2023-October-30 +07:00)
+- 341 built-in functions
+- 8 built-in modules
+- Updated ui_calendar module for date
+  picker
+- Updated date and datetime function 
+- Updated Singkong and SQL type mapping:
+  DATE, NULL
+- Default timeout 60 seconds for HTTP
+  client (was 10 seconds)
+
+Version: 8.2 (2023-October-23 +07:00)
+- 341 built-in functions
+- 8 built-in modules
+- Additional functions in ui_calendar
+  module (2 new functions)
+- Date picker using ui_calendar module
+
+Version: 8.1 (2023-October-18 +07:00)
+- 341 built-in functions
+  new: parse_string
+- 8 built-in modules
+- Updated parse_array and parse_hash
+- Updated json module for parsing string
+  type
+
+Version: 8.0 (2023-October-17 +07:00)
+- 340 built-in functions
+- 8 built-in modules
+  new: json
+- Partial support for JSON (json module)
+  (3 functions for JSON parsing and
+  converting to JSON STRING)
+- Updated number function 
+- Additional mode for parse_array:
+  parse only ARRAY, BOOLEAN, HASH 
+  (uses strings for keys); 
+  NULL, NUMBER, other types: NULL 
+  (or empty ARRAY)
+- Additional mode for parse_hash:
+  uses strings for keys;
+  parse only ARRAY, BOOLEAN, HASH, 
+  NULL, NUMBER;
+  other types: NULL (or empty HASH)
+
+Version: 7.9 (2023-October-14 +07:00)
+- 340 built-in functions
+- 7 built-in modules
+- Additional mode (to default eval 
+  expression) for converting STRING 
+  to ARRAY (parse only ARRAY, BOOLEAN, 
+  HASH (uses strings for keys); 
+  NULL, NUMBER, other types: 
+  STRING representation)
+- Additional mode (to default eval 
+  expression) for converting STRING
+  to HASH (uses strings for keys; 
+  parse only ARRAY, BOOLEAN, 
+  HASH, NULL, NUMBER; other types: 
+  STRING representation)
+
+Version: 7.8 (2023-October-10 +07:00)
+- 340 built-in functions
+- 7 built-in modules
+- Update on query string handling 
+
+Version: 7.7 (2023-October-09 +07:00)
+- 340 built-in functions
+- 7 built-in modules
+
+Version: 7.6 (2023-October-08 +07:00)
+- 340 built-in functions
+  new: parse_array
+- 7 built-in modules
+- Support for converting STRING to ARRAY
+- Updated string function to optionally
+  use strings for keys, when converting 
+  HASH to STRING
+
+Version: 7.5 (2023-October-05 +07:00)
+- 339 built-in functions
+- 7 built-in modules
+- Updated csv module
+
+Version: 7.4 (2023-October-02 +07:00)
+- 339 built-in functions
+- 7 built-in modules
+- Updated function db_driver (db_util)
+  for "id." table column
+
+Version: 7.3 (2022-July-08 +07:00)
+- 339 built-in functions
+- 7 built-in modules
+  new: ui_calendar
+- GUI: calendar related functions
+  from ui_calendar module
+  (5 functions)
+
+Version: 7.2 (2022-June-12 +07:00)
+- 339 built-in functions
+- 6 built-in modules
+
+Version: 7.1 (2022-May-22 +07:00)
+- 339 built-in functions
+- 6 built-in modules
+- GUI: new component configuration:
+  margin (button, applicable in grid) 
+
+Version: 7.0 (2022-May-18 +07:00)
+- 339 built-in functions
+- 6 built-in modules
+- New GUI component: spin
+
+Version: 6.9 (2022-May-16 +07:00)
+- 339 built-in functions
+  new: days_of_month, runtime_version
+- 6 built-in modules
+- Support for getting Java runtime version
+
+Version: 6.8 (2022-April-27 +07:00)
+- 337 built-in functions
+  new: component_info, event_focus, 
+  frame_location, frame_top, 
+  popup_component, popup_hide, popup_show
+- 6 built-in modules
+- GUI: focus events
+- GUI: popup (using panel or grid)
+- GUI: popup at component
+- GUI component: text: number of columns
+  (applicable in grid)
+- GUI: support getting component info
+
+Version: 6.7 (2022-April-07 +07:00)
+- 330 built-in functions
+  new: database_metadata, integer_gcd, 
+  left_shift, right_shift, 
+  unsigned_right_shift
+- 6 built-in modules
+- Same look and feel in all supported 
+  platforms
+- New GUI component: piechart
+- NUMBER bit shift operation functions
+- Support for database metadata
+
+Version: 6.6 (2021-August-30 +07:00)
+- 325 built-in functions
+  new: draw_get_pixel, draw_read, 
+  draw_set_pixel, draw_write_bmp, 
+  draw_write_jpg, draw_write_png
+- 6 built-in modules
+- Example: simple painting program
+- When embedding Singkong into
+  Java application, after evaluating 
+  Singkong code, calling System.exit() 
+  explicitly might be needed, 
+  to terminate the application
+
+Version: 6.5 (2021-August-27 +07:00)
+- 319 built-in functions
+  new: color_chooser, draw_arc, 
+  draw_line, draw_oval, draw_polygon, 
+  draw_polyline, draw_rect, 
+  draw_round_rect, draw_string, 
+  draw_width, fill_arc, fill_oval, 
+  fill_polygon, fill_rect, 
+  fill_round_rect
+- 6 built-in modules
+- New GUI component: draw
+- GUI: drawing functions
+
+Version: 6.4 (2021-August-16 +07:00)
+- 304 built-in functions
+- 6 built-in modules
+- Additional functions in db_util module,
+  for generating SQL command only
+  (underscore in function name)
+  (13 new functions)
+- New GUI component: mask
+
+Version: 6.3 (2021-August-12 +07:00)
+- 304 built-in functions
+- 6 built-in modules
+- Number grouping built-in function 
+  and utilities in module util
+  (4 new functions)
+- Additional user interface functions
+  in module ui_util (4 new functions)
+- Updates to functions in db_util,
+  to allow optional and/or in where HASH
+
+Version: 6.2 (2021-July-21 +07:00)
+- 304 built-in functions
+  new: table_column_info
+- 6 built-in modules
+  new: ui_util
+- Simple string or file encryption/
+  decryption (module util)
+- User interface related utilities:
+  functions from built-in module
+  ui_util (4 functions)
+
+Version: 6.1 (2021-July-20 +07:00)
+- 303 built-in functions
+  new: is_array_and_of
+- 5 built-in modules
+  new: db_util
+- Work with relational database without 
+  using SQL command directly: functions
+  from built-in module db_util
+  (25 functions)
+
+Version: 6.0 (2021-July-16 +07:00)
+- 302 built-in functions
+  new: format_time
+- 4 built-in modules
+- New variable scope in nested function
+- Singkong and SQL type mapping:
+  NUMBER (Database serial, bigserial, 
+  or numeric)
+
+Version: 5.9 (2021-July-14 +07:00)
+- 301 built-in functions
+  new: isalnum, load_file_or_resource, 
+  table_column_count, table_column_name, 
+  table_get_value, table_row_count, 
+  table_set_value, userhome
+- 4 built-in modules 
+- DATABASE type: valid connection to a 
+  database system (otherwise: NULL)
+- Singkong and SQL type mapping:
+  DATE (Database Date or Timestamp)
+  NUMBER (Database Integer, Bigint, or Decimal)
+- Database query function optionally returns 
+  column labels and types
+- load_file_or_resource: support for 
+  evaluating/running Singkong code
+  (file in current working directory or 
+  (if failed), /resource/<value> in 
+  interpreter file)
+
+Version: 5.8 (2021-July-11 +07:00)
+- 293 built-in functions
+- 4 built-in modules 
+- Removed documentation: 
+  known limitations in event handler
+  (documented in version 2.8, fixed 
+  started in version 4.6)
+
+Version: 5.7 (2021-July-01 +07:00)
+- 293 built-in functions
+  new: boolean_xor, number_and, 
+  number_not, number_or, number_to_byte, 
+  number_xor
+- 4 built-in modules 
+- NUMBER bitwise operation functions
+- New functions in util module 
+  (12 functions)
+- New functions in set_util module
+  (9 functions)
+- New operator (BOOLEAN): !
+
+Version: 5.6 (2021-June-22 +07:00)
+- 287 built-in functions
+- 4 built-in modules
+  new: set_util
+- Set related functions in set_util module
+  (12 functions)
+
+Version: 5.5 (2021-June-20 +07:00)
+- 287 built-in functions
+  new: array_extend_all, from_bin, 
+  from_hex, from_oct, 
+  number_to_byte_array, 
+  string_from_byte_array, 
+  string_to_byte_array, to_bin, to_hex, 
+  to_oct
+- 3 built-in modules
+- Number base conversion functions
+- Byte array functions 
+- Set related functions in util module
+  (5 functions)
+- Changes to function:
+  array_equals: same elements, 
+  not necessarily in the same order
+- Changes to operator for ARRAY:
+  == same elements, same order
+
+Version: 5.4 (2021-June-10 +07:00)
+- 277 built-in functions
+  new: read_byte, write_byte
+- 3 built-in modules
+  new: rect_array_util
+- Rectangular array and matrix: functions
+  from rect_array_util module
+  (42 functions)
+
+Version: 5.3 (2021-May-18 +07:00)
+- 275 built-in functions
+  new: grid_add, grid_clear, grid_remove
+- 2 built-in modules
+- GUI: grid based layout
+- New GUI component: grid
+- Custom dialog using grid, in addition
+  to using panel
+
+Version: 5.2 (2021-May-06 +07:00)
+- 272 built-in functions
+  new: array_equals, array_extend, 
+  is_leap_year, number_boolean
+- 2 built-in modules
+- Additional array and set 
+  related functions from util module
+
+Version: 5.1 (2021-March-04 +07:00)
+- 268 built-in functions
+- 2 built-in modules
+
+Version: 5.0 (2021-February-22 +07:00)
+- 268 built-in functions
+- 2 built-in modules
+
+Version: 4.9 (2021-February-21 +07:00)
+- 268 built-in functions
+  new: thread_alive
+- 2 built-in modules
+- Removed function: threads
+
+Version: 4.8 (2021-February-20 +07:00)
+- 268 built-in functions
+  new: menubar, thread, thread_join, 
+  threads
+- 2 built-in modules
+- Multithreading support
+- GUI: menu bar
+
+Version: 4.7 (2021-February-08 +07:00)
+- 264 built-in functions
+  new: _e, _pi, acos, asin, atan, cbrt, 
+  copy, cos, cosh, exp, frame_close, 
+  is_array_of, is_array_of_component_of, 
+  is_rect_array, is_rect_array_of, log, 
+  log10, number_scale, rect_array_size, 
+  rect_array_size_of, sin, sinh, sqrt, 
+  statusbar, tan, tanh, to_degrees, 
+  to_radians
+- 2 built-in modules
+- Support for changing number scale
+- Trigonometric, degrees radians,
+  hyperbolic, natural exponential, 
+  logarithm, square/cube root functions
+- mean, median, mode, range 
+  (using built-in util module)
+- Array checking functions
+- Rectangular array
+- GUI: status bar
+- Evaluate/run Singkong code saved 
+  as resource
+
+Version: 4.6 (2021-January-25 +07:00)
+- 236 built-in functions
+  new: load_module, load_resource, 
+  md5_file, modules, sha1_file, 
+  sha256_file, sha384_file, sha512_file, 
+  variables 
+- 2 built-in modules: csv, util
+- Built-in modules support
+- Documentation string for functions
+- Copying array and hash using functions
+  from util module
+- Working with Comma-Separated Values file
+  using csv module
+- Fix for limitation in event handler
+  (since version 2.8), using variables
+  function
+
+Version: 4.5 (2021-January-04 +07:00)
+- 227 built-in functions
+  new: beep, play_sound
+- Sound playing support
+- Example: Monkey programming language 
+  interpreter implemented in Singkong
+
+Version: 4.4 (2020-December-20 +07:00)
+- 225 built-in functions
+  new: start, start_timer, timer_running, wait
+- Additional timer support
+- Long running process in another thread using
+  wait function
+
+Version: 4.3 (2020-December-18 +07:00)
+- 221 built-in functions
+  new: clipboard_get, clipboard_set, 
+  event_frame, stop_timer, temp_file
+- Clipboard support
+- Frame events 
+
+Version: 4.2 (2020-December-16 +07:00)
+- 216 built-in functions
+  new: x_base64_decode_file, 
+  x_base64_encode_file, x_edit_print
+- extended functions (built-in functions 
+  that require minimum Java version > 5.0,
+  and have name prefix x_)
+- Extended functions are always available,
+  if the requirement is not met: 
+  returns NULL
+- GUI component: edit: print
+- Singkong and SQL type mapping:
+  STRING (Database CLOB)
+
+Version: 4.1 (2020-December-15 +07:00)
+- 213 built-in functions
+  new: chr, ord, table_column, 
+  table_print
+- GUI component: table: printing,
+  column width
+
+Version: 4.0 (2020-June-06 +07:00)
+- 209 built-in functions
+- Line number in error message
+- GUI: new component configuration:
+  border 
+
+Version: 3.9 (2020-Jun-01 +07:00)
+- 209 built-in functions
+  new: button_image, event_keyboard_frame, 
+  event_mouse, event_mouse_frame, 
+  panel_dialog, tab_add, tab_clear, 
+  tab_remove, table_scroll
+- Creation of GUI dialogs using only 
+  Singkong code
+- Keyboard (frame) and mouse 
+  (component and frame) events
+- New GUI component: tab
+- GUI component: table: scrolling
+- GUI component: button: icon
+
+Version: 3.8 (2020-May-28 +07:00)
+- 200 built-in functions
+  new: isalpha, isdigit, islower, 
+  isupper, panel_add, panel_clear, 
+  panel_remove, resizable
+- Absolute positioning in frame 
+  (using panel)
+- New GUI component: panel
+
+Version: 3.7 (2020-May-26 +07:00)
+- 192 built-in functions
+  new: inet_address, inet_address_local
+- Singkong and SQL type mapping:
+  NULL
+- Unsupported Singkong data types: 
+  returns STRING representation instead
+  of error
+
+Version: 3.6 (2020-May-19 +07:00)
+- 190 built-in functions
+  new: copy_resource
+- Using resources bundled in jar file
+  in user interface components
+  (and copying bunded resources to 
+  files)
+- GUI Component: button: mnemonic index
+
+Version: 3.5 (2020-May-06 +07:00)
+- 189 built-in functions
+  new: singkong_interpreter
+- Support bundling application 
+  files/resources with
+  Singkong interpreter file
+  (Singkong.jar) to ease application
+  distribution (as single jar file)
+
+Version: 3.4 (2020-May-01 +07:00)
+- 188 built-in functions
+
+Version: 3.3 (2020-April-27 +07:00)
+- 188 built-in functions
+
+Version: 3.2 (2020-April-16 +07:00)
+- 188 built-in functions
+  new: http_response_ok
+- Database tool
+- -DDISABLE property to disable all 
+  built-in functions, in addition to
+  disable some of built-ins introduced in
+  Singkong version 0.5
+- -DDISABLE property can also be set to
+  only allow select built-in functions
+
+Version: 3.1 (2020-April-08 +07:00)
+- 187 built-in functions
+
+Version: 3.0 (2020-April-08 +07:00)
+- 187 built-in functions
+  new: require
+- Support Singkong version requirement 
+  in runtime, using require built-in 
+  function
+- Apache Derby bundled: Network Server, 
+  Embedded Driver, Client Driver
+
+Version: 2.9 (2020-April-07 +07:00)
+- 186 built-in functions
+  new: base64_decode, base64_encode, 
+  cgi_post_hash, delete, mkdir, rename
+- JDBC drivers bundled 
+  (compatible with Java 5.0 or later):
+  Apache Derby (Apache License, version 2.0)
+  PostgreSQL (BSD-2-Clause License)
+
+Version: 2.8 (2020-Mar-13 +07:00)
+- 180 built-in functions
+- Documentation on known limitations in
+  event handler (regarding nested function
+  and variable scope)
+
+Version: 2.7 (2020-Mar-12 +07:00)
+- 180 built-in functions
+  new: cgi_contents, cgi_get, cgi_header, 
+  cgi_post
+- Web application development (CGI)
+
+Version: 2.6 (2020-Mar-10 +07:00)
+- 176 built-in functions
+- Assignment is done using var statement
+  (let is supported for compatibility) 
+
+Version: 2.5 (2020-Mar-07 +07:00)
+- 176 built-in functions
+- New GUI component: barchart
+
+Version: 2.4 (2020-Mar-03 +07:00)
+- 176 built-in functions
+  new: is_update_available, login_dialog
+
+Version: 2.3 (2020-Feb-16 +07:00)
+- 174 built-in functions
+  new: stdin, table_bottom, table_center, 
+  table_left, table_middle, table_right, 
+  table_top
+- New GUI component: progress
+
+Version: 2.2 (2020-Feb-06 +07:00)
+- 167 built-in functions
+  new: parts
+- New GUI component: date
+
+Version: 2.1 (2020-Feb-05 +07:00)
+- 166 built-in functions
+  new: env
+- New GUI component: view
+
+Version: 2.0 (2020-Feb-03 +07:00)
+- 165 built-in functions
+  new: http_head
+- Check for Update button in Singkong.jar
+  user interface
+
+Version: 1.9 (2020-Feb-02 +07:00)
+- 164 built-in functions
+  new: http_delete, http_get, 
+  http_get_file, http_post, 
+  http_post_override, http_put, 
+  keywords, parse_hash, url_decode, 
+  url_encode
+- HTTP client
+- Singkong.version file 
+
+Version: 1.8 (2020-Jan-20 +07:00)
+- 154 built-in functions
+
+Version: 1.7 (2020-Jan-20 +07:00)
+- 154 built-in functions
+  new: number_group
+
+Version: 1.6 (2020-Jan-19 +07:00)
+- 153 built-in functions
+- Comment (multi-line) support
+- null is not printed
+
+Version: 1.5 (2020-Jan-16 +07:00)
+- 153 built-in functions
+- Book in Bahasa Indonesia (PDF, free): 
+  Mengenal dan Menggunakan Bahasa 
+  Pemrograman Singkong 
+  (ISBN: 978-602-52770-1-6)
+
+Version: 1.4 (2020-Jan-14 +07:00)
+- 153 built-in functions
+  new: fonts
+- GUI: new component configuration:
+  visible, focus, foreground/background,
+  font
+
+Version: 1.3 (2020-Jan-12 +07:00)
+- 152 built-in functions
+  new: array_number, array_string, 
+  endswith, matches, reverse, shuffle, 
+  sort_array, sort_boolean, sort_date, 
+  sort_hash, sort_number, sort_string, 
+  startswith
+
+Version: 1.2 (2020-Jan-12 +07:00)
+- 139 built-in functions
+  new: call_info
+- Calling Java method supports 
+  static singkong_info method, which 
+  could be used to return information
+  about the class
+- New GUI component: image 
+
+Version: 1.1 (2020-Jan-11 +07:00)
+- 138 built-in functions
+  new: random_string
+- Calling Java method supports
+  ARRAY (of ARRAY (of STRING))
+
+Version: 1.0 (2020-Jan-11 +07:00)
+- 137 built-in functions
+  new: call
+- Support calling static Java method
+
+Version: 0.9 (2020-Jan-10 +07:00)
+- 136 built-in functions
+  new: clear, frame, interactive, 
+  remove, remove_e, remove_n, remove_s, 
+  remove_w, reset
+- GUI: frame reset and component removal
+  functions
+
+Version: 0.8 (2020-Jan-09 +07:00)
+- 127 built-in functions
+  new: screen, size, stop, timer
+- GUI timer support
+
+Version: 0.7 (2020-Jan-08 +07:00)
+- 123 built-in functions
+  new: database, database_connected, query
+- SQL relational database management system
+- New type: DATABASE
+- No database driver bundled with Singkong.jar
+- Singkong and SQL type mapping:
+  BOOLEAN, DATE, NUMBER, STRING 
+  Unsupported Singkong data type: 
+  returns error
+
+Version: 0.6 (2020-Jan-08 +07:00)
+- 120 built-in functions
+  new: add, add_e, add_n, add_s, add_w, 
+  array, closing, component, 
+  component_type, components, config, 
+  directory, event, get, hide, open, 
+  printer, radio_group, save, show, 
+  table_add, table_remove, title
+- GUI application development, 
+  with GUI components, layout functions, 
+  and events
+- New type: COMPONENT
+- GUI components: button, checkbox, 
+  combobox, edit, label, password, radio, 
+  table, text
+- Simple printing support
+
+Version: 0.5 (2020-Jan-05 +07:00)
+- 97 built-in functions
+  new: disabled, eval, gui, help, in, 
+  index, param
+- -DDISABLE property to disable some 
+  builtin functions
+
+Version: 0.4 (2020-Jan-03 +07:00)
+- 90 built-in functions
+  new: append, average, center, count, 
+  cr, crlf, cwd, day, diff, dir, each, 
+  empty, equals, exit, format_date, 
+  format_datetime, format_diff, hour, 
+  is, join, left, lf, load, lower, max, 
+  md5, min, minute, month, part, pop, 
+  quote, random, range, read, replace, 
+  right, second, separator, sha1, 
+  sha256, sha384, sha512, split, stat, 
+  sum, system, tab, trim, types, upper, 
+  user, values, words_en, words_id, 
+  write, year
+- renamed functions:
+  date_day to day
+  date_diff to diff
+  date_diff_format to format_diff
+  date_format to format_date
+  date_hour to hour
+  date_minute to minute
+  date_month to month
+  date_second to second
+  date_year to year
+  datetime_format to format_datetime
+  file_append to append
+  file_read to read
+  file_write to write
+  number_to_words_en to words_en
+  number_to_words_id to words_id
+  string_equals to equals
+  string_lower to lower
+  string_replace to replace
+  string_split to split
+  string_trim to trim
+  string_upper to upper
+- new BOOLEAN operators: & and |
+- new NUMBER operators: <= and >=
+- Function information in interactive 
+  evaluator
+  
+Version: 0.3 (2019-Dec-24 +07:00)
+- 54 built-in functions
+  new: keys, round, singkong
+- -DSINGKONG=0 property to run Singkong
+  in text mode when GUI is available
+
+Version: 0.2 (2019-Dec-24 +07:00)
+- 51 built-in functions
+
+Version: 0.1 (2019-Dec-23 +07:00)
+- Public release
+- 51 built-in functions
+  abs, arguments, builtins, confirm, 
+  date, date_day, date_diff, 
+  date_diff_format, date_format, 
+  date_hour, date_minute, date_month, 
+  date_second, date_year, datetime, 
+  datetime_format, delay, do, 
+  file_append, file_read, file_write, 
+  first, hash, info, input, integer, 
+  last, len, message, newline, number, 
+  number_to_words_en, 
+  number_to_words_id, password, print, 
+  println, properties_read, 
+  properties_write, push, puts, rest, 
+  set, slice, string, string_equals, 
+  string_lower, string_replace, 
+  string_split, string_trim, 
+  string_upper, type
+
+
 =============================================================================
-Thank you for using Singkong Programming Language.
