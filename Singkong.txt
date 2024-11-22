@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2024
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 10.1 (2024-November-13 +07:00)
+Version: 10.2 (2024-November-22 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -104,7 +104,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 10.1
+        Singkong 10.2
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -3811,6 +3811,8 @@ To bundle application file with Singkong interpreter:
   - To evaluate/run Singkong code (file in current working directory or 
     (if failed), /resource/<value> in interpreter file), please use 
     built-in function load_file_or_resource
+  - To read /resource/<value> in interpreter file (as text file), please use 
+    built-in function read
   
 
 -----------------------------------------------------------------------------
@@ -4727,6 +4729,12 @@ show()
 -----------------------------------------------------------------------------
 
 30. Changelog
+Version: 10.2 (2024-November-22 +07:00)
+- 350 built-in functions
+- 9 built-in modules
+- Built-in: read: optionally read 
+  /resource/<value> in interpreter file
+
 Version: 10.1 (2024-November-13 +07:00)
 - 350 built-in functions
 - 9 built-in modules

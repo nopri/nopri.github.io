@@ -13,7 +13,7 @@
     load_module("web")
 ;
 
-require(9.8)
+require(10.2)
 
 load_module("json")
 
@@ -76,7 +76,8 @@ return value: HASH (empty HASH on error)
     var v = md5(
         @ + "-" + 
         random() + "-" + 
-        random_string(16, 16)
+        random_string(16, 16) + "-" + 
+        uuid()
     )
     if (v == null) {
         return {}
