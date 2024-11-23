@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2024
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 10.2 (2024-November-22 +07:00)
+Version: 10.3 (2024-November-23 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -104,7 +104,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 10.2
+        Singkong 10.3
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -1398,7 +1398,7 @@ To keep it as simple as possible:
     text NUMBER (column, applicable in grid))
   - contents (contents of edit/mask/password/text/view STRING, 
     file of image STRING, ARRAY of ARRAY (table), 
-    ARRAY (combobox), DATE/STRING (date), NUMBER (progress/spin), ARRAY of ARRAY 
+    ARRAY (of STRING, or of [STRING, STRING], combobox), DATE/STRING (date), NUMBER (progress/spin), ARRAY of ARRAY 
     (of [NUMBER (value), STRING (label), STRING (color name or RGB value)], barchart/piechart))
   - margin (button ARRAY of NUMBER [top, left, bottom, right] applicable in grid,
     table ARRAY of NUMBER [horizontal, vertical])
@@ -1423,13 +1423,48 @@ To keep it as simple as possible:
     combobox/tab/table NUMBER, button NUMBER, text NUMBER)
   - contents (contents of edit/mask/password/text/view STRING, 
     file of image STRING, ARRAY of ARRAY (of STRING, table), 
-    ARRAY (of STRING, combobox), DATE (date), NUMBER (progress/spin))
+    ARRAY (of STRING, or of [STRING, STRING], combobox), DATE (date), NUMBER (progress/spin))
   - margin (button ARRAY of NUMBER [top, left, bottom, right],
     table ARRAY of NUMBER [horizontal, vertical])
   - align (button/label/mask/password/text, horizontal alignment, NUMBER(0=left, 1=center, 2=right, 3=leading, 4=trailing))
   - border_painted (button, BOOLEAN)
   (configuration may be ignored if it is not applicable and NULL will be
    returned).
+- Combobox:
+  - Default, contents: an ARRAY of STRING
+        reset()
+        var c = component("combobox", "A,B,C,D,E")
+        config(c, "text", "E")
+        var b = component("button", "get")
+        add_n([c, b])
+        show()
+
+        event(b, fn() {
+            message(get(c, "active"))
+            message(get(c, "text"))
+            message(get(c, "contents"))
+        })
+  - ARRAY of [value, text] contents: please use ARRAY of [STRING, STRING]
+        reset()
+        var c = component("combobox", "")
+        config(c, "contents", [
+            ["a", "Item A"],
+            ["b", "Item B"],
+            ["c", "Item C"],
+            ["d", "Item D"],
+            ["e", "Item E"],
+            "f"
+        ])  
+        config(c, "text", "e")
+        var b = component("button", "get")
+        add_n([c, b])
+        show()
+
+        event(b, fn() {
+            message(get(c, "active"))
+            message(get(c, "text"))
+            message(get(c, "contents"))
+        })
 - To use resources for contents of edit/image/password/text/view:
   - put all resource files in /resource directory in interpreter jar file
     for example: 
@@ -4729,6 +4764,12 @@ show()
 -----------------------------------------------------------------------------
 
 30. Changelog
+Version: 10.3 (2024-November-23 +07:00)
+- 350 built-in functions
+- 9 built-in modules
+- GUI: combobox: optional contents in ARRAY of [STRING, STRING]
+  in addition to default ARRAY of STRING
+
 Version: 10.2 (2024-November-22 +07:00)
 - 350 built-in functions
 - 9 built-in modules
