@@ -13,7 +13,7 @@
     load_module("ui_calendar")
 ;
 
-require(9.4)
+require(10.4)
 
 var create_calendar = fn(year, month, data) 
 "
@@ -404,6 +404,7 @@ return value: ARRAY [COMPONENT (grid), COMPONENT (text), COMPONENT (button)]
     event(b, fn() {
         var dr = [-1]
         var dh = fn(d, s, dow) {
+            config(t, "active", len(s))
             config(t, "contents", s)
             popup_hide(dr[0])
             config(b, "enabled", true)
