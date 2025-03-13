@@ -1,8 +1,8 @@
 Singkong Programming Language Interpreter
-(c) Noprianto <nop@noprianto.com>, 2019-2024
+(c) Noprianto <nop@noprianto.com>, 2019-2025
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 10.4 (2024-November-24 +07:00)
+Version: 10.5 (2025-March-13 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -318,7 +318,9 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
     http_head, http_post, http_post_override, http_put, url_decode, url_encode 
   - system related functions: cwd, inet_address_local, separator, user, userhome
   - Singkong related functions: load, load_file_or_resource, load_module, load_resource
-  - extended: x_base64_decode_file, x_base64_encode_file
+  - extended: x_base64_decode, x_base64_decode_file, x_base64_encode, 
+    x_base64_encode_file, x_base64_md5, x_base64_sha1, x_base64_sha256, 
+    x_base64_sha384, x_base64_sha512
   - sorting: lexicographically
   - UUID: please use built-in function uuid
     - If no argument is passed, generates a pseudo randomly generated UUID
@@ -928,11 +930,12 @@ To get a list of built-in functions, please call builtins()
 "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
 "UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "USERHOME", 
 "UUID", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", 
-"WRITE_BYTE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE_FILE", "X_EDIT_PRINT", 
-"YEAR"]
+"WRITE_BYTE", "X_BASE64_DECODE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE", 
+"X_BASE64_ENCODE_FILE", "X_BASE64_MD5", "X_BASE64_SHA1", "X_BASE64_SHA256", 
+"X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-351
+358
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -3074,8 +3077,8 @@ Singkong comes with simple HTTP client.
 - Encode or decode: please use built-in functions url_encode or url_decode 
 - URL-encoded query string from ARRAY or HASH: please use functions 
   query_string_array or query_string_hash from built-in module web.
-- Base64: please use built-in functions base64_decode, base64_encode,
-  x_base64_decode_file, or x_base64_encode_file
+- Base64: please use built-in functions base64_decode, x_base64_decode, 
+  base64_encode, x_base64_encode, x_base64_decode_file, or x_base64_encode_file
 - Read timeout can be set for each request (default: 60 seconds)
 - Headers may be set for each request
 - HEAD
@@ -4765,6 +4768,14 @@ show()
 -----------------------------------------------------------------------------
 
 30. Changelog
+Version: 10.5 (2025-March-13 +07:00)
+- 358 built-in functions
+  new: x_base64_decode, x_base64_encode,  
+  x_base64_md5, x_base64_sha1, 
+  x_base64_sha256, x_base64_sha384, 
+  x_base64_sha512
+- 9 built-in modules
+
 Version: 10.4 (2024-November-24 +07:00)
 - 351 built-in functions
   new: ifnull
