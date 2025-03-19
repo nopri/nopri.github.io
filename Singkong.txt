@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2025
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 10.5 (2025-March-13 +07:00)
+Version: 10.6 (2025-March-19 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -104,7 +104,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 10.4
+        Singkong 10.6
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -305,12 +305,12 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
   - index operator
   - modify STRING: please use built-in function set
   - related functions: array_string, base64_decode, base64_encode, call, center, 
-    count, cr, crlf, dir, empty, endswith, equals, eval, in, index, isalnum, isalpha,
-    isdigit, islower, isupper, join, left, len, 
-    lf, lower, matches, md5, md5_file, newline, ord, parse_string, quote, random_string, replace, right, 
-    set, sha1, sha1_file, sha256, sha256_file, sha384, sha384_file, sha512, sha512_file, 
-    slice, sort_string, split, startswith, 
-    stat, tab, trim, upper, uuid
+    count, cr, crlf, dir, empty, endswith, equals, eval, extract, extract_group, 
+    in, index, isalnum, isalpha, isdigit, islower, isupper, join, left, len, lf, 
+    lower, matches, md5, md5_file, newline, ord, parse_string, quote, 
+    random_string, replace, right, set, sha1, sha1_file, sha256, sha256_file, 
+    sha384, sha384_file, sha512, sha512_file, slice, sort_string, split, 
+    startswith, stat, tab, trim, upper, uuid
   - special characters: cr, crlf, lf, newline, quote, tab
   - file related functions: abs, append, copy, copy_resource, delete, mkdir, read, 
     rename, temp_file, write 
@@ -352,6 +352,28 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
         "Singkong programming language"
         >  replace_hash("$name $type", {"$name": "Singkong", "$type": "programming language"})
         "Singkong programming language"
+  - regular expression
+    - matches (whole STRING):
+        >  matches("A1 B2 C3 D4", "^A")
+        false
+        >  matches("A1 B2 C3 D4", "4$")
+        false
+        >  matches("A1 B2 C3 D4", "^A.*4$")
+        true
+        >  matches("A1 B2 C3 D4", "^a.*4$")
+        false
+        >  matches("A1 B2 C3 D4", "(?i)^a.*4$")
+        true
+    - extract:
+        >  extract("A1 B2 C3 D4", "(\d+)")
+        ["1", "2", "3", "4"]
+        >  extract("A1 B2 C3 D4", "(\D+)")
+        ["A", " B", " C", " D"]      
+        >  extract("Code: <tag>Singkong</tag> Code: <tag>Programming</tag>", "<(\w+)>(.*?)</(\1)>")
+        ["<tag>Singkong</tag>", "<tag>Programming</tag>"]
+    - extract_group:
+        >  extract_group("Code: <tag>Singkong</tag> Code: <tag>Programming</tag>", "<(\w+)>(.*?)</(\1)>")
+        [["<tag>Singkong</tag>", "tag", "Singkong"], ["<tag>Programming</tag>", "tag", "Programming"]]
 - ARRAY
   - []
   - array of mixed data types
@@ -888,15 +910,15 @@ To get a list of built-in functions, please call builtins()
 "DRAW_WIDTH", "DRAW_WRITE_BMP", "DRAW_WRITE_JPG", "DRAW_WRITE_PNG", "EACH", 
 "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FOCUS", 
 "EVENT_FRAME", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", 
-"EXIT", "EXP", "FILL_ARC", "FILL_OVAL", "FILL_POLYGON", "FILL_RECT", 
-"FILL_ROUND_RECT", "FIRST", "FONTS", "FORMAT_DATE", "FORMAT_DATETIME", 
-"FORMAT_DIFF", "FORMAT_TIME", "FRAME", "FRAME_CLOSE", "FRAME_IMAGE", 
-"FRAME_LOCATION", "FRAME_TOP", "FROM_BIN", "FROM_HEX", "FROM_OCT", "GET", 
-"GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", "HOUR", 
-"HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
-"HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IFNULL", "IN", "INDEX", 
-"INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTEGER_GCD", 
-"INTERACTIVE", "IS", "IS_ARRAY_AND_OF", "IS_ARRAY_OF", 
+"EXIT", "EXP", "EXTRACT", "EXTRACT_GROUP", "FILL_ARC", "FILL_OVAL", 
+"FILL_POLYGON", "FILL_RECT", "FILL_ROUND_RECT", "FIRST", "FONTS", "FORMAT_DATE", 
+"FORMAT_DATETIME", "FORMAT_DIFF", "FORMAT_TIME", "FRAME", "FRAME_CLOSE", 
+"FRAME_IMAGE", "FRAME_LOCATION", "FRAME_TOP", "FROM_BIN", "FROM_HEX", 
+"FROM_OCT", "GET", "GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", 
+"HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", 
+"HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IFNULL", 
+"IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", 
+"INTEGER_GCD", "INTERACTIVE", "IS", "IS_ARRAY_AND_OF", "IS_ARRAY_OF", 
 "IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", "IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", 
 "IS_UPDATE_AVAILABLE", "ISALNUM", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", 
 "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEFT_SHIFT", "LEN", "LF", "LOAD", 
@@ -935,7 +957,7 @@ To get a list of built-in functions, please call builtins()
 "X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-358
+360
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -2388,6 +2410,7 @@ database management system).
   - DATE -> Java: java.sql.Timestamp or java.sql.Date (if error)
   - NULL -> Java: null (java.lang.Object, non-typed null) or String (if error)
   - NUMBER -> Java: int (if a NUMBER looks like an integer) or 
+              Java: long (if a NUMBER looks like a long) or 
               Java: java.math.BigDecimal
   - STRING -> Java: String
   - Unsupported Singkong data types in query: STRING representation
@@ -3085,14 +3108,14 @@ Singkong comes with simple HTTP client.
   - built-in function: http_head
   - Accept-Charset: UTF-8
   - Redirection from HTTP to HTTPS is supported
-  - Only one redirect is followed (Location header)
+  - Only one redirect is followed (Location header)(optional)
   - Supported redirects: 301, 302, 303
   - Built-in function returns ARRAY (headers, response code, data) or NULL
 - GET
   - built-in functions: http_get, http_get_file
   - Accept-Charset: UTF-8
   - Redirection from HTTP to HTTPS is supported
-  - Only one redirect is followed (Location header)
+  - Only one redirect is followed (Location header)(optional)
   - Supported redirects: 301, 302, 303
   - To download a file, please use built-in function: http_get_file
   - Built-in functions return ARRAY (headers, response code, data) or NULL
@@ -4768,6 +4791,14 @@ show()
 -----------------------------------------------------------------------------
 
 30. Changelog
+Version: 10.6 (2025-March-19 +07:00)
+- 360 built-in functions
+  new: extract, extract_group
+- 9 built-in modules
+- Bug fix: query (NUMBER is integer check)
+- Update: http_get, http_get_file, http_head
+  (additional optional argument to follow redirect)
+
 Version: 10.5 (2025-March-13 +07:00)
 - 358 built-in functions
   new: x_base64_decode, x_base64_encode,  
