@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2025
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 10.6 (2025-March-19 +07:00)
+Version: 10.7 (2025-March-20 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -104,7 +104,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 10.6
+        Singkong 10.7
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -306,11 +306,11 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
   - modify STRING: please use built-in function set
   - related functions: array_string, base64_decode, base64_encode, call, center, 
     count, cr, crlf, dir, empty, endswith, equals, eval, extract, extract_group, 
-    in, index, isalnum, isalpha, isdigit, islower, isupper, join, left, len, lf, 
-    lower, matches, md5, md5_file, newline, ord, parse_string, quote, 
-    random_string, replace, right, set, sha1, sha1_file, sha256, sha256_file, 
-    sha384, sha384_file, sha512, sha512_file, slice, sort_string, split, 
-    startswith, stat, tab, trim, upper, uuid
+    in, index, interpolate, isalnum, isalpha, isdigit, islower, isupper, join, 
+    left, len, lf, lower, matches, md5, md5_file, newline, ord, parse_string, 
+    quote, random_string, replace, right, set, sha1, sha1_file, sha256, 
+    sha256_file, sha384, sha384_file, sha512, sha512_file, slice, sort_string, 
+    split, startswith, stat, tab, trim, upper, uuid
   - special characters: cr, crlf, lf, newline, quote, tab
   - file related functions: abs, append, copy, copy_resource, delete, mkdir, read, 
     rename, temp_file, write 
@@ -352,6 +352,21 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
         "Singkong programming language"
         >  replace_hash("$name $type", {"$name": "Singkong", "$type": "programming language"})
         "Singkong programming language"
+  - string (variable) interpolation:
+        >  var a = "Singkong"
+        >  var b = [1,2,3,4]
+        >  var s = "Hello, {a} {b} {c}"
+        >  a
+        "Singkong"
+        >  b
+        [1, 2, 3, 4]
+        >  s
+        "Hello, {a} {b} {c}"
+        >  interpolate(s)
+        "Hello, Singkong [1, 2, 3, 4] {c}"
+        >  var c = {1:2, 3:4}
+        >  interpolate(s)
+        "Hello, Singkong [1, 2, 3, 4] {1: 2, 3: 4}"
   - regular expression
     - matches (whole STRING):
         >  matches("A1 B2 C3 D4", "^A")
@@ -918,35 +933,36 @@ To get a list of built-in functions, please call builtins()
 "HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", 
 "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IFNULL", 
 "IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", 
-"INTEGER_GCD", "INTERACTIVE", "IS", "IS_ARRAY_AND_OF", "IS_ARRAY_OF", 
-"IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", "IS_RECT_ARRAY", "IS_RECT_ARRAY_OF", 
-"IS_UPDATE_AVAILABLE", "ISALNUM", "ISALPHA", "ISDIGIT", "ISLOWER", "ISUPPER", 
-"JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEFT_SHIFT", "LEN", "LF", "LOAD", 
-"LOAD_FILE_OR_RESOURCE", "LOAD_MODULE", "LOAD_RESOURCE", "LOG", "LOG10", 
-"LOGIN_DIALOG", "LOWER", "MAIN_RESOURCE", "MATCHES", "MAX", "MD5", "MD5_FILE", 
-"MENUBAR", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", "MONTH", "NEWLINE", 
-"NUMBER", "NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", "NUMBER_NOT", 
-"NUMBER_OR", "NUMBER_SCALE", "NUMBER_TO_BYTE", "NUMBER_TO_BYTE_ARRAY", 
-"NUMBER_XOR", "OPEN", "ORD", "PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", 
-"PANEL_REMOVE", "PARAM", "PARSE_ARRAY", "PARSE_HASH", "PARSE_STRING", "PART", 
-"PARTS", "PASSWORD", "PLAY_SOUND", "POP", "POPUP_COMPONENT", "POPUP_HIDE", 
-"POPUP_SHOW", "PRINT", "PRINTER", "PRINTLN", "PROPERTIES_READ", 
-"PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
-"RANDOM_STRING", "RANGE", "READ", "READ_BYTE", "RECT_ARRAY_SIZE", 
-"RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", 
-"RENAME", "REPLACE", "REQUIRE", "REQUIRE_RUNTIME", "RESET", "RESIZABLE", "REST", 
-"REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", "RUNTIME_VERSION", "SAVE", "SCREEN", 
-"SECOND", "SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", 
-"SHA384", "SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", 
-"SINGKONG", "SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", 
-"SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", 
-"SQRT", "START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", 
-"STOP", "STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", 
-"SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
-"TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", 
-"TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", 
-"TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", 
-"TABLE_SCROLL", "TABLE_SET_COLOR", "TABLE_SET_RENDERER", "TABLE_SET_ROW_HEIGHT", 
+"INTEGER_GCD", "INTERACTIVE", "INTERPOLATE", "IS", "IS_ARRAY_AND_OF", 
+"IS_ARRAY_OF", "IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", "IS_RECT_ARRAY", 
+"IS_RECT_ARRAY_OF", "IS_UPDATE_AVAILABLE", "ISALNUM", "ISALPHA", "ISDIGIT", 
+"ISLOWER", "ISUPPER", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEFT_SHIFT", 
+"LEN", "LF", "LOAD", "LOAD_FILE_OR_RESOURCE", "LOAD_MODULE", "LOAD_RESOURCE", 
+"LOG", "LOG10", "LOGIN_DIALOG", "LOWER", "MAIN_RESOURCE", "MATCHES", "MAX", 
+"MD5", "MD5_FILE", "MENUBAR", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", 
+"MONTH", "NEWLINE", "NUMBER", "NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", 
+"NUMBER_NOT", "NUMBER_OR", "NUMBER_SCALE", "NUMBER_TO_BYTE", 
+"NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", "ORD", "PANEL_ADD", "PANEL_CLEAR", 
+"PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_ARRAY", "PARSE_HASH", 
+"PARSE_STRING", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", 
+"POPUP_COMPONENT", "POPUP_HIDE", "POPUP_SHOW", "PRINT", "PRINTER", "PRINTLN", 
+"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
+"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "READ_BYTE", 
+"RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", 
+"REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "REQUIRE_RUNTIME", 
+"RESET", "RESIZABLE", "REST", "REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", 
+"RUNTIME_VERSION", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
+"SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", "SHA512", 
+"SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", "SINGKONG_INTERPRETER", 
+"SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", 
+"SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", "START", "START_TIMER", 
+"STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", "STOP_TIMER", "STRING", 
+"STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", "SUM", "SYSTEM", "TAB", 
+"TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", 
+"TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", "TABLE_COLUMN_INFO", 
+"TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", "TABLE_MIDDLE", 
+"TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", "TABLE_SCROLL", 
+"TABLE_SET_COLOR", "TABLE_SET_RENDERER", "TABLE_SET_ROW_HEIGHT", 
 "TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", 
 "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", 
 "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
@@ -957,7 +973,7 @@ To get a list of built-in functions, please call builtins()
 "X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-360
+361
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -4791,6 +4807,11 @@ show()
 -----------------------------------------------------------------------------
 
 30. Changelog
+Version: 10.7 (2025-March-20 +07:00)
+- 361 built-in functions
+  new: interpolate
+- 9 built-in modules
+
 Version: 10.6 (2025-March-19 +07:00)
 - 360 built-in functions
   new: extract, extract_group
