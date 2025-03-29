@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2025
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 10.7 (2025-March-20 +07:00)
+Version: 10.8 (2025-March-29 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -51,7 +51,8 @@ Bundled JDBC Drivers (compatible with Java 5.0 or later):
 27. Example: Monkey programming language interpreter in Singkong
 28. Example: Working with Comma-Separated Values file
 29. Example: Drawing: simple painting program
-30. Changelog
+30. Example: String interpolation, template engine, regular expression
+31. Changelog
 
 
 -----------------------------------------------------------------------------
@@ -104,7 +105,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 10.7
+        Singkong 10.8
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -310,7 +311,7 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
     left, len, lf, lower, matches, md5, md5_file, newline, ord, parse_string, 
     quote, random_string, replace, right, set, sha1, sha1_file, sha256, 
     sha256_file, sha384, sha384_file, sha512, sha512_file, slice, sort_string, 
-    split, startswith, stat, tab, trim, upper, uuid
+    split, startswith, stat, tab, template, trim, upper, uuid
   - special characters: cr, crlf, lf, newline, quote, tab
   - file related functions: abs, append, copy, copy_resource, delete, mkdir, read, 
     rename, temp_file, write 
@@ -352,43 +353,8 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
         "Singkong programming language"
         >  replace_hash("$name $type", {"$name": "Singkong", "$type": "programming language"})
         "Singkong programming language"
-  - string (variable) interpolation:
-        >  var a = "Singkong"
-        >  var b = [1,2,3,4]
-        >  var s = "Hello, {a} {b} {c}"
-        >  a
-        "Singkong"
-        >  b
-        [1, 2, 3, 4]
-        >  s
-        "Hello, {a} {b} {c}"
-        >  interpolate(s)
-        "Hello, Singkong [1, 2, 3, 4] {c}"
-        >  var c = {1:2, 3:4}
-        >  interpolate(s)
-        "Hello, Singkong [1, 2, 3, 4] {1: 2, 3: 4}"
-  - regular expression
-    - matches (whole STRING):
-        >  matches("A1 B2 C3 D4", "^A")
-        false
-        >  matches("A1 B2 C3 D4", "4$")
-        false
-        >  matches("A1 B2 C3 D4", "^A.*4$")
-        true
-        >  matches("A1 B2 C3 D4", "^a.*4$")
-        false
-        >  matches("A1 B2 C3 D4", "(?i)^a.*4$")
-        true
-    - extract:
-        >  extract("A1 B2 C3 D4", "(\d+)")
-        ["1", "2", "3", "4"]
-        >  extract("A1 B2 C3 D4", "(\D+)")
-        ["A", " B", " C", " D"]      
-        >  extract("Code: <tag>Singkong</tag> Code: <tag>Programming</tag>", "<(\w+)>(.*?)</(\1)>")
-        ["<tag>Singkong</tag>", "<tag>Programming</tag>"]
-    - extract_group:
-        >  extract_group("Code: <tag>Singkong</tag> Code: <tag>Programming</tag>", "<(\w+)>(.*?)</(\1)>")
-        [["<tag>Singkong</tag>", "tag", "Singkong"], ["<tag>Programming</tag>", "tag", "Programming"]]
+  - Please also read: 
+    Example: String interpolation, template engine, regular expression
 - ARRAY
   - []
   - array of mixed data types
@@ -815,6 +781,8 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
     function name prefix: x_
     these functions are always available 
     if the requirement is not met: returns NULL 
+  - to add or reset disabled built-in functions, please use optional argument
+    of disabled.
 - COMPONENT
   - Please read: GUI application development
   - related functions: add, add_e, add_n, add_s, add_w, button_image, clear, closing, 
@@ -963,17 +931,17 @@ To get a list of built-in functions, please call builtins()
 "TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", "TABLE_MIDDLE", 
 "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", "TABLE_SCROLL", 
 "TABLE_SET_COLOR", "TABLE_SET_RENDERER", "TABLE_SET_ROW_HEIGHT", 
-"TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "THREAD", 
-"THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", 
-"TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", "TYPES", 
-"UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", "USERHOME", 
-"UUID", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", 
-"WRITE_BYTE", "X_BASE64_DECODE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE", 
-"X_BASE64_ENCODE_FILE", "X_BASE64_MD5", "X_BASE64_SHA1", "X_BASE64_SHA256", 
-"X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
+"TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "TEMPLATE", 
+"THREAD", "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", 
+"TO_BIN", "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", 
+"TYPES", "UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", 
+"USERHOME", "UUID", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", 
+"WRITE", "WRITE_BYTE", "X_BASE64_DECODE", "X_BASE64_DECODE_FILE", 
+"X_BASE64_ENCODE", "X_BASE64_ENCODE_FILE", "X_BASE64_MD5", "X_BASE64_SHA1", 
+"X_BASE64_SHA256", "X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-361
+362
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -4806,7 +4774,128 @@ show()
 
 -----------------------------------------------------------------------------
 
-30. Changelog
+30. Example: String interpolation, template engine, regular expression
+  - string (variable) interpolation:
+        >  var a = "Singkong"
+        >  var b = [1,2,3,4]
+        >  var s = "Hello, {a} {b} {c}"
+        >  a
+        "Singkong"
+        >  b
+        [1, 2, 3, 4]
+        >  s
+        "Hello, {a} {b} {c}"
+        >  interpolate(s)
+        "Hello, Singkong [1, 2, 3, 4] {c}"
+        >  upper(s)
+        "HELLO, {A} {B} {C}"
+        >  interpolate(upper(s))
+        "HELLO, Singkong [1, 2, 3, 4] {C}"
+        >  var c = {1:2, 3:4}
+        >  interpolate(s)
+        "Hello, Singkong [1, 2, 3, 4] {1: 2, 3: 4}"
+        >  interpolate("{1 + 2 + 3}")
+        "{1 + 2 + 3}"
+        >  var d = 1 + 2 + 3
+        >  interpolate("{d}")
+        "6"
+        >  interpolate("{words_en(string(d))}")
+        "{words_en(string(d))}"
+        >  var e = [1,2,3,4,5]
+        >  interpolate("{e[4]}")
+        "{e[4]}"
+  - template engine:
+        >  var a = "Singkong"
+        >  var b = [1,2,3,4]
+        >  var s = "Hello, $a$ $b$ $c$"
+        >  a
+        "Singkong"
+        >  b
+        [1, 2, 3, 4]
+        >  s
+        "Hello, $a$ $b$ $c$"
+        >  template(s)
+        "Hello, Singkong [1, 2, 3, 4] ERROR: [line: 1] identifier not found: c"
+        >  upper(s)
+        "HELLO, $A$ $B$ $C$"
+        >  template(upper(s))
+        "HELLO, Singkong [1, 2, 3, 4] ERROR: [line: 1] identifier not found: C"
+        >  var c = {1:2, 3:4}
+        >  template(s)
+        "Hello, Singkong [1, 2, 3, 4] {1: 2, 3: 4}"
+        >  template("$1 + 2 + 3$")
+        "6"
+        >  d
+        ERROR: [line: 1] identifier not found: d
+        >  template("$d$")
+        "ERROR: [line: 1] identifier not found: d"
+        >  template("$var d = 1 + 2 + 3$")
+        ""
+        >  d
+        6
+        >  template("$d$")
+        "6"
+        >  template("$words_en(string(1+2+3))$")
+        "Six"
+        >  template("$words_en(string(d))$")
+        "Six"
+        >  template("$var e = [1,2,3,4,5]$ Array: $e$, Length: $len(e)$, Sum: $sum(e)$, Array[4] = $e[4]$")
+        " Array: [1, 2, 3, 4, 5], Length: 5, Sum: 15, Array[4] = 5"
+        >  disabled()
+        []
+        >  disabled([sum])
+        ["sum"]
+        >  disabled()
+        ["sum"]
+        >  template("$var e = [1,2,3,4,5]$ Array: $e$, Length: $len(e)$, Sum: $sum(e)$, Array[4] = $e[4]$")
+        " Array: [1, 2, 3, 4, 5], Length: 5, Sum: ERROR: [line: 1] built-in function "sum" is disabled, Array[4] = 5"
+        >  disabled([])
+        []
+        >  template("$var e = [1,2,3,4,5]$ Array: $e$, Length: $len(e)$, Sum: $sum(e)$, Array[4] = $e[4]$")
+        " Array: [1, 2, 3, 4, 5], Length: 5, Sum: 15, Array[4] = 5"
+        >  var f = [1,2,3,4,5]
+        >  template("Empty: $if (empty(f)) { true } else { false }$")
+        "Empty: false"
+        >  var f = []
+        >  template("Empty: $if (empty(f)) { true } else { false }$")
+        "Empty: true"
+        >  template("$var g = []$ Init: $g$ $each(range(0, 16, 4), fn(e, i) { g + e })$ Result: $g$")
+        " Init: []  Result: [0, 4, 8, 12]"
+  - regular expression
+    - matches (whole STRING):
+        >  matches("A1 B2 C3 D4", "^A")
+        false
+        >  matches("A1 B2 C3 D4", "4$")
+        false
+        >  matches("A1 B2 C3 D4", "^A.*4$")
+        true
+        >  matches("A1 B2 C3 D4", "^a.*4$")
+        false
+        >  matches("A1 B2 C3 D4", "(?i)^a.*4$")
+        true
+    - extract:
+        >  extract("A1 B2 C3 D4", "(\d+)")
+        ["1", "2", "3", "4"]
+        >  extract("A1 B2 C3 D4", "(\D+)")
+        ["A", " B", " C", " D"]      
+        >  extract("Code: <tag>Singkong</tag> Code: <tag>Programming</tag>", "<(\w+)>(.*?)</(\1)>")
+        ["<tag>Singkong</tag>", "<tag>Programming</tag>"]
+    - extract_group:
+        >  extract_group("Code: <tag>Singkong</tag> Code: <tag>Programming</tag>", "<(\w+)>(.*?)</(\1)>")
+        [["<tag>Singkong</tag>", "tag", "Singkong"], ["<tag>Programming</tag>", "tag", "Programming"]]
+
+
+-----------------------------------------------------------------------------
+
+31. Changelog
+Version: 10.8 (2025-March-29 +07:00)
+- 362 built-in functions
+  new: template
+- 9 built-in modules
+- Update: disabled
+  (optional argument to add or reset disabled 
+  built-in functions)
+
 Version: 10.7 (2025-March-20 +07:00)
 - 361 built-in functions
   new: interpolate
