@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2025
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 10.8 (2025-March-29 +07:00)
+Version: 10.9 (2025-April-24 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -105,7 +105,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 10.8
+        Singkong 10.9
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -232,6 +232,7 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
   - hyperbolic functions: sinh, cosh, tanh
   - natural exponential, logarithm, square/cube root functions: exp, log, log10, sqrt, cbrt
   - base conversion: from_bin, from_hex, from_oct, to_bin, to_hex, to_oct
+  - UTF-16 representation: utf16
   - bitwise operation: number_xor, number_or, number_and, number_not
   - bit shift operation: left_shift, right_shift, unsigned_right_shift
   - sorting: by value
@@ -313,8 +314,8 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
     sha256_file, sha384, sha384_file, sha512, sha512_file, slice, sort_string, 
     split, startswith, stat, tab, template, trim, upper, uuid
   - special characters: cr, crlf, lf, newline, quote, tab
-  - file related functions: abs, append, copy, copy_resource, delete, mkdir, read, 
-    rename, temp_file, write 
+  - file related functions: abs, append, copy, copy_resource, delete, 
+    file_contents, mkdir, read, rename, temp_file, write 
   - HTTP client related functions: http_delete, http_get, http_get_file, 
     http_head, http_post, http_post_override, http_put, url_decode, url_encode 
   - system related functions: cwd, inet_address_local, separator, user, userhome
@@ -893,15 +894,15 @@ To get a list of built-in functions, please call builtins()
 "DRAW_WIDTH", "DRAW_WRITE_BMP", "DRAW_WRITE_JPG", "DRAW_WRITE_PNG", "EACH", 
 "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FOCUS", 
 "EVENT_FRAME", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", 
-"EXIT", "EXP", "EXTRACT", "EXTRACT_GROUP", "FILL_ARC", "FILL_OVAL", 
-"FILL_POLYGON", "FILL_RECT", "FILL_ROUND_RECT", "FIRST", "FONTS", "FORMAT_DATE", 
-"FORMAT_DATETIME", "FORMAT_DIFF", "FORMAT_TIME", "FRAME", "FRAME_CLOSE", 
-"FRAME_IMAGE", "FRAME_LOCATION", "FRAME_TOP", "FROM_BIN", "FROM_HEX", 
-"FROM_OCT", "GET", "GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", 
-"HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", 
-"HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IFNULL", 
-"IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", 
-"INTEGER_GCD", "INTERACTIVE", "INTERPOLATE", "IS", "IS_ARRAY_AND_OF", 
+"EXIT", "EXP", "EXTRACT", "EXTRACT_GROUP", "FILE_CONTENTS", "FILL_ARC", 
+"FILL_OVAL", "FILL_POLYGON", "FILL_RECT", "FILL_ROUND_RECT", "FIRST", "FONTS", 
+"FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "FORMAT_TIME", "FRAME", 
+"FRAME_CLOSE", "FRAME_IMAGE", "FRAME_LOCATION", "FRAME_TOP", "FROM_BIN", 
+"FROM_HEX", "FROM_OCT", "GET", "GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", 
+"HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", 
+"HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", 
+"IFNULL", "IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", 
+"INTEGER", "INTEGER_GCD", "INTERACTIVE", "INTERPOLATE", "IS", "IS_ARRAY_AND_OF", 
 "IS_ARRAY_OF", "IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", "IS_RECT_ARRAY", 
 "IS_RECT_ARRAY_OF", "IS_UPDATE_AVAILABLE", "ISALNUM", "ISALPHA", "ISDIGIT", 
 "ISLOWER", "ISUPPER", "JOIN", "KEYS", "KEYWORDS", "LAST", "LEFT", "LEFT_SHIFT", 
@@ -935,13 +936,13 @@ To get a list of built-in functions, please call builtins()
 "THREAD", "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", 
 "TO_BIN", "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", 
 "TYPES", "UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", 
-"USERHOME", "UUID", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", "WORDS_ID", 
-"WRITE", "WRITE_BYTE", "X_BASE64_DECODE", "X_BASE64_DECODE_FILE", 
+"USERHOME", "UTF16", "UUID", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", 
+"WORDS_ID", "WRITE", "WRITE_BYTE", "X_BASE64_DECODE", "X_BASE64_DECODE_FILE", 
 "X_BASE64_ENCODE", "X_BASE64_ENCODE_FILE", "X_BASE64_MD5", "X_BASE64_SHA1", 
 "X_BASE64_SHA256", "X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-362
+364
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -4861,6 +4862,14 @@ show()
         "Empty: true"
         >  template("$var g = []$ Init: $g$ $each(range(0, 16, 4), fn(e, i) { g + e })$ Result: $g$")
         " Init: []  Result: [0, 4, 8, 12]"
+  - template engine (local variables):
+        >  var test = fn() { var name = "Singkong"; print(template("Hello, $name$")) }
+        >  test()
+        Hello, ERROR: [line: 1] identifier not found: name
+        >  var vars = {}
+        >  var test = fn() { var name = "Singkong"; set(vars, 0, name); print(template("Hello, $vars[0]$")) }
+        >  test()
+        Hello, Singkong
   - regular expression
     - matches (whole STRING):
         >  matches("A1 B2 C3 D4", "^A")
@@ -4888,6 +4897,13 @@ show()
 -----------------------------------------------------------------------------
 
 31. Changelog
+Version: 10.9 (2025-April-24 +07:00)
+- 364 built-in functions
+  new: file_contents, utf16
+- 9 built-in modules
+- Update: stat
+  (parent directory)
+
 Version: 10.8 (2025-March-29 +07:00)
 - 362 built-in functions
   new: template
