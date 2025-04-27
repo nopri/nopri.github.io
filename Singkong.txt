@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2025
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 10.9 (2025-April-24 +07:00)
+Version: 11.0 (2025-April-27 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -105,7 +105,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 10.9
+        Singkong 11.0
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -320,7 +320,7 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
     http_head, http_post, http_post_override, http_put, url_decode, url_encode 
   - system related functions: cwd, inet_address_local, separator, user, userhome
   - Singkong related functions: load, load_file_or_resource, load_module, load_resource
-  - extended: x_base64_decode, x_base64_decode_file, x_base64_encode, 
+  - extended: x_base64_contents, x_base64_decode, x_base64_decode_file, x_base64_encode, 
     x_base64_encode_file, x_base64_md5, x_base64_sha1, x_base64_sha256, 
     x_base64_sha384, x_base64_sha512
   - sorting: lexicographically
@@ -588,7 +588,7 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
   - related functions: empty, keys, len, parse_hash, random, sort_hash, values
   - file related functions: properties_read, properties_write, stat
   - CGI related functions: cgi_header, cgi_get, cgi_post, cgi_post_hash
-  - system related functions: env, info
+  - system related functions: env, info, runtime_command
   - Singkong related functions: singkong
   - sorting: by length
   - copy:
@@ -920,29 +920,30 @@ To get a list of built-in functions, please call builtins()
 "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", 
 "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "REQUIRE_RUNTIME", 
 "RESET", "RESIZABLE", "REST", "REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", 
-"RUNTIME_VERSION", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", "SHA1", 
-"SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", "SHA512", 
-"SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", "SINGKONG_INTERPRETER", 
-"SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", 
-"SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", "START", "START_TIMER", 
-"STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", "STOP_TIMER", "STRING", 
-"STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", "SUM", "SYSTEM", "TAB", 
-"TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", 
-"TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", "TABLE_COLUMN_INFO", 
-"TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", "TABLE_MIDDLE", 
-"TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", "TABLE_SCROLL", 
-"TABLE_SET_COLOR", "TABLE_SET_RENDERER", "TABLE_SET_ROW_HEIGHT", 
+"RUNTIME_COMMAND", "RUNTIME_VERSION", "SAVE", "SCREEN", "SECOND", "SEPARATOR", 
+"SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", 
+"SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
+"SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
+"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", 
+"START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", 
+"STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", "SUM", 
+"SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
+"TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", 
+"TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", 
+"TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", 
+"TABLE_SCROLL", "TABLE_SET_COLOR", "TABLE_SET_RENDERER", "TABLE_SET_ROW_HEIGHT", 
 "TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "TEMPLATE", 
 "THREAD", "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", 
 "TO_BIN", "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", 
 "TYPES", "UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", 
 "USERHOME", "UTF16", "UUID", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", 
-"WORDS_ID", "WRITE", "WRITE_BYTE", "X_BASE64_DECODE", "X_BASE64_DECODE_FILE", 
-"X_BASE64_ENCODE", "X_BASE64_ENCODE_FILE", "X_BASE64_MD5", "X_BASE64_SHA1", 
-"X_BASE64_SHA256", "X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
+"WORDS_ID", "WRITE", "WRITE_BYTE", "X_BASE64_CONTENTS", "X_BASE64_DECODE", 
+"X_BASE64_DECODE_FILE", "X_BASE64_ENCODE", "X_BASE64_ENCODE_FILE", 
+"X_BASE64_MD5", "X_BASE64_SHA1", "X_BASE64_SHA256", "X_BASE64_SHA384", 
+"X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-364
+366
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -2905,6 +2906,17 @@ Interface (CGI).
 - Both cgi_post and cgi_post_hash read up to HTTP server variable CONTENT_LENGTH, if set.
   Optional charset (supported by Java) may be passed, for example:
   US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, UTF-16. 
+- To output file contents:
+  - Set Content-type header
+  - Set Content-disposition header if needed
+  - Call file_contents built-in function
+  - Call exit
+- To output file contents (saved in Base64 encoded STRING):
+  - Set Content-type header
+  - Set Content-disposition header if needed
+  - Call x_base64_contents built-in function
+  - Call exit
+- Get runtime command or current file/dir: runtime_command
 - Using HTTP server with CGI support:
   - It is preferred to use .web filename extension (rather than .singkong) for Singkong
     CGI application (shorter to type, allows .singkong files to be downloaded). 
@@ -2943,6 +2955,8 @@ Interface (CGI).
       - Executable: <path to java.exe> -DSINGKONG=0 -jar <path to Singkong.jar> %s
       - Name: SingkongWeb
       (then allow this ISAPI extension)
+  - To set property (for example session directory), please use -D when running
+    java. Alternatively, runtime_command built-in function may be used.
 - Query string handling examples:
     a                       : {"a": ""}
     a&b                     : {"a": "", "b": ""}
@@ -4897,6 +4911,11 @@ show()
 -----------------------------------------------------------------------------
 
 31. Changelog
+Version: 11.0 (2025-April-27 +07:00)
+- 366 built-in functions
+  new: runtime_command, x_base64_contents
+- 9 built-in modules
+
 Version: 10.9 (2025-April-24 +07:00)
 - 364 built-in functions
   new: file_contents, utf16
