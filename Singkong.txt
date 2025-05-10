@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2025
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 11.0 (2025-April-27 +07:00)
+Version: 11.1 (2025-May-10 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -105,7 +105,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 11.0
+        Singkong 11.1
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -686,6 +686,28 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
         2023-01-01 00:00:00
         >  type(date([], @2023, true))
         "NULL"
+  - Day of week: please use functions from date_util module:
+        >  load_module("date_util")
+        >  @
+        2025-05-10 16:40:39
+        >  day_of_week_now()
+        7
+        >  day_of_week(@20250508)
+        5
+        >  day_of_week_data(@20250508, 4)
+        [2025-05-08 00:00:00, "2025-05-08", 5, -1, 6, 2025-05-07 00:00:00, 
+        2025-05-14 00:00:00, "2025-05-07", "2025-05-14", [2025-05-07 00:00:00, 
+        2025-05-08 00:00:00, 2025-05-09 00:00:00, 2025-05-10 00:00:00, 
+        2025-05-11 00:00:00, 2025-05-12 00:00:00, 2025-05-13 00:00:00, 
+        2025-05-14 00:00:00], ["2025-05-07", "2025-05-08", "2025-05-09", 
+        "2025-05-10", "2025-05-11", "2025-05-12", "2025-05-13", "2025-05-14"]]
+        >  day_of_week_data_now(4)
+        [2025-05-10 00:00:00, "2025-05-10", 7, -3, 4, 2025-05-07 00:00:00, 
+        2025-05-14 00:00:00, "2025-05-07", "2025-05-14", [2025-05-07 00:00:00, 
+        2025-05-08 00:00:00, 2025-05-09 00:00:00, 2025-05-10 00:00:00, 
+        2025-05-11 00:00:00, 2025-05-12 00:00:00, 2025-05-13 00:00:00, 
+        2025-05-14 00:00:00], ["2025-05-07", "2025-05-08", "2025-05-09", 
+        "2025-05-10", "2025-05-11", "2025-05-12", "2025-05-13", "2025-05-14"]]
   - sorting: before/after
 - FUNCTION
   - fn()
@@ -961,11 +983,13 @@ return value: <any type>
 
 To get a list of built-in modules, please call modules()
 >  modules()
-["csv", "db_util", "json", "rect_array_util", "set_util", "ui_calendar", "ui_util", "util", "web"]
+["csv", "date_util", "db_util", "json", "rect_array_util", "set_util", 
+"ui_calendar", "ui_util", "util", "web"]
 
 To load a built-in module, please use built-in function load_module, 
 for example:
 >  load_module("csv")
+>  load_module("date_util")
 >  load_module("db_util")
 >  load_module("json")
 >  load_module("rect_array_util")
@@ -1005,6 +1029,9 @@ Functions in module: db_util:
 "DB_SELECT_DERBY_", "DB_SELECT_EMBED", "DB_SELECT_EMBED_", 
 "DB_SELECT_POSTGRESQL", "DB_SELECT_POSTGRESQL_", "DB_UPDATE", "DB_UPDATE_", 
 "QUERY_RESULT"]
+
+Functions in module: date_util: 
+["DAY_OF_WEEK", "DAY_OF_WEEK_DATA", "DAY_OF_WEEK_DATA_NOW", "DAY_OF_WEEK_NOW"]
 
 Functions in module: json: 
 ["JSON_PARSE", "JSON_PARSE_", "JSON_STRING"]
@@ -2911,11 +2938,26 @@ Interface (CGI).
   - Set Content-disposition header if needed
   - Call file_contents built-in function
   - Call exit
+  - Authentication/authorization may be applied
+  - example ("data" dir is set forbidden, in web server configuration):
+    cgi_header({
+        "Content-type": "image/png"
+    })
+    var f = runtime_command()["dir"] + "/data/image.png"
+    file_contents(f)
+    exit()
 - To output file contents (saved in Base64 encoded STRING):
   - Set Content-type header
   - Set Content-disposition header if needed
   - Call x_base64_contents built-in function
   - Call exit
+  - Authentication/authorization may be applied
+  - example (b is Base64 encoded STRING):
+    cgi_header({
+        "Content-type": "image/png"
+    })
+    x_base64_contents(b)
+    exit()
 - Get runtime command or current file/dir: runtime_command
 - Using HTTP server with CGI support:
   - It is preferred to use .web filename extension (rather than .singkong) for Singkong
@@ -4911,6 +4953,13 @@ show()
 -----------------------------------------------------------------------------
 
 31. Changelog
+Version: 11.1 (2025-May-10 +07:00)
+- 366 built-in functions
+- 10 built-in modules
+  new: date_util
+  (day_of_week, day_of_week_now,
+  day_of_week_data, day_of_week_data_now)
+
 Version: 11.0 (2025-April-27 +07:00)
 - 366 built-in functions
   new: runtime_command, x_base64_contents

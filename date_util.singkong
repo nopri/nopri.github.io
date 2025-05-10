@@ -1,0 +1,123 @@
+#
+    date_util
+    date_util.singkong
+
+    Part of Singkong Programming Language Interpreter
+    (c) Noprianto <nop@noprianto.com>
+
+    More information: https://nopri.github.io/singkong.html
+    Download Singkong: https://nopri.github.io/Singkong.jar
+    (License: Free to use or redistribute, no warranty)
+
+    To use this module:
+    load_module("date_util")
+;
+
+require(11.1)
+
+var day_of_week = fn(d) 
+"
+[date_util] function: day_of_week: returns day of week of the specified DATE.
+arguments: 1: DATE
+return value: NUMBER (day of week (1=Sunday)) or NULL (error)
+" 
+{
+    if (!is(d, "DATE")) {
+        return null
+    }
+    var n = part(d)
+    var z = days_of_month(n[0], n[1])
+    var a = [null]
+    var i = 0
+    repeat {
+        var e = z[i]
+        if (e[0] == n[2]) {
+            set(a, 0, e[1])
+            return i
+        }
+        if (i > len(z)) {
+            return i
+        }
+        var i = i + 1
+    }
+    return a[0]
+}
+
+var day_of_week_now = fn() 
+"
+[date_util] function: day_of_week_now: returns day of week of current date.
+arguments:
+return value: NUMBER (day of week (1=Sunday)) or NULL (error)
+" 
+{
+    return day_of_week(@)
+}
+
+var day_of_week_data = fn(c, x) 
+"
+[date_util] function: day_of_week_data: returns [specified DATE, specified DATE as STRING, day of week of specified DATE (1=Sunday), NUMBER of days to previous specified day of week, NUMBER of days to next specified day of week, DATE of previous specified day of week, DATE of next specified day of week, STRING of previous specified day of week, STRING of next specified day of week, ARRAY of DATE (date range between previous to next specified day of week), ARRAY of STRING (date range between previous to next specified day of week)] relative to the specified DATE.
+arguments: 2: DATE and NUMBER (day of week (1=Sunday))
+return value: ARRAY or NULL (error)
+" 
+{
+    if (!is(x, "NUMBER")) {
+        return null
+    }
+    if (!is(c, "DATE")) {
+        return null
+    }
+    var x = integer(x)
+    if ((x < 1) | (x > 7)) {
+        return null
+    }
+    var w = day_of_week(c)
+
+    var n = 0
+    var p = 0
+    if (x == w) {
+        var n = 7
+        var p = 0
+    } else {
+        if (x > w) {
+            var n = x - w
+            var p = 7 - n
+        } else {
+            var p = w - x
+            var n = 7 - p
+        }
+    }
+    var p = p * -1
+    var sn = format_date(day(c, n))
+    var sp = format_date(day(c, p))
+    var dn = date(sn)
+    var dp = date(sp)
+    var sc = format_date(c)
+    var dc = date(sc)
+    var rd = []
+    var rs = []
+    each(range(p * -1, 0, -1), fn(e, i) {
+        var ed = day(dc, -e)
+        rd + ed
+        rs + format_date(ed)
+    })
+    rd + dc
+    rs + sc
+    each(range(1, n+1), fn(e, i) {
+        var ed = day(dc, e)
+        rd + ed
+        rs + format_date(ed)
+    })
+    return [dc, sc, w, p, n, dp, dn, sp, sn, rd, rs]
+}
+
+var day_of_week_data_now = fn(x) 
+"
+[date_util] function: day_of_week_data_now: returns [current DATE, current DATE as STRING, day of week of current DATE (1=Sunday), NUMBER of days to previous specified day of week, NUMBER of days to next specified day of week, DATE of previous specified day of week, DATE of next specified day of week, STRING of previous specified day of week, STRING of next specified day of week, ARRAY of DATE (date range between previous to next specified day of week), ARRAY of STRING (date range between previous to next specified day of week)] relative to current date.
+arguments: 1: NUMBER (day of week (1=Sunday))
+return value: ARRAY or NULL (error)
+" 
+{
+    return day_of_week_data(@, x)
+}
+
+
