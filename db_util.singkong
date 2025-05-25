@@ -13,7 +13,7 @@
     load_module("db_util")
 ;
 
-require(9.4)
+require(11.2)
 
 var db_driver = fn(a) 
 "
@@ -201,6 +201,9 @@ return value: ARRAY or NULL (error)
     if (empty(c)) {
         return null
     }
+    if (!isalnum(c)) {
+        return null
+    }
     var fields = create_field_from_array(d)
     if (fields == null) {
         return null
@@ -337,6 +340,10 @@ return value: ARRAY or NULL (error)
     if (empty(b)) {
         return null
     }
+    if (!isalnum(b)) {
+        return null
+    }
+
     var cols = "*"
     if (!empty(c)) {
         var cols = join(",", c)
@@ -506,6 +513,10 @@ return value: ARRAY or NULL (error)
     if (empty(b)) {
         return null
     }
+    if (!isalnum(b)) {
+        return null
+    }
+
     var k = keys(c)
     if (empty(k)) {
         return null
@@ -547,6 +558,10 @@ return value: ARRAY or NULL (error)
     if (empty(b)) {
         return null
     }
+    if (!isalnum(b)) {
+        return null
+    }
+
     if (empty(d)) {
         return null
     }
@@ -602,6 +617,10 @@ return value: ARRAY or NULL (error)
     if (empty(b)) {
         return null
     }
+    if (!isalnum(b)) {
+        return null
+    }
+
     var w = []
     var ww = []
     var www = ""

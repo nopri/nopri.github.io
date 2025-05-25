@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2025
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 11.1 (2025-May-10 +07:00)
+Version: 11.2 (2025-May-26 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -105,7 +105,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 11.1
+        Singkong 11.2
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -1017,6 +1017,9 @@ Functions in module: csv:
 ["CSV_FROM_STRING", "CSV_FROM_STRING_DEFAULT", "CSV_FUNCTIONS", "CSV_TO_STRING", 
 "CSV_TO_STRING_DEFAULT"]
 
+Functions in module: date_util: 
+["DAY_OF_WEEK", "DAY_OF_WEEK_DATA", "DAY_OF_WEEK_DATA_NOW", "DAY_OF_WEEK_NOW"]
+
 Functions in module: db_util: 
 ["CREATE_FIELD_FROM_ARRAY", "DB_CONNECT", "DB_CONNECT_EMBED", 
 "DB_CONNECT_EMBED_", "DB_CONNECT_EMBED_USER", "DB_CREATE_TABLE", 
@@ -1029,9 +1032,6 @@ Functions in module: db_util:
 "DB_SELECT_DERBY_", "DB_SELECT_EMBED", "DB_SELECT_EMBED_", 
 "DB_SELECT_POSTGRESQL", "DB_SELECT_POSTGRESQL_", "DB_UPDATE", "DB_UPDATE_", 
 "QUERY_RESULT"]
-
-Functions in module: date_util: 
-["DAY_OF_WEEK", "DAY_OF_WEEK_DATA", "DAY_OF_WEEK_DATA_NOW", "DAY_OF_WEEK_NOW"]
 
 Functions in module: json: 
 ["JSON_PARSE", "JSON_PARSE_", "JSON_STRING"]
@@ -1093,8 +1093,10 @@ Functions in module: util:
 Functions in module: web:
 ["HEADER_LOCATION", "HEADER_SESSION", "HEADER_SESSION_", "HEADER_SESSION_DELETE", 
 "HEADER_SESSION_DELETE_", "HEADER_SESSION_SECURE", "QUERY_STRING_ARRAY", 
-"QUERY_STRING_HASH", "REQUEST_METHOD", "SESSION_FILE_DELETE", 
-"SESSION_FILE_GET", "SESSION_FILE_GET_", "SESSION_FILE_SET", "SESSION_NEW"]
+"QUERY_STRING_HASH", "REDIRECT_IF", "REDIRECT_TO", "REQUEST_METHOD", 
+"SESSION_DB_DELETE", "SESSION_DB_DELETE_", "SESSION_DB_GET", "SESSION_DB_GET_", 
+"SESSION_DB_SET", "SESSION_DB_SET_", "SESSION_FILE_DELETE", "SESSION_FILE_GET", 
+"SESSION_FILE_GET_", "SESSION_FILE_SET", "SESSION_NEW"]
 
 
 -----------------------------------------------------------------------------
@@ -3008,14 +3010,21 @@ Interface (CGI).
     a=1&a=2&A&b=1&b=2&b&c   : {"a": ["1", "2"], "A": "", "b": ["1", "2", ""], "c": ""}
     a=hello+world           : {"a": "hello world"}
     a=hello%20world!        : {"a": "hello world!"}
+- Redirects (before header is sent): redirect_if, redirect_to
 - Working with session:
   - Please use built-in module: web
-  - Currently supported storage: file system
-    (for example: "/tmp", "c:\session")
+  - Currently supported storage: file system, database
+    (for example: "/tmp", "c:\session", or DATABASE)
   - Session data (HASH) reserved keys (STRING):
     - session: session id
     - timestamp: timestamp (save)
-  - Example:
+  - Related functions (file system):
+    session_file_delete, session_file_get, session_file_get_, session_file_set, 
+    session_new
+  - Related functions (database):
+    session_db_delete, session_db_delete_, session_db_get, session_db_get_, 
+    session_db_set, session_db_set_, session_new
+  - Example (file system):
     (please adjust sess_path variable, make sure it is writable by web server process)
 
     - index.web: if authenticated, redirect to home.web
@@ -4953,6 +4962,14 @@ show()
 -----------------------------------------------------------------------------
 
 31. Changelog
+Version: 11.2 (2025-May-26 +07:00)
+- 366 built-in functions
+- 10 built-in modules
+- Additional functions in web module
+  (8 new functions)
+- web: database-based session
+- web: redirect functions
+
 Version: 11.1 (2025-May-10 +07:00)
 - 366 built-in functions
 - 10 built-in modules

@@ -13,7 +13,7 @@
     load_module("web")
 ;
 
-require(10.2)
+require(11.2)
 
 load_module("json")
 
@@ -331,4 +331,294 @@ return value: STRING (empty: error)
     })
     return join("&", r)
 }
+
+var session_db_get_ = fn(d, t, n) 
+"
+[web] function: session_db_get_: returns database-based session data.
+arguments: 3: DATABASE, STRING (table name; will be automatically created; fields: session_id char(128) unique, contents clob / text, updated timestamp), and STRING (cookie name)
+return value: HASH (empty HASH on error)
+" 
+{
+    var res = [{}]
+
+    if (!is(d, "DATABASE") | !is(t, "STRING") | !is(n, "STRING")) {
+        return res[0]
+    }
+
+    var t = trim(t)
+    if (empty(t)) {
+        return res[0]
+    }
+
+    if (!isalnum(t)) {
+        return res[0]
+    }
+    
+    var sql_create = fn(t, c) {
+        var ret = "
+            create table 
+            " + t + "
+                (
+                    session_id char(128) 
+                        not null primary key,
+                    contents " + c + ",
+                    updated timestamp
+                )
+            "
+        return ret
+    }
+
+    var en = env()
+    var cookie = en["HTTP_COOKIE"]
+    if (cookie == null) {
+        return res[0]
+    }
+
+    var cookies = split(cookie, ";")
+    each(cookies, fn(e, i) {
+        var temp = split(trim(e), "=")
+        if (temp[0] == n) {
+            var v = trim(temp[1])
+            var q = "
+                    select
+                        contents
+                    from
+                    " + t + "
+                    where
+                        session_id=?
+                    "
+            var r = query(d, [[q, [v]]])
+            if (r == null) {
+                var rr = query(d, [[sql_create(t, "clob"), []]])
+                if (rr == null) {
+                    var rr = query(d, [[sql_create(t, "text"), []]])
+                }
+                var r = query(d, [[q, [v]]])
+            }
+            var o = null
+            if (r != null) {
+                var r = r[0]
+                if (!empty(r)) {
+                    var r = r[0]
+                    var o = r[0]
+                }
+            }
+            if (o != null) {
+                var j = json_parse(o)
+                if (is(j, "HASH")) {
+                    set(j, "session", v)
+                    set(res, 0, j)
+                }
+            }
+        }    
+    })
+    return res[0]
+}
+
+var session_db_get = fn(d) 
+"
+[web] function: session_db_get: returns database-based session data (using default table (session; will be automatically created; fields: session_id char(128) unique, contents clob / text, updated timestamp) and cookie name (session)).
+arguments: 1: DATABASE
+return value: HASH (empty HASH on error)
+" 
+{
+    return session_db_get_(d, "session", "session")
+}
+
+var session_db_set_ = fn(d, t, s) 
+"
+[web] function: session_db_set_: updates database-based session data.
+arguments: 3: DATABASE, STRING (table name; will be automatically created; fields: session_id char(128) unique, contents clob / text, updated timestamp), and HASH (session data).
+return value: BOOLEAN or NULL (error)
+" 
+{
+    if (!is(d, "DATABASE") | !is(t, "STRING") | !is(s, "HASH")) {
+        return null
+    }
+    
+    var t = trim(t)
+    if (empty(t)) {
+        return null
+    }
+
+    if (!isalnum(t)) {
+        return null
+    }
+
+    var v = s["session"]
+    if (v == null) {
+        return null
+    }
+
+    var v = trim(v)
+
+    if (!isalnum(v)) {
+        return null
+    }
+
+    set(s, "timestamp", number(@))
+
+    var j = json_string(s)
+   
+    var r = query(d, [
+            [
+                "select * from " + t + "
+                where
+                    session_id=?
+                ",
+                [v]
+            ]
+        ]
+    )
+    if (r != null) {
+        var r = r[0]
+        var rr = null
+        if (empty(r)) {
+            var rr = query(d, [
+                    [
+                        "insert into " + t + "
+                        ( 
+                            session_id,
+                            contents,
+                            updated
+                        )
+                        values(
+                            ?,
+                            ?,
+                            ?
+                        )
+                        ",
+                        [v, j, @]
+                    ]
+                ]
+            )
+        } else {
+            var rr = query(d, [
+                    [
+                        "update " + t + "
+                        set 
+                            contents=?,
+                            updated=?
+                        where
+                            session_id=?
+                        ",
+                        [j, @, v]
+                    ]
+                ]
+            )
+        }
+        if (rr == null) {
+            return null
+        }
+        var rr = rr[0]
+        return rr > 0
+    }
+    return null
+}
+
+var session_db_set = fn(d, s) 
+"
+[web] function: session_db_set: updates database-based session data (using default table (session; will be automatically created; fields: session_id char(128) unique, contents clob / text, updated timestamp).
+arguments: 2: DATABASE and HASH (session data).
+return value: BOOLEAN or NULL (error)
+" 
+{
+    return session_db_set_(d, "session", s)
+}
+
+var session_db_delete_ = fn(d, t, s) 
+"
+[web] function: session_db_delete_: deletes database-based session data.
+arguments: 3: DATABASE, STRING (table name; will be automatically created; fields: session_id char(128) unique, contents clob / text, updated timestamp), and HASH (session data).
+return value: BOOLEAN or NULL (error)
+" 
+{
+    if (!is(d, "DATABASE") | !is(t, "STRING") | !is(s, "HASH")) {
+        return null
+    }
+    
+    var t = trim(t)
+    if (empty(t)) {
+        return null
+    }
+
+    if (!isalnum(t)) {
+        return null
+    }
+
+    var v = s["session"]
+    if (v == null) {
+        return null
+    }
+    
+    var v = trim(v)
+
+    if (!isalnum(v)) {
+        return null
+    }
+
+    var r = query(d, [
+            [
+                "delete from " + t + "
+                where
+                    session_id=?
+                ",
+                [v]
+            ]
+        ]
+    )
+    if (r == null) {
+        return null
+    }
+    var r = r[0]
+    return r > 0 
+}
+
+
+var session_db_delete = fn(d, s) 
+"
+[web] function: session_db_delete: deletes database-based session data (using default table (session; will be automatically created; fields: session_id char(128) unique, contents clob / text, updated timestamp).
+arguments: 2: DATABASE and HASH (session data).
+return value: BOOLEAN or NULL (error)
+" 
+{
+    return session_db_delete_(d, "session", s)
+}
+
+var redirect_if = fn(c, u) 
+"
+[web] function: redirect_if: redirects to the specified URL when the specified condition is met.
+arguments: 2: BOOLEAN (condition) and STRING (URL)
+return value: NULL
+" 
+{
+    if (!is(c, "BOOLEAN") | !is(u, "STRING")) {
+        return null
+    }
+
+    if (c == true) {
+        cgi_header(
+            header_location(u)
+        )
+        exit()
+    }
+}
+
+var redirect_to = fn(u) 
+"
+[web] function: redirect_to: redirects to the specified URL.
+arguments: 1: STRING (URL)
+return value: NULL
+" 
+{
+    if (!is(u, "STRING")) {
+        return null
+    }
+
+    cgi_header(
+        header_location(u)
+    )
+    exit()
+}
+
 
