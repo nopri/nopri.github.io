@@ -13,7 +13,7 @@
     load_module("web")
 ;
 
-require(11.2)
+require(11.3)
 
 load_module("json")
 
@@ -110,6 +110,8 @@ return value: BOOLEAN (write function) or NULL (error)
     }
 
     set(s, "timestamp", number(@))
+    set(s, "_type", "file")
+    set(s, "_table", "")
 
     var f = d + separator() + v + ".txt"
     var f = abs(f)
@@ -335,7 +337,7 @@ return value: STRING (empty: error)
 var session_db_get_ = fn(d, t, n) 
 "
 [web] function: session_db_get_: returns database-based session data.
-arguments: 3: DATABASE, STRING (table name; will be automatically created; fields: session_id char(128) unique, contents clob / text, updated timestamp), and STRING (cookie name)
+arguments: 3: DATABASE, STRING (table name; will be automatically created; fields: session_id char(128) not null primary key, contents clob / text, updated timestamp), and STRING (cookie name)
 return value: HASH (empty HASH on error)
 " 
 {
@@ -417,7 +419,7 @@ return value: HASH (empty HASH on error)
 
 var session_db_get = fn(d) 
 "
-[web] function: session_db_get: returns database-based session data (using default table (session; will be automatically created; fields: session_id char(128) unique, contents clob / text, updated timestamp) and cookie name (session)).
+[web] function: session_db_get: returns database-based session data (using default table (session; will be automatically created; fields: session_id char(128) not null primary key, contents clob / text, updated timestamp) and cookie name (session)).
 arguments: 1: DATABASE
 return value: HASH (empty HASH on error)
 " 
@@ -428,7 +430,7 @@ return value: HASH (empty HASH on error)
 var session_db_set_ = fn(d, t, s) 
 "
 [web] function: session_db_set_: updates database-based session data.
-arguments: 3: DATABASE, STRING (table name; will be automatically created; fields: session_id char(128) unique, contents clob / text, updated timestamp), and HASH (session data).
+arguments: 3: DATABASE, STRING (table name; will be automatically created; fields: session_id char(128) not null primary key, contents clob / text, updated timestamp), and HASH (session data).
 return value: BOOLEAN or NULL (error)
 " 
 {
@@ -457,6 +459,8 @@ return value: BOOLEAN or NULL (error)
     }
 
     set(s, "timestamp", number(@))
+    set(s, "_type", "database")
+    set(s, "_table", t)
 
     var j = json_string(s)
    
@@ -518,7 +522,7 @@ return value: BOOLEAN or NULL (error)
 
 var session_db_set = fn(d, s) 
 "
-[web] function: session_db_set: updates database-based session data (using default table (session; will be automatically created; fields: session_id char(128) unique, contents clob / text, updated timestamp).
+[web] function: session_db_set: updates database-based session data (using default table (session; will be automatically created; fields: session_id char(128) not null primary key, contents clob / text, updated timestamp).
 arguments: 2: DATABASE and HASH (session data).
 return value: BOOLEAN or NULL (error)
 " 
@@ -529,7 +533,7 @@ return value: BOOLEAN or NULL (error)
 var session_db_delete_ = fn(d, t, s) 
 "
 [web] function: session_db_delete_: deletes database-based session data.
-arguments: 3: DATABASE, STRING (table name; will be automatically created; fields: session_id char(128) unique, contents clob / text, updated timestamp), and HASH (session data).
+arguments: 3: DATABASE, STRING (table name; will be automatically created; fields: session_id char(128) not null primary key, contents clob / text, updated timestamp), and HASH (session data).
 return value: BOOLEAN or NULL (error)
 " 
 {
@@ -577,7 +581,7 @@ return value: BOOLEAN or NULL (error)
 
 var session_db_delete = fn(d, s) 
 "
-[web] function: session_db_delete: deletes database-based session data (using default table (session; will be automatically created; fields: session_id char(128) unique, contents clob / text, updated timestamp).
+[web] function: session_db_delete: deletes database-based session data (using default table (session; will be automatically created; fields: session_id char(128) not null primary key, contents clob / text, updated timestamp).
 arguments: 2: DATABASE and HASH (session data).
 return value: BOOLEAN or NULL (error)
 " 

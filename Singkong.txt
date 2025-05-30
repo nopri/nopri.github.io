@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2025
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 11.2 (2025-May-26 +07:00)
+Version: 11.3 (2025-May-30 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -51,8 +51,9 @@ Bundled JDBC Drivers (compatible with Java 5.0 or later):
 27. Example: Monkey programming language interpreter in Singkong
 28. Example: Working with Comma-Separated Values file
 29. Example: Drawing: simple painting program
-30. Example: String interpolation, template engine, regular expression
-31. Changelog
+30. Example: UDP server and client 
+31. Example: String interpolation, template engine, regular expression
+32. Changelog
 
 
 -----------------------------------------------------------------------------
@@ -105,7 +106,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 11.2
+        Singkong 11.3
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -893,6 +894,24 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
         db_update
         db_update_
         query_result
+- UDP
+  - User Datagram Protocol
+  - related functions: udp_close, udp_receive, udp_send, 
+    udp_send_byte_array, udp_socket, udp_socket_port
+  - Server:
+    - Create a socket using udp_socket_port
+    - In a repeat loop:
+      - Receive a packet using udp_receive 
+        (data (STRING), data (ARRAY of NUMBER (byte)), IP address, hostname, 
+        and port are returned)
+      - Send a packet using udp_send or udp_send_byte_array
+    - Close a socket using udp_close
+  - Client:
+    - Create a socket using udp_socket
+    - Send a packet using udp_send or udp_send_byte_array 
+    - Receive a packet using udp_receive 
+    - Close a socket using udp_close
+  - Please also read the UDP examples  
 
 
 -----------------------------------------------------------------------------
@@ -957,15 +976,16 @@ To get a list of built-in functions, please call builtins()
 "TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "TEMPLATE", 
 "THREAD", "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", 
 "TO_BIN", "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", 
-"TYPES", "UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", "URL_ENCODE", "USER", 
-"USERHOME", "UTF16", "UUID", "VALUES", "VARIABLES", "WAIT", "WORDS_EN", 
-"WORDS_ID", "WRITE", "WRITE_BYTE", "X_BASE64_CONTENTS", "X_BASE64_DECODE", 
-"X_BASE64_DECODE_FILE", "X_BASE64_ENCODE", "X_BASE64_ENCODE_FILE", 
-"X_BASE64_MD5", "X_BASE64_SHA1", "X_BASE64_SHA256", "X_BASE64_SHA384", 
-"X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
+"TYPES", "UDP_CLOSE", "UDP_RECEIVE", "UDP_SEND", "UDP_SEND_BYTE_ARRAY", 
+"UDP_SOCKET", "UDP_SOCKET_PORT", "UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", 
+"URL_ENCODE", "USER", "USERHOME", "UTF16", "UUID", "VALUES", "VARIABLES", 
+"WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", "X_BASE64_CONTENTS", 
+"X_BASE64_DECODE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE", 
+"X_BASE64_ENCODE_FILE", "X_BASE64_MD5", "X_BASE64_SHA1", "X_BASE64_SHA256", 
+"X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-366
+372
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -3015,9 +3035,16 @@ Interface (CGI).
   - Please use built-in module: web
   - Currently supported storage: file system, database
     (for example: "/tmp", "c:\session", or DATABASE)
+  - DATABASE-based: session table will be automatically created
+    fields: 
+    - session_id char(128) not null primary key
+    - contents clob / text
+    - updated timestamp
   - Session data (HASH) reserved keys (STRING):
     - session: session id
     - timestamp: timestamp (save)
+    - _type: "file" or "database"
+    - _table: "" (file system), or table name (DATABASE)
   - Related functions (file system):
     session_file_delete, session_file_get, session_file_get_, session_file_set, 
     session_new
@@ -4840,7 +4867,65 @@ show()
 
 -----------------------------------------------------------------------------
 
-30. Example: String interpolation, template engine, regular expression
+30. Example: UDP server and client 
+    Please change the port accordingly.
+
+  - Server (example_udp_server.singkong)
+    Run: java -DSINGKONG=0 -jar Singkong.jar example_udp_server.singkong
+    (Control C to stop the server)
+
+        var s = udp_socket_port(60000)
+
+        repeat {
+            println("Server")
+            var d = udp_receive(s)
+            println(d)
+        }
+
+  - Client (in STRING, example_udp_client.singkong)
+    Run: java -DSINGKONG=0 -jar Singkong.jar example_udp_client.singkong
+
+        var s = udp_socket()
+        udp_send(s, "Hello", "localhost", 60000)
+
+  - Client (in byte ARRAY, example_udp_client_byte.singkong)
+    Run: java -DSINGKONG=0 -jar Singkong.jar example_udp_client_byte.singkong
+
+        var s = udp_socket()
+        udp_send_byte_array(s, [72, 101, 108, 108, 111], "localhost", 60000)
+
+  - Echo server (example_udp_echo_server.singkong)
+    Run: java -DSINGKONG=0 -jar Singkong.jar example_udp_echo_server.singkong
+    (Control C to stop the server)
+
+        var s = udp_socket_port(60000)
+
+        repeat {
+            println("Server")
+            var d = udp_receive(s)
+            println(d)
+	    if (d != null) {
+		udp_send(
+			s,
+			d[0],
+			d[2],
+			d[4]
+		)
+	    }
+        }
+
+  - Echo client (example_udp_echo_client.singkong)
+    Run: java -DSINGKONG=0 -jar Singkong.jar example_udp_echo_client.singkong
+
+        var s = udp_socket()
+        udp_send(s, "Hello", "localhost", 60000)
+	var r = udp_receive(s)
+	println(r)
+
+
+-----------------------------------------------------------------------------
+
+31. Example: String interpolation, template engine, regular expression
   - string (variable) interpolation:
         >  var a = "Singkong"
         >  var b = [1,2,3,4]
@@ -4961,7 +5046,17 @@ show()
 
 -----------------------------------------------------------------------------
 
-31. Changelog
+32. Changelog
+Version: 11.3 (2025-May-30 +07:00)
+- 372 built-in functions
+  new: udp_close, udp_receive, udp_send,
+  udp_send_byte_array, udp_socket,
+  udp_socket_port
+- 10 built-in modules
+- New type: UDP
+- Total lines of code: 37985 
+  (33170 Java + 4815 Singkong)
+
 Version: 11.2 (2025-May-26 +07:00)
 - 366 built-in functions
 - 10 built-in modules
