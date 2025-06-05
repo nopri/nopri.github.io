@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2025
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 11.3 (2025-May-30 +07:00)
+Version: 11.4 (2025-June-05 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -106,7 +106,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 11.3
+        Singkong 11.4
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -236,6 +236,9 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
   - UTF-16 representation: utf16
   - bitwise operation: number_xor, number_or, number_and, number_not
   - bit shift operation: left_shift, right_shift, unsigned_right_shift
+  - byte-level packing and unpacking: byte_to_unsigned, bytes_to_unsigned,
+    bytes_to_unsigned24, bytes_to_unsigned32, unsigned24_to_byte_array,
+    unsigned32_to_byte_array, unsigned_to_byte, unsigned_to_byte_array
   - sorting: by value
   - constant values: _e, _pi
         >  number_scale(15)
@@ -396,7 +399,7 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
     last, len, max, min, parse_array, pop, push, random, range, rest, reverse, shuffle, slice, 
     sort_array, sort_boolean, sort_date, sort_hash, sort_number, sort_string, sum
   - array check functions: is_array_and_of, is_array_of, is_array_of_component_of
-  - file related functions: dir, read_byte, write_byte
+  - file related functions: dir, read_byte, read_byte_unsigned, write_byte
   - CGI related functions: cgi_contents
   - HTTP client related functions: http_response_ok
   - system related functions: arguments, inet_address, runtime_version, system
@@ -922,7 +925,8 @@ To get a list of built-in functions, please call builtins()
 "APPEND", "ARGUMENTS", "ARRAY", "ARRAY_EQUALS", "ARRAY_EXTEND", 
 "ARRAY_EXTEND_ALL", "ARRAY_NUMBER", "ARRAY_STRING", "ASIN", "ATAN", "AVERAGE", 
 "BASE64_DECODE", "BASE64_ENCODE", "BEEP", "BOOLEAN_XOR", "BUILTINS", 
-"BUTTON_IMAGE", "CALL", "CALL_INFO", "CBRT", "CENTER", "CGI_CONTENTS", 
+"BUTTON_IMAGE", "BYTE_TO_UNSIGNED", "BYTES_TO_UNSIGNED", "BYTES_TO_UNSIGNED24", 
+"BYTES_TO_UNSIGNED32", "CALL", "CALL_INFO", "CBRT", "CENTER", "CGI_CONTENTS", 
 "CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", "CHR", "CLEAR", 
 "CLIPBOARD_GET", "CLIPBOARD_SET", "CLOSING", "COLOR_CHOOSER", "COMPONENT", 
 "COMPONENT_INFO", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY", 
@@ -958,26 +962,28 @@ To get a list of built-in functions, please call builtins()
 "POPUP_COMPONENT", "POPUP_HIDE", "POPUP_SHOW", "PRINT", "PRINTER", "PRINTLN", 
 "PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
 "RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "READ_BYTE", 
-"RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", "REMOVE_N", 
-"REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", "REQUIRE_RUNTIME", 
-"RESET", "RESIZABLE", "REST", "REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", 
-"RUNTIME_COMMAND", "RUNTIME_VERSION", "SAVE", "SCREEN", "SECOND", "SEPARATOR", 
-"SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", 
-"SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
-"SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", "SORT_BOOLEAN", 
-"SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", 
-"START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", "STOP", 
-"STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", "STRING_TO_BYTE_ARRAY", "SUM", 
-"SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", "TAB_REMOVE", "TABLE_ADD", 
-"TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", "TABLE_COLUMN_COUNT", 
-"TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", "TABLE_GET_VALUE", "TABLE_LEFT", 
-"TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", "TABLE_RIGHT", "TABLE_ROW_COUNT", 
-"TABLE_SCROLL", "TABLE_SET_COLOR", "TABLE_SET_RENDERER", "TABLE_SET_ROW_HEIGHT", 
-"TABLE_SET_VALUE", "TABLE_TOP", "TAN", "TANH", "TEMP_FILE", "TEMPLATE", 
-"THREAD", "THREAD_ALIVE", "THREAD_JOIN", "TIMER", "TIMER_RUNNING", "TITLE", 
-"TO_BIN", "TO_DEGREES", "TO_HEX", "TO_OCT", "TO_RADIANS", "TRIM", "TYPE", 
-"TYPES", "UDP_CLOSE", "UDP_RECEIVE", "UDP_SEND", "UDP_SEND_BYTE_ARRAY", 
-"UDP_SOCKET", "UDP_SOCKET_PORT", "UNSIGNED_RIGHT_SHIFT", "UPPER", "URL_DECODE", 
+"READ_BYTE_UNSIGNED", "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", 
+"REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", 
+"REQUIRE_RUNTIME", "RESET", "RESIZABLE", "REST", "REVERSE", "RIGHT", 
+"RIGHT_SHIFT", "ROUND", "RUNTIME_COMMAND", "RUNTIME_VERSION", "SAVE", "SCREEN", 
+"SECOND", "SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", 
+"SHA384", "SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", 
+"SINGKONG", "SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", 
+"SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", 
+"SQRT", "START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", 
+"STOP", "STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", 
+"STRING_TO_BYTE_ARRAY", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", 
+"TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", 
+"TABLE_COLUMN_COUNT", "TABLE_COLUMN_INFO", "TABLE_COLUMN_NAME", 
+"TABLE_GET_VALUE", "TABLE_LEFT", "TABLE_MIDDLE", "TABLE_PRINT", "TABLE_REMOVE", 
+"TABLE_RIGHT", "TABLE_ROW_COUNT", "TABLE_SCROLL", "TABLE_SET_COLOR", 
+"TABLE_SET_RENDERER", "TABLE_SET_ROW_HEIGHT", "TABLE_SET_VALUE", "TABLE_TOP", 
+"TAN", "TANH", "TEMP_FILE", "TEMPLATE", "THREAD", "THREAD_ALIVE", "THREAD_JOIN", 
+"TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", "TO_DEGREES", "TO_HEX", "TO_OCT", 
+"TO_RADIANS", "TRIM", "TYPE", "TYPES", "UDP_CLOSE", "UDP_RECEIVE", "UDP_SEND", 
+"UDP_SEND_BYTE_ARRAY", "UDP_SOCKET", "UDP_SOCKET_PORT", 
+"UNSIGNED24_TO_BYTE_ARRAY", "UNSIGNED32_TO_BYTE_ARRAY", "UNSIGNED_RIGHT_SHIFT", 
+"UNSIGNED_TO_BYTE", "UNSIGNED_TO_BYTE_ARRAY", "UPPER", "URL_DECODE", 
 "URL_ENCODE", "USER", "USERHOME", "UTF16", "UUID", "VALUES", "VARIABLES", 
 "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", "X_BASE64_CONTENTS", 
 "X_BASE64_DECODE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE", 
@@ -985,7 +991,7 @@ To get a list of built-in functions, please call builtins()
 "X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-372
+381
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -5047,6 +5053,19 @@ show()
 -----------------------------------------------------------------------------
 
 32. Changelog
+Version: 11.4 (2025-June-05 +07:00)
+- 381 built-in functions
+  new: byte_to_unsigned, bytes_to_unsigned,
+  bytes_to_unsigned24, bytes_to_unsigned32, 
+  read_byte_unsigned, unsigned24_to_byte_array,
+  unsigned32_to_byte_array, unsigned_to_byte,
+  unsigned_to_byte_array
+- 10 built-in modules
+- NUMBER byte-level packing and unpacking 
+  functions
+- Total lines of code: 38528 
+  (33713 Java + 4815 Singkong)
+
 Version: 11.3 (2025-May-30 +07:00)
 - 372 built-in functions
   new: udp_close, udp_receive, udp_send,
