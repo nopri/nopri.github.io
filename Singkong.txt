@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2025
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 11.4 (2025-June-05 +07:00)
+Version: 11.5 (2025-June-21 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -106,7 +106,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 11.4
+        Singkong 11.5
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -900,7 +900,7 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
 - UDP
   - User Datagram Protocol
   - related functions: udp_close, udp_receive, udp_send, 
-    udp_send_byte_array, udp_socket, udp_socket_port
+    udp_send_byte_array, udp_set_timeout, udp_socket, udp_socket_port
   - Server:
     - Create a socket using udp_socket_port
     - In a repeat loop:
@@ -914,6 +914,8 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
     - Send a packet using udp_send or udp_send_byte_array 
     - Receive a packet using udp_receive 
     - Close a socket using udp_close
+  - Set timeout: udp_set_timeout
+    - A call to udp_receive will block for only specified amount of time
   - Please also read the UDP examples  
 
 
@@ -981,7 +983,7 @@ To get a list of built-in functions, please call builtins()
 "TAN", "TANH", "TEMP_FILE", "TEMPLATE", "THREAD", "THREAD_ALIVE", "THREAD_JOIN", 
 "TIMER", "TIMER_RUNNING", "TITLE", "TO_BIN", "TO_DEGREES", "TO_HEX", "TO_OCT", 
 "TO_RADIANS", "TRIM", "TYPE", "TYPES", "UDP_CLOSE", "UDP_RECEIVE", "UDP_SEND", 
-"UDP_SEND_BYTE_ARRAY", "UDP_SOCKET", "UDP_SOCKET_PORT", 
+"UDP_SEND_BYTE_ARRAY", "UDP_SET_TIMEOUT", "UDP_SOCKET", "UDP_SOCKET_PORT", 
 "UNSIGNED24_TO_BYTE_ARRAY", "UNSIGNED32_TO_BYTE_ARRAY", "UNSIGNED_RIGHT_SHIFT", 
 "UNSIGNED_TO_BYTE", "UNSIGNED_TO_BYTE_ARRAY", "UPPER", "URL_DECODE", 
 "URL_ENCODE", "USER", "USERHOME", "UTF16", "UUID", "VALUES", "VARIABLES", 
@@ -991,7 +993,7 @@ To get a list of built-in functions, please call builtins()
 "X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-381
+382
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -5053,6 +5055,13 @@ show()
 -----------------------------------------------------------------------------
 
 32. Changelog
+Version: 11.5 (2025-June-21 +07:00)
+- 382 built-in functions
+  new: udp_set_timeout
+- 10 built-in modules
+- Total lines of code: 38595 
+  (33780 Java + 4815 Singkong)
+
 Version: 11.4 (2025-June-05 +07:00)
 - 381 built-in functions
   new: byte_to_unsigned, bytes_to_unsigned,
