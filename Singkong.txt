@@ -1,8 +1,8 @@
 Singkong Programming Language Interpreter
-(c) Noprianto <nop@noprianto.com>, 2019-2025
+(c) Noprianto <nop@noprianto.com>, 2019-2026
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 11.5 (2025-June-21 +07:00)
+Version: 11.6 (2026-Feb-24 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -106,7 +106,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 11.5
+        Singkong 11.6
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -5055,6 +5055,13 @@ show()
 -----------------------------------------------------------------------------
 
 32. Changelog
+Version: 11.6 (2026-Feb-24 +07:00)
+- 382 built-in functions
+- 10 built-in modules
+- Bug fix: words_en, words_id
+- Total lines of code: 38595 
+  (33780 Java + 4815 Singkong)
+
 Version: 11.5 (2025-June-21 +07:00)
 - 382 built-in functions
   new: udp_set_timeout
