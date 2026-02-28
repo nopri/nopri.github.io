@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2026
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 11.7 (2026-February-26 +07:00)
+Version: 11.8 (2026-February-28 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -106,7 +106,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 11.7
+        Singkong 11.8
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -2496,6 +2496,7 @@ database management system).
     >  var r = query(d, q, true)
     >  r
     [[[["A", "INTEGER"], ["B", "INTEGER"]], [1, 1], [2, 2]], 1]
+- To get the last error message, if any: last_error
 - Singkong.jar comes with simple GUI database tool:
   - Table list (double-click to run SQL SELECT command)
   - Query tool (run SQL query)
@@ -2989,6 +2990,13 @@ Interface (CGI).
     x_base64_contents(b)
     exit()
 - Get runtime command or current file/dir: runtime_command
+- Alernative Java Runtime for faster startup in CGI applications:
+  - IBM Semeru Runtime
+  - Command line example, leveraging Shared Class Cache
+    (please adjust the name (cache), dir (/cache), memory (60m),
+    and application jar file (app.jar) accordingly):
+    java -Xshareclasses:name=cache,cacheDir=/cache -Xquickstart -Xscmx60m -jar app.jar
+  - Please also adjust the web server configuration below.
 - Using HTTP server with CGI support:
   - It is preferred to use .web filename extension (rather than .singkong) for Singkong
     CGI application (shorter to type, allows .singkong files to be downloaded). 
@@ -2997,6 +3005,7 @@ Interface (CGI).
     - http://<server_name>/test.web
     - http://<server_name>/example/test.web
   - Apache HTTP Server:
+    - Multi-Processing Module (MPM): please use prefork
     - Required modules:
       - cgi or cgid (depending on used multi-processing module)
       - actions
@@ -3189,6 +3198,7 @@ Singkong comes with simple HTTP client.
   base64_encode, x_base64_encode, x_base64_decode_file, or x_base64_encode_file
 - Read timeout can be set for each request (default: 60 seconds)
 - Headers may be set for each request
+- To get the last error message, if any: last_error
 - HEAD
   - built-in function: http_head
   - Accept-Charset: UTF-8
@@ -5055,6 +5065,15 @@ show()
 -----------------------------------------------------------------------------
 
 32. Changelog
+Version: 11.8 (2026-February-28 +07:00)
+- 383 built-in functions
+- 10 built-in modules
+- Bug fix: http_delete, http_get, 
+  http_get_file, http_head, http_post, 
+  http_post_override, http_put
+- Total lines of code: 38719 
+  (33904 Java + 4815 Singkong)
+
 Version: 11.7 (2026-February-26 +07:00)
 - 383 built-in functions
   new: last_error
