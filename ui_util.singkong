@@ -13,7 +13,7 @@
     load_module("ui_util")
 ;
 
-require(10.0)
+require(11.9)
 
 var table_to_text = fn(a, b) 
 "
@@ -380,3 +380,96 @@ return value: NULL
 
     return null
 }
+
+var table_row_fg_color = fn(a, b, c) 
+"
+[ui_util] function: table_row_fg_color: sets the table (COMPONENT) row foreground color (and resets the background color).
+arguments: 3: COMPONENT (table), NUMBER (row, starting from 0), and STRING (color)
+return value: STRING or NULL
+"
+{
+    if ((!is(a, "COMPONENT")) | (!is(b, "NUMBER"))) {
+        return null
+    }
+    if (component_type(a) != "table") {
+        return null
+    }
+    var color = string(c)
+
+    var cols = table_column_count(a)
+    each(range(0, cols), fn(e, i) {
+        table_set_color(t, color, "", b, e)
+    })
+
+    return color
+}
+
+var table_row_bg_color = fn(a, b, c) 
+"
+[ui_util] function: table_row_bg_color: sets the table (COMPONENT) row background color (and resets the foreground color).
+arguments: 3: COMPONENT (table), NUMBER (row, starting from 0), and STRING (color)
+return value: STRING or NULL
+"
+{
+    if ((!is(a, "COMPONENT")) | (!is(b, "NUMBER"))) {
+        return null
+    }
+    if (component_type(a) != "table") {
+        return null
+    }
+    var color = string(c)
+
+    var cols = table_column_count(a)
+    each(range(0, cols), fn(e, i) {
+        table_set_color(t, "", color, b, e)
+    })
+
+    return color
+}
+
+var table_row_colors = fn(a, b, c, d) 
+"
+[ui_util] function: table_row_colors: sets the table (COMPONENT) row foreground and background colors.
+arguments: 4: COMPONENT (table), NUMBER (row, starting from 0), STRING (foreground color), and STRING (background color)
+return value: STRING or NULL
+"
+{
+    if ((!is(a, "COMPONENT")) | (!is(b, "NUMBER"))) {
+        return null
+    }
+    if (component_type(a) != "table") {
+        return null
+    }
+    var color = string(c)
+    var bgcolor = string(d)
+
+    var cols = table_column_count(a)
+    each(range(0, cols), fn(e, i) {
+        table_set_color(t, color, bgcolor, b, e)
+    })
+
+    return color + " " + bgcolor
+}
+
+var table_reset_colors = fn(a) 
+"
+[ui_util] function: table_reset_colors: resets the table (COMPONENT) foreground and background colors.
+arguments: 1: COMPONENT (table)
+return value: NULL
+"
+{
+    if (!is(a, "COMPONENT")) {
+        return null
+    }
+    if (component_type(a) != "table") {
+        return null
+    }
+    
+    var cols = table_column_count(a)
+    each(range(0, cols), fn(e, i) {
+        table_set_color(t, "", "", -1, e)
+    })
+
+    return null
+}
+

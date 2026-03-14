@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2026
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 11.8 (2026-February-28 +07:00)
+Version: 11.9 (2026-March-14 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -106,7 +106,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 11.8
+        Singkong 11.9
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -1103,9 +1103,11 @@ Functions in module: ui_calendar:
 
 Functions in module: ui_util:
 ["CONFIG_FONT_SIZE", "CONFIG_FONT_SIZE_R", "POPUP_SHOW_PROGRESS", 
-"POPUP_SHOW_PROGRESS_", "TABLE_ADD_FILL", "TABLE_ADD_ROW_FILL", "TABLE_FILL", 
-"TABLE_GET_ARRAY_", "TABLE_GET_ARRAY_NUMBER", "TABLE_GET_ARRAY_STRING", 
-"TABLE_TO_HTML", "TABLE_TO_TEXT", "THREAD_TIMER", "THREAD_TIMER_"]
+"POPUP_SHOW_PROGRESS_", "TABLE_ADD_FILL", "TABLE_ADD_ROW_FILL", 
+"TABLE_FILL", "TABLE_GET_ARRAY_", "TABLE_GET_ARRAY_NUMBER", 
+"TABLE_GET_ARRAY_STRING", "TABLE_RESET_COLORS", "TABLE_ROW_BG_COLOR", 
+"TABLE_ROW_COLORS", "TABLE_ROW_FG_COLOR", "TABLE_TO_HTML", 
+"TABLE_TO_TEXT", "THREAD_TIMER", "THREAD_TIMER_"]
 
 Functions in module: util:
 ["ARRAY_COPY", "ARRAY_DIFF", "BINOMIAL_COEFFICIENT", "BINOMIAL_DISTRIBUTION", 
@@ -2308,6 +2310,9 @@ To keep it as simple as possible:
             ----------------------------------------------------------------
             |0         |         0          |                             0|
             ================================================================
+  - table row colors: 
+    table_row_bg_color, table_row_fg_color,
+    table_row_colors, table_reset_colors
 - Calendar:
   - Using ui_calendar module:
     - Example: simple style
@@ -2994,8 +2999,8 @@ Interface (CGI).
   - IBM Semeru Runtime
   - Command line example, leveraging Shared Class Cache
     (please adjust the name (cache), dir (/cache), memory (60m),
-    and application jar file (app.jar) accordingly):
-    java -Xshareclasses:name=cache,cacheDir=/cache -Xquickstart -Xscmx60m -jar app.jar
+    accordingly):
+    java -DSINGKONG=0 -Xshareclasses:name=cache,cacheDir=/cache -Xquickstart -Xscmx60m -jar Singkong.jar <file.web>
   - Please also adjust the web server configuration below.
 - Using HTTP server with CGI support:
   - It is preferred to use .web filename extension (rather than .singkong) for Singkong
@@ -5065,6 +5070,17 @@ show()
 -----------------------------------------------------------------------------
 
 32. Changelog
+Version: 11.9 (2026-March-14 +07:00)
+- 383 built-in functions
+- 10 built-in modules
+- ui_util module: 4 new functions:
+  table_row_fg_color, 
+  table_row_bg_color,
+  table_row_colors,
+  table_reset_colors
+- Total lines of code: 38812 
+  (33904 Java + 4908 Singkong)
+
 Version: 11.8 (2026-February-28 +07:00)
 - 383 built-in functions
 - 10 built-in modules
