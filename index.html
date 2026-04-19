@@ -94,6 +94,9 @@
         <a href="https://nopri.github.io/singkong-win-xp.png">Windows XP</a>, 
         <a href="https://nopri.github.io/singkong-win-2000.png">Windows 2000</a>, 
         <a href="https://nopri.github.io/singkong-win-98.png">Windows 98</a>, 
+        <a href="https://nopri.github.io/singkong-win-98-example-db.png">Windows 98 (database)</a>, 
+        <a href="https://nopri.github.io/singkong-win-98-example-matrix.png">Windows 98 (matrix)</a>, 
+        <a href="https://nopri.github.io/singkong-win-98-example-paint.png">Windows 98 (paint)</a>, 
         <a href="https://nopri.github.io/singkong-linux-ubuntu.16.04.png">Ubuntu 16.04</a>, 
         <a href="https://nopri.github.io/singkong-linux-ubuntu.4.10.png">Ubuntu 4.10</a>, 
         <a href="https://nopri.github.io/singkong-linux-redhat.7.3.png">Red Hat Linux 7.3</a>, 
@@ -102,6 +105,8 @@
         <a href="https://nopri.github.io/singkong-freebsd-13.0.png">FreeBSD 13.0</a>, 
         <a href="https://nopri.github.io/singkong-openbsd-7.0.png">OpenBSD 7.0</a>, 
         <a href="https://nopri.github.io/singkong-netbsd-9.2.png">NetBSD 9.2</a>, 
+        <a href="https://nopri.github.io/singkong-ecomstation.2.1.png">eComStation 2.1</a>, 
+        <a href="https://nopri.github.io/singkong-reactos.alpha">ReactOS (alpha)</a>, 
         <a href="https://nopri.github.io/singkong-linux-android-debian.10.png">Debian 10 on Android</a>. 
         </p>
     
@@ -733,12 +738,32 @@
     
     <div id="compiled">
         <h3><a href='#menu'>Compiled</a></h3>
-	Cross-compiled using Ubuntu Linux 22.04, for Windows. Portable/standalone, no installation, no admin privileges required. <a href="cross-compile.html">Tutorial</a> in Bahasa Indonesia. 
+	Cross-compiled, using Linux, for Windows. Portable/standalone, no installation, no admin privileges required. <a href="cross-compile.html">Tutorial</a> in Bahasa Indonesia. 
         <table>
         <tr>
         <th>Name</th>
         <th class="title">Description</th>
         <th>Link</th>
+	<th>Build</th>
+        </tr>
+        
+	<tr>
+        <td>QEMU 10.2.2 (x86_64)</td>
+        <td>
+	QEMU 10.2.2 with SDL, SLIRP (User-Mode Networking), and WHPX (Windows Hypervisor Platform acceleration) for Windows (x86_64)
+	<br>
+	SoftMMU target list: i386, x86_64, arm, aarch64, ppc, ppc64, sparc, sparc64, mips, mips64, mipsel, mips64el, riscv64, riscv32, s390x, m68k, sh4, alpha, xtensa, microblaze, hppa
+	<br>
+	Recommended (over version 7.0.0)
+	</td>
+	<td>
+		<a href="compiled/qemu1022-x86_64.7z">qemu1022-x86_64.7z</a>
+		<br>
+		<a href="compiled/qemu1022-x86_64.7z.md5">qemu1022-x86_64.7z.md5</a>
+		<br>
+		<a href="compiled/qemu1022-x86_64.build.txt">howto</a>
+	</td>
+	<td>Fedora Linux 43</td>
         </tr>
 
         <tr>
@@ -753,6 +778,7 @@
 		<br>
 		<a href="compiled/glib-cross-compile.txt">glib-cross-compile.txt</a>
 	</td>
+	<td>Ubuntu Linux 22.04</td>
         </tr>
 
         <tr>
@@ -767,6 +793,7 @@
 		<br>
 		<a href="compiled/glib-cross-compile-x86_64.txt">glib-cross-compile-x86_64.txt</a>
 	</td>
+	<td>Ubuntu Linux 22.04</td>
         </tr>
 
         <tr>
@@ -779,6 +806,7 @@
 		<br>
 		<a href="compiled/qemu700.build.txt">howto</a>
 	</td>
+	<td>Ubuntu Linux 22.04</td>
         </tr>
 
         <tr>
@@ -791,6 +819,7 @@
 		<br>
 		<a href="compiled/qemu700-x86_64.build.txt">howto</a>
 	</td>
+	<td>Ubuntu Linux 22.04</td>
         </tr>
 
         <tr>
@@ -805,6 +834,7 @@
 		<br>
 		<a href="compiled/postgresql.build.txt">howto</a>
 	</td>
+	<td>Ubuntu Linux 22.04</td>
         </tr>
 
         </table>
@@ -926,7 +956,7 @@
 
     <hr>
     <div>
-        <p>Last updated on: 2026-March-14 +07:00</p>
+        <p>Last updated on: 2026-April-19 +07:00</p>
     </div>
 </body>
 </html>

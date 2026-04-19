@@ -1,0 +1,23 @@
+sudo dnf install gcc mingw64-gcc mingw64-gcc-c++ mingw64-binutils mingw64-libfdt mingw64-spice-protocol mingw64-pixman mingw64-glib2 mingw64-SDL2 mingw64-SDL2_image mingw64-libusb1 mingw64-usbredir mingw64-zstd mingw64-bzip2 mingw64-curl mingw64-gnutls mingw64-libtasn1 xz make ninja-build meson git p7zip 
+ 
+wget https://download.qemu.org/qemu-10.2.2.tar.xz
+
+tar xf qemu-10.2.2.tar.xz
+
+cd qemu-10.2.2
+
+PKG_CONFIG=/usr/bin/x86_64-w64-mingw32-pkg-config PKG_CONFIG_LIBDIR=/usr/x86_64-w64-mingw32/sys-root/mingw/lib/pkgconfig:/usr/x86_64-w64-mingw32/sys-root/mingw/share/pkgconfig/  ./configure --cross-prefix=x86_64-w64-mingw32- --target-list=i386-softmmu,x86_64-softmmu,arm-softmmu,aarch64-softmmu,ppc-softmmu,ppc64-softmmu,sparc-softmmu,sparc64-softmmu,mips-softmmu,mips64-softmmu,mipsel-softmmu,mips64el-softmmu,riscv64-softmmu,riscv32-softmmu,s390x-softmmu,m68k-softmmu,sh4-softmmu,alpha-softmmu,xtensa-softmmu,microblaze-softmmu,hppa-softmmu --enable-whpx --enable-sdl  --enable-slirp --enable-strip --extra-ldflags="-s" --prefix=/qemu
+
+make -j
+
+sudo make install
+
+sudo cp  /usr/x86_64-w64-mingw32/sys-root/mingw/bin/*.dll /qemu/
+
+cd ..
+
+7za a -mx=9 qemu1022-x86_64.7z /qemu/
+
+md5sum qemu1022-x86_64.7z > qemu1022-x86_64.7z.md5
+
+
