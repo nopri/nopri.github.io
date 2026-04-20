@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2026
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 11.9 (2026-March-14 +07:00)
+Version: 12.0 (2026-April-20 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -106,7 +106,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 11.9
+        Singkong 12.0
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -322,7 +322,8 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
     file_contents, mkdir, read, rename, temp_file, write 
   - HTTP client related functions: http_delete, http_get, http_get_file, 
     http_head, http_post, http_post_override, http_put, url_decode, url_encode 
-  - system related functions: cwd, inet_address_local, separator, user, userhome
+  - system related functions: cwd, inet_address_local, 
+    runtime_program, separator, user, userhome
   - Singkong related functions: load, load_file_or_resource, load_module, load_resource
   - extended: x_base64_contents, x_base64_decode, x_base64_decode_file, x_base64_encode, 
     x_base64_encode_file, x_base64_md5, x_base64_sha1, x_base64_sha256, 
@@ -967,10 +968,11 @@ To get a list of built-in functions, please call builtins()
 "READ_BYTE_UNSIGNED", "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", 
 "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", 
 "REQUIRE_RUNTIME", "RESET", "RESIZABLE", "REST", "REVERSE", "RIGHT", 
-"RIGHT_SHIFT", "ROUND", "RUNTIME_COMMAND", "RUNTIME_VERSION", "SAVE", "SCREEN", 
-"SECOND", "SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", 
-"SHA384", "SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", 
-"SINGKONG", "SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", 
+"RIGHT_SHIFT", "ROUND", "RUNTIME_COMMAND", "RUNTIME_PROGRAM", 
+"RUNTIME_VERSION", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", 
+"SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", 
+"SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
+"SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", 
 "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", 
 "SQRT", "START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", 
 "STOP", "STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", 
@@ -993,7 +995,7 @@ To get a list of built-in functions, please call builtins()
 "X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-383
+384
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -3998,7 +4000,7 @@ To bundle application file with Singkong interpreter:
   (for example: * for string repeat, - for string remove, - for array 
   remove, and many more).
 - Repeat loop (and built-in functions: do, each for simple looping)
-- Some (or all) built-in functions may be disabled when the interpreter in run 
+- Some (or all) built-in functions may be disabled when the interpreter is run 
 - Singkong supports multi-line comment (between # and ;)
 - Singkong supports documentation string for FUNCTION
 - There is a Monkey implementation in Singkong (monkey.singkong):
@@ -5070,6 +5072,15 @@ show()
 -----------------------------------------------------------------------------
 
 32. Changelog
+Version: 12.0 (2026-April-20 +07:00)
+- 384 built-in functions
+  new: runtime_program
+- 10 built-in modules
+- Update: last_error
+  (add database to supported functions)
+- Total lines of code: 38889 
+  (33981 Java + 4908 Singkong)
+
 Version: 11.9 (2026-March-14 +07:00)
 - 383 built-in functions
 - 10 built-in modules
