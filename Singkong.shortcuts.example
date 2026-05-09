@@ -1,0 +1,21 @@
+#!/data/data/com.termux/files/usr/bin/bash 
+
+pkill -f termux-x11
+
+termux-x11 :1 -xstartup "fluxbox" &
+
+am start --user 0 -n com.termux.x11/.MainActivity
+
+sleep 2
+
+export DISPLAY=:1
+
+cd $HOME
+rm Singkong.properties
+java -Dsun.java2d.uiScale=1.5 -jar Singkong.jar
+
+pkill -f termux-x11
+
+am broadcast -a com.termux.x11.ACTION_STOP -p com.termux.x11
+
+exit
