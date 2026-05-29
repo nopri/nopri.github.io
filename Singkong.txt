@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2026
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 12.0 (2026-April-20 +07:00)
+Version: 12.1 (2026-May-30 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -36,7 +36,7 @@ Bundled JDBC Drivers (compatible with Java 5.0 or later):
 12. Working with threads
 13. Calling Java method
 14. Embedding Singkong into another applications
-15. Deployment
+15. Application distribution
 16. Differences with Monkey Programming Language
 17. Example: GUI: components
 18. Example: GUI: layout
@@ -106,7 +106,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 12.0
+        Singkong 12.1
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -838,6 +838,7 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
     draw_write_jpg, draw_write_bmp, draw_get_pixel, draw_set_pixel
   - Clipboard: clipboard_get, clipboard_set
   - Sound: beep, play_sound
+  - Frame state: frame_max, frame_min, frame_normal
   - array of component check: is_array_of_component_of
   - extended: x_edit_print
   - user interface related functions: please use functions from ui_util module:
@@ -945,12 +946,13 @@ To get a list of built-in functions, please call builtins()
 "EXIT", "EXP", "EXTRACT", "EXTRACT_GROUP", "FILE_CONTENTS", "FILL_ARC", 
 "FILL_OVAL", "FILL_POLYGON", "FILL_RECT", "FILL_ROUND_RECT", "FIRST", "FONTS", 
 "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "FORMAT_TIME", "FRAME", 
-"FRAME_CLOSE", "FRAME_IMAGE", "FRAME_LOCATION", "FRAME_TOP", "FROM_BIN", 
-"FROM_HEX", "FROM_OCT", "GET", "GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", 
-"HASH", "HELP", "HIDE", "HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", 
-"HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", 
-"IFNULL", "IN", "INDEX", "INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", 
-"INTEGER", "INTEGER_GCD", "INTERACTIVE", "INTERPOLATE", "IS", "IS_ARRAY_AND_OF", 
+"FRAME_CLOSE", "FRAME_IMAGE", "FRAME_LOCATION", "FRAME_MAX", "FRAME_MIN", 
+"FRAME_NORMAL", "FRAME_TOP", "FROM_BIN", "FROM_HEX", "FROM_OCT", "GET", 
+"GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", 
+"HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
+"HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IFNULL", "IN", "INDEX", 
+"INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", 
+"INTEGER_GCD", "INTERACTIVE", "INTERPOLATE", "IS", "IS_ARRAY_AND_OF", 
 "IS_ARRAY_OF", "IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", "IS_RECT_ARRAY", 
 "IS_RECT_ARRAY_OF", "IS_UPDATE_AVAILABLE", "ISALNUM", "ISALPHA", "ISDIGIT", 
 "ISLOWER", "ISUPPER", "JOIN", "KEYS", "KEYWORDS", "LAST", "LAST_ERROR", "LEFT", 
@@ -995,7 +997,7 @@ To get a list of built-in functions, please call builtins()
 "X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
 
 >  len(builtins())
-384
+387
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -1241,8 +1243,8 @@ To keep it as simple as possible:
   please use built-in function frame.
   To reset frame (remove all COMPONENTs, reset frame title and size to default
   values, stop all timers, disable frame closing confirmation, reset status bar,
-  reset menu bar, reset always on top state, hide all popups), please use 
-  built-in function reset. 
+  reset menu bar, reset always on top state, hide all popups, closes all dialogs, 
+  resets the state to normal), please use built-in function reset. 
   To programmatically close frame, please use built-in function frame_close.
 - Every user interface component is a COMPONENT in Singkong.
 - To create a user interface component, please use built-in function component.
@@ -1456,7 +1458,7 @@ To keep it as simple as possible:
   (key = contents) and (type of COMPONENT is one of: edit/image/password/text/view) 
   and (type of value is STRING) then read /resource/<value> in interpreter 
   jar file.
-  (please also read about deployment)
+  (please also read about Application distribution)
   Different component may have different keys, but common keys are: 
   - border (all supported components, STRING (title))
   - enabled (all components, BOOLEAN)
@@ -1543,7 +1545,7 @@ To keep it as simple as possible:
     for example: 
         /resource/file.png
         /resource/test.txt
-    (please also read about deployment)
+    (please also read about Application distribution)
   - built-in function config examples:
     (1) image
         var c = component("image", "")
@@ -2099,7 +2101,7 @@ To keep it as simple as possible:
     - resource: put all supported resource files in /resource directory in 
       interpreter jar file. For example: 
         play_sound("sound.wav", true) # from /resource/sound.wav in interpreter jar file;
-      (please also read about deployment)
+      (please also read about Application distribution)
     - file:
         play_sound("sound.wav", false) # from current working directory;
 - Status bar:
@@ -2378,6 +2380,24 @@ To keep it as simple as possible:
         var d = create_date_picker(p[0], p[1])
         add_n(d[0])
         show()
+- Frame state
+  Please use: frame_max, frame_min, frame_normal 
+  Example:
+        reset()
+        var a = component("button", "Max")
+        var b = component("button", "Min")
+        var c = component("button", "Normal")
+        add_s([a, b, c])
+        event(a, fn() {
+            frame_max()
+        })
+        event(b, fn() {
+            frame_min()
+        })
+        event(c, fn() {
+            frame_normal()
+        })
+        show()  
 
 
 -----------------------------------------------------------------------------
@@ -2448,7 +2468,7 @@ database management system).
   directory, <dir> might be replaced with a ., for example:
   java -cp Singkong.jar:. com.noprianto.singkong.Singkong
 
-  (please also read about deployment)
+  (please also read about Application distribution)
 - Database connection example:
     >  var db = database("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:test;create=true", "", "")
     >  db
@@ -3446,7 +3466,7 @@ provide functionalities in Java Programming Language.
   <dir> might be replaced with a ., for example:
   java -cp Singkong.jar:. com.noprianto.singkong.Singkong
 
-  (please also read about deployment and bundling with interpreter file)
+  (please also read about Application distribution and bundling with interpreter file)
 - Called method must be static method named: singkong. It must require a 
   String[][] and return a String, a String[], or a String[][]. 
 - When the method is called, Singkong interpreter will use STRING representation
@@ -3519,7 +3539,7 @@ provide functionalities in Java Programming Language.
     jar uf Singkong.jar HelloWorld.class 
     java -jar Singkong.jar
 
-    (please also read about deployment)
+    (please also read about Application distribution)
 
   - Singkong program can call the method (a STRING is returned):
 
@@ -3903,7 +3923,7 @@ ERROR: [line: 1] built-in function "info" is disabled
 
 -----------------------------------------------------------------------------
 
-15. Deployment
+15. Application distribution
 To run applications developed using Singkong programming language, 
 target system must have Java Runtime Environment installed (Java 5.0 or later).
 
@@ -5072,6 +5092,19 @@ show()
 -----------------------------------------------------------------------------
 
 32. Changelog
+Version: 12.1 (2026-May-30 +07:00)
+- 387 built-in functions
+  new: frame_max, frame_min, frame_normal
+- 10 built-in modules
+- Bug fix: no longer interpreting command
+  line arguments as Singkong code, 
+  if main.singkong is bundled
+  (Application distribution, 
+  bundle application file with 
+  Singkong interpreter)
+- Total lines of code: 38977 
+  (34069 Java + 4908 Singkong)
+
 Version: 12.0 (2026-April-20 +07:00)
 - 384 built-in functions
   new: runtime_program
