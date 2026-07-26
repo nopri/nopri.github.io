@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2026
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 12.1 (2026-May-30 +07:00)
+Version: 12.2 (2026-July-26 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -106,7 +106,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 12.1
+        Singkong 12.2
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -359,6 +359,21 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
         "Singkong programming language"
         >  replace_hash("$name $type", {"$name": "Singkong", "$type": "programming language"})
         "Singkong programming language"
+  - string trim:
+        >  var a = crlf() + "    Hello" + (4 * tab()) + "    World" + crlf()
+        >  a
+        "
+            Hello				    World
+        "
+        >  var b = trim(a)
+        >  b
+        "Hello				    World"
+        >  var c = trim(a, false)
+        >  c
+        "Hello				    World"
+        >  var d = trim(a, true)
+        >  d
+        "Hello World"
   - Please also read: 
     Example: String interpolation, template engine, regular expression
 - ARRAY
@@ -5092,6 +5107,18 @@ show()
 -----------------------------------------------------------------------------
 
 32. Changelog
+Version: 12.2 (2026-July-26 +07:00)
+- 387 built-in functions
+- 10 built-in modules
+- Update: trim
+  (optional boolean argument to
+  replace any consecutive 
+  sequence of internal 
+  whitespace characters with 
+  a single space)
+- Total lines of code: 38998 
+  (34090 Java + 4908 Singkong)
+
 Version: 12.1 (2026-May-30 +07:00)
 - 387 built-in functions
   new: frame_max, frame_min, frame_normal
