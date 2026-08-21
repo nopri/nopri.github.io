@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2026
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 12.2 (2026-July-26 +07:00)
+Version: 12.3 (2026-August-21 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -106,7 +106,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 12.2
+        Singkong 12.3
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -208,8 +208,10 @@ VAR
 Note: to get list of keywords, please use built-in function keywords.
 
 Data types:
-Related functions: builtins, eval, ifnull, is, is_array_and_of, is_array_of, 
-is_array_of_component_of, hash, print, println, puts, string, type, types, variables
+Related functions: builtins, eval, ifnull, is, is_array_and_of, 
+is_array_and_of_len, is_array_len, is_array_of, 
+is_array_of_component_of, hash, print, println, puts, string, 
+type, types, variables
 
 - NULL
   - null
@@ -312,7 +314,8 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
   - modify STRING: please use built-in function set
   - related functions: array_string, base64_decode, base64_encode, call, center, 
     count, cr, crlf, dir, empty, endswith, equals, eval, extract, extract_group, 
-    in, index, interpolate, isalnum, isalpha, isdigit, islower, isupper, join, 
+    in, index, interpolate, isalnum, isalnumspace, isalpha, isdigit, 
+    isemail, islower, isupper, join, 
     left, len, lf, lower, matches, md5, md5_file, newline, ord, parse_string, 
     quote, random_string, replace, right, set, sha1, sha1_file, sha256, 
     sha256_file, sha384, sha384_file, sha512, sha512_file, slice, sort_string, 
@@ -322,12 +325,13 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
     file_contents, mkdir, read, rename, temp_file, write 
   - HTTP client related functions: http_delete, http_get, http_get_file, 
     http_head, http_post, http_post_override, http_put, url_decode, url_encode 
-  - system related functions: cwd, inet_address_local, 
+  - HTML related functions: html_encode
+  - system related functions: cwd, inet_address_local, program_ext, 
     runtime_program, separator, user, userhome
   - Singkong related functions: load, load_file_or_resource, load_module, load_resource
   - extended: x_base64_contents, x_base64_decode, x_base64_decode_file, x_base64_encode, 
     x_base64_encode_file, x_base64_md5, x_base64_sha1, x_base64_sha256, 
-    x_base64_sha384, x_base64_sha512
+    x_base64_sha384, x_base64_sha512, x_html_data_base64
   - sorting: lexicographically
   - UUID: please use built-in function uuid
     - If no argument is passed, generates a pseudo randomly generated UUID
@@ -414,7 +418,8 @@ is_array_of_component_of, hash, print, println, puts, string, type, types, varia
     array_string, average, call, count, each, empty, first, in, index, join, 
     last, len, max, min, parse_array, pop, push, random, range, rest, reverse, shuffle, slice, 
     sort_array, sort_boolean, sort_date, sort_hash, sort_number, sort_string, sum
-  - array check functions: is_array_and_of, is_array_of, is_array_of_component_of
+  - array check functions: is_array_and_of, is_array_and_of_len, 
+    is_array_len, is_array_of, is_array_of_component_of
   - file related functions: dir, read_byte, read_byte_unsigned, write_byte
   - CGI related functions: cgi_contents
   - HTTP client related functions: http_response_ok
@@ -964,26 +969,31 @@ To get a list of built-in functions, please call builtins()
 "FRAME_CLOSE", "FRAME_IMAGE", "FRAME_LOCATION", "FRAME_MAX", "FRAME_MIN", 
 "FRAME_NORMAL", "FRAME_TOP", "FROM_BIN", "FROM_HEX", "FROM_OCT", "GET", 
 "GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", 
-"HOUR", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", "HTTP_HEAD", "HTTP_POST", 
-"HTTP_POST_OVERRIDE", "HTTP_PUT", "HTTP_RESPONSE_OK", "IFNULL", "IN", "INDEX", 
-"INET_ADDRESS", "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", 
-"INTEGER_GCD", "INTERACTIVE", "INTERPOLATE", "IS", "IS_ARRAY_AND_OF", 
-"IS_ARRAY_OF", "IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", "IS_RECT_ARRAY", 
-"IS_RECT_ARRAY_OF", "IS_UPDATE_AVAILABLE", "ISALNUM", "ISALPHA", "ISDIGIT", 
-"ISLOWER", "ISUPPER", "JOIN", "KEYS", "KEYWORDS", "LAST", "LAST_ERROR", "LEFT", 
-"LEFT_SHIFT", "LEN", "LF", "LOAD", "LOAD_FILE_OR_RESOURCE", "LOAD_MODULE", 
-"LOAD_RESOURCE", "LOG", "LOG10", "LOGIN_DIALOG", "LOWER", "MAIN_RESOURCE", "MATCHES", 
-"MAX", "MD5", "MD5_FILE", "MENUBAR", "MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", 
+"HOUR", "HTML_ENCODE", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", 
+"HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", 
+"HTTP_RESPONSE_OK", "IFNULL", "IN", "INDEX", "INET_ADDRESS", 
+"INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTEGER_GCD", 
+"INTERACTIVE", "INTERPOLATE", "IS", "IS_ARRAY_AND_OF",
+"IS_ARRAY_AND_OF_LEN", "IS_ARRAY_LEN", "IS_ARRAY_OF", 
+"IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", "IS_RECT_ARRAY", 
+"IS_RECT_ARRAY_OF", "IS_UPDATE_AVAILABLE", "ISALNUM", "ISALNUMSPACE", 
+"ISALPHA", "ISDIGIT", "ISEMAIL", "ISLOWER", "ISUPPER", "JOIN", 
+"KEYS", "KEYWORDS", "LAST", "LAST_ERROR", "LEFT", "LEFT_SHIFT", 
+"LEN", "LF", "LOAD", "LOAD_FILE_OR_RESOURCE", "LOAD_MODULE", 
+"LOAD_RESOURCE", "LOG", "LOG10", "LOGIN_DIALOG", "LOWER", 
+"MAIN_RESOURCE", "MATCHES", "MAX", "MD5", "MD5_FILE", "MENUBAR", 
+"MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", 
 "MONTH", "NEWLINE", "NUMBER", "NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", 
 "NUMBER_NOT", "NUMBER_OR", "NUMBER_SCALE", "NUMBER_TO_BYTE", 
 "NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", "ORD", "PANEL_ADD", "PANEL_CLEAR", 
 "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_ARRAY", "PARSE_HASH", 
 "PARSE_STRING", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", 
-"POPUP_COMPONENT", "POPUP_HIDE", "POPUP_SHOW", "PRINT", "PRINTER", "PRINTLN", 
-"PROPERTIES_READ", "PROPERTIES_WRITE", "PUSH", "PUTS", "QUERY", "QUOTE", 
-"RADIO_GROUP", "RANDOM", "RANDOM_STRING", "RANGE", "READ", "READ_BYTE", 
-"READ_BYTE_UNSIGNED", "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", 
-"REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", 
+"POPUP_COMPONENT", "POPUP_HIDE", "POPUP_SHOW", "PRINT", "PRINTER", 
+"PRINTLN", "PROGRAM_EXT",  "PROPERTIES_READ", "PROPERTIES_WRITE", 
+"PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
+"RANDOM_STRING", "RANGE", "READ", "READ_BYTE", "READ_BYTE_UNSIGNED", 
+"RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", 
+"REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", 
 "REQUIRE_RUNTIME", "RESET", "RESIZABLE", "REST", "REVERSE", "RIGHT", 
 "RIGHT_SHIFT", "ROUND", "RUNTIME_COMMAND", "RUNTIME_PROGRAM", 
 "RUNTIME_VERSION", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", 
@@ -1009,10 +1019,11 @@ To get a list of built-in functions, please call builtins()
 "WAIT", "WORDS_EN", "WORDS_ID", "WRITE", "WRITE_BYTE", "X_BASE64_CONTENTS", 
 "X_BASE64_DECODE", "X_BASE64_DECODE_FILE", "X_BASE64_ENCODE", 
 "X_BASE64_ENCODE_FILE", "X_BASE64_MD5", "X_BASE64_SHA1", "X_BASE64_SHA256", 
-"X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", "YEAR"]
+"X_BASE64_SHA384", "X_BASE64_SHA512", "X_EDIT_PRINT", 
+"X_HTML_DATA_BASE64", "YEAR"]
 
 >  len(builtins())
-387
+394
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -3006,6 +3017,10 @@ Interface (CGI).
 - Both cgi_post and cgi_post_hash read up to HTTP server variable CONTENT_LENGTH, if set.
   Optional charset (supported by Java) may be passed, for example:
   US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, UTF-16. 
+- HTML output encoding: please use built-in function html_encode
+    >  var html = "& < > " + quote() + " '"
+    >  html_encode(html)
+    "&amp; &lt; &gt; &quot; &#x27;"  
 - To output file contents:
   - Set Content-type header
   - Set Content-disposition header if needed
@@ -3031,6 +3046,10 @@ Interface (CGI).
     })
     x_base64_contents(b)
     exit()
+- To encode a file using Base64 encoding scheme 
+  and returns a data URL (with the specified MIME type) 
+  for use in HTML (for example, an <img>), please use 
+  built-in function x_html_data_base64.
 - Get runtime command or current file/dir: runtime_command
 - Alernative Java Runtime for faster startup in CGI applications:
   - IBM Semeru Runtime
@@ -5107,6 +5126,16 @@ show()
 -----------------------------------------------------------------------------
 
 32. Changelog
+Version: 12.3 (2026-August-21 +07:00)
+- 394 built-in functions
+  new: html_encode, 
+  is_array_and_of_len, is_array_len, 
+  isalnumspace, isemail, program_ext,
+  x_html_data_base64
+- 10 built-in modules
+- Total lines of code: 39424 
+  (34516 Java + 4908 Singkong)
+
 Version: 12.2 (2026-July-26 +07:00)
 - 387 built-in functions
 - 10 built-in modules
