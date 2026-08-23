@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2026
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 12.3 (2026-August-21 +07:00)
+Version: 12.4 (2026-August-23 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -106,7 +106,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 12.3
+        Singkong 12.4
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -210,8 +210,8 @@ Note: to get list of keywords, please use built-in function keywords.
 Data types:
 Related functions: builtins, eval, ifnull, is, is_array_and_of, 
 is_array_and_of_len, is_array_len, is_array_of, 
-is_array_of_component_of, hash, print, println, puts, string, 
-type, types, variables
+is_array_of_component_of, hash, none, none_and, none_or, 
+print, println, puts, string, type, types, variables
 
 - NULL
   - null
@@ -300,6 +300,31 @@ type, types, variables
   - operators: == != & | !
   - related functions: number_boolean, boolean_xor, sort_boolean
   - sorting: by value
+  - false, zero, empty, or null check: none, none_and, none_or
+    >  none(false)
+    true
+    >  none(0)
+    true
+    >  none([])
+    true
+    >  none({})
+    true
+    >  none("")
+    true
+    >  none(null)
+    true
+    >  none_and(false, 0, [], {}, "", null)
+    true
+    >  none_and(false, 0.005, [], {}, "", null)
+    false
+    >  none_and(0,1,2,3)
+    false
+    >  none_or(false, 0, [], {}, "", null)
+    true
+    >  none_or(0,1,2,3)
+    true
+    >  none_or(1,2,3,4)
+    false
 - STRING
   - double-quoted
   - arbitrary length string
@@ -983,7 +1008,8 @@ To get a list of built-in functions, please call builtins()
 "LOAD_RESOURCE", "LOG", "LOG10", "LOGIN_DIALOG", "LOWER", 
 "MAIN_RESOURCE", "MATCHES", "MAX", "MD5", "MD5_FILE", "MENUBAR", 
 "MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", 
-"MONTH", "NEWLINE", "NUMBER", "NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", 
+"MONTH", "NEWLINE", "NONE", "NONE_AND", "NONE_OR", 
+"NUMBER", "NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", 
 "NUMBER_NOT", "NUMBER_OR", "NUMBER_SCALE", "NUMBER_TO_BYTE", 
 "NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", "ORD", "PANEL_ADD", "PANEL_CLEAR", 
 "PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_ARRAY", "PARSE_HASH", 
@@ -1023,7 +1049,7 @@ To get a list of built-in functions, please call builtins()
 "X_HTML_DATA_BASE64", "YEAR"]
 
 >  len(builtins())
-394
+397
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -5126,6 +5152,13 @@ show()
 -----------------------------------------------------------------------------
 
 32. Changelog
+Version: 12.4 (2026-August-23 +07:00)
+- 397 built-in functions
+  new: none, none_and, none_or 
+- 10 built-in modules
+- Total lines of code: 39590 
+  (34682 Java + 4908 Singkong)
+
 Version: 12.3 (2026-August-21 +07:00)
 - 394 built-in functions
   new: html_encode, 
