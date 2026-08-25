@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2026
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 12.4 (2026-August-23 +07:00)
+Version: 12.5 (2026-August-25 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -20,6 +20,10 @@ Thank you for using Singkong Programming Language.
 Bundled JDBC Drivers (compatible with Java 5.0 or later): 
  Apache Derby (Apache License 2.0): Network Server, Driver (Embedded, Client)
  PostgreSQL (BSD-2-Clause License)
+
+Bundled Libraries:
+ Project Nayuki QR-Code-generator (MIT License)
+  (modified QrSegment.java to be compatible with -source 1.5) 
 =============================================================================
 
  1. What is Singkong Programming Language
@@ -53,7 +57,8 @@ Bundled JDBC Drivers (compatible with Java 5.0 or later):
 29. Example: Drawing: simple painting program
 30. Example: UDP server and client 
 31. Example: String interpolation, template engine, regular expression
-32. Changelog
+32. Example: QR Code
+33. Changelog
 
 
 -----------------------------------------------------------------------------
@@ -106,7 +111,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 12.4
+        Singkong 12.5
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -351,6 +356,7 @@ print, println, puts, string, type, types, variables
   - HTTP client related functions: http_delete, http_get, http_get_file, 
     http_head, http_post, http_post_override, http_put, url_decode, url_encode 
   - HTML related functions: html_encode
+  - QR Code functions: qrcode 
   - system related functions: cwd, inet_address_local, program_ext, 
     runtime_program, separator, user, userhome
   - Singkong related functions: load, load_file_or_resource, load_module, load_resource
@@ -1016,7 +1022,7 @@ To get a list of built-in functions, please call builtins()
 "PARSE_STRING", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", 
 "POPUP_COMPONENT", "POPUP_HIDE", "POPUP_SHOW", "PRINT", "PRINTER", 
 "PRINTLN", "PROGRAM_EXT",  "PROPERTIES_READ", "PROPERTIES_WRITE", 
-"PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
+"PUSH", "PUTS", "QRCODE", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
 "RANDOM_STRING", "RANGE", "READ", "READ_BYTE", "READ_BYTE_UNSIGNED", 
 "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", 
 "REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", 
@@ -1049,7 +1055,7 @@ To get a list of built-in functions, please call builtins()
 "X_HTML_DATA_BASE64", "YEAR"]
 
 >  len(builtins())
-397
+398
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -5151,7 +5157,43 @@ show()
 
 -----------------------------------------------------------------------------
 
-32. Changelog
+32. Example: QR Code
+    reset()
+
+    var t = component("text", "")
+    config(t, "border", "Text")
+    var g = component("image", "")
+    var b = component("button", "Generate QR Code")
+    add_n(t)
+    add(g)
+    add_s(b)
+    title("QR Code")
+    show()
+
+    event(b, fn() {
+        var c = trim(get(t, "contents"))
+        if (none(c)) {
+            message("Please enter some text")
+        } else {
+            var f = temp_file("qr", ".png")
+            var q = qrcode(f, c)
+            if (!none(q)) {
+                config(g, "contents", f)
+            }
+        }
+    })
+
+
+-----------------------------------------------------------------------------
+
+33. Changelog
+Version: 12.5 (2026-August-25 +07:00)
+- 398 built-in functions
+  new: qrcode
+- 10 built-in modules
+- Total lines of code: 39682 
+  (34774 Java + 4908 Singkong)
+
 Version: 12.4 (2026-August-23 +07:00)
 - 397 built-in functions
   new: none, none_and, none_or 
