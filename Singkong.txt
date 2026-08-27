@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2026
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 12.6 (2026-August-25 +07:00)
+Version: 12.7 (2026-August-27 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -58,7 +58,8 @@ Bundled Libraries:
 30. Example: UDP server and client 
 31. Example: String interpolation, template engine, regular expression
 32. Example: QR Code
-33. Changelog
+33. Integration: Sending email
+34. Changelog
 
 
 -----------------------------------------------------------------------------
@@ -111,7 +112,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 12.6
+        Singkong 12.7
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -1075,8 +1076,7 @@ return value: <any type>
 
 To get a list of built-in modules, please call modules()
 >  modules()
-["csv", "date_util", "db_util", "json", "rect_array_util", "set_util", 
-"ui_calendar", "ui_util", "util", "web"]
+["csv", "date_util", "db_util", "json", "mail_s", "rect_array_util", "set_util", "ui_calendar", "ui_util", "util", "web"]
 
 To load a built-in module, please use built-in function load_module, 
 for example:
@@ -1084,6 +1084,7 @@ for example:
 >  load_module("date_util")
 >  load_module("db_util")
 >  load_module("json")
+>  load_module("mail_s")
 >  load_module("rect_array_util")
 >  load_module("set_util")
 >  load_module("ui_calendar")
@@ -1127,6 +1128,11 @@ Functions in module: db_util:
 
 Functions in module: json: 
 ["JSON_PARSE", "JSON_PARSE_", "JSON_STRING"]
+
+Functions in module: mail_s: 
+["MAIL_S_SEND", "MAIL_S_SEND_", "MAIL_S_SEND_ATTACH", 
+"MAIL_S_SEND_HTML", "MAIL_S_SEND_HTML_ATTACH", 
+"MAIL_S_SIMPLE"]
 
 Functions in module: rect_array_util:
 ["ADD_RECT_ARRAY_OF", "ADD_RECT_ARRAY_OF_NUMBER", 
@@ -5196,7 +5202,165 @@ show()
 
 -----------------------------------------------------------------------------
 
-33. Changelog
+33. Integration: Sending email
+- Using Twilio SendGrid Email API
+  built-in module: mail_s
+  Client for the Twilio SendGrid Email API
+  Not affiliated with or endorsed by Twilio Inc.
+
+  - load the built-in module
+    load_module("mail_s")
+
+  - all functions in this module return:
+    ARRAY of STRING 
+    [
+        status (OK or ERROR), 
+        value (X-Message-Id or error category), 
+        detail
+    ]
+
+  - API key
+    var key = "SENDGRID API KEY"
+
+  - Verified sender in SendGrid
+    var from = [
+        "info@app.example.com",
+        "Example.com"
+    ]
+
+  - mail_s_simple, to (STRING)
+    var to = "info@example.com"
+    var r = mail_s_simple(key, from, to, 
+        "Hello from Singkong (mail_s_simple)",
+        "This is an email sent using an email API 
+        (mail_s_simple, STRING to)"
+    )
+    println(r)
+
+  - mail_s_simple, to (ARRAY)
+    var to = [
+        "info@example.com",
+        "Example.com"
+    ]
+    var r = mail_s_simple(key, from, to, 
+        "Hello from Singkong (mail_s_simple)",
+        "This is an email sent using an email API 
+        (mail_s_simple, ARRAY to, with email and name)"
+    )
+    println(r)
+  
+  - mail_s_simple, to (ARRAY of ARRAY, multiple addresses)
+    var to = [
+        [
+            "info@example.com",
+            "Example.com"
+        ],
+        [
+            "user@example.com",
+            "User"
+        ]
+    ]
+    var r = mail_s_simple(key, from, to, 
+        "Hello from Singkong (mail_s_simple)",
+        "This is an email sent using an email API 
+        (mail_s_simple, ARRAY of ARRAY to, multiple addresses)"
+    )
+    println(r)
+
+  - mail_s_send, to/cc/bcc, reply_to
+    var to = [
+        "info@example.com",
+        "Example.com"
+    ]
+    var reply = [
+        "support@example.com",
+        "Support"
+    ]
+    var cc = [
+        "user@example.com",
+        "User"
+    ]
+    var bcc = []
+    var r = mail_s_send(key, from, reply,
+        to, cc, bcc,
+        "Hello from Singkong (mail_s_send)",
+        "This is an email sent using an email API 
+        (mail_s_send, to/cc/bcc, reply_to)"
+    )
+    println(r)
+  
+  - mail_s_send_html
+    var to = "info@example.com"
+    var reply = []
+    var cc = []
+    var bcc = []
+    var r = mail_s_send_html(key, from, reply,
+        to, cc, bcc,
+        "Hello from Singkong (mail_s_send_html)",
+        "This is an <strong>HTML email</strong> sent using an email API 
+        (mail_s_send_html)"
+    )
+    println(r)
+  
+  - mail_s_send_attach, attachments
+    var attachment = [
+        {
+            "filename": "test.txt",
+            "content": ifnull(x_base64_encode("Hello, World"), ""),
+            "type": "text/plain",
+            "disposition": "attachment"
+        },
+        {
+            "filename": "hello.txt",
+            "content": ifnull(x_base64_encode("Hello"), "")
+        }
+    ]
+    var to = "info@example.com"
+    var reply = []
+    var cc = []
+    var bcc = []
+    var r = mail_s_send_attach(key, from, reply,
+        to, cc, bcc,
+        "Hello from Singkong (mail_s_send_attach)",
+        "This is an email (with attachments) sent using an email API 
+        (mail_s_send_attach)",
+        attachment
+    )
+    println(r)
+  
+  - mail_s_send_html_attach, attachments
+    var to = "info@example.com"
+    var reply = []
+    var cc = []
+    var bcc = []
+    var r = mail_s_send_html_attach(key, from, reply,
+        to, cc, bcc,
+        "Hello from Singkong (mail_s_send_html_attach)",
+        "This is an <strong>HTML email</strong> 
+        (with attachments) sent using an email API 
+        (mail_s_send_html_attach)",
+        attachment
+    )
+    println(r)
+
+  
+-----------------------------------------------------------------------------
+
+34. Changelog
+Version: 12.7 (2026-August-27 +07:00)
+- 400 built-in functions
+- 11 built-in modules
+  new: mail_s
+  (Client for the Twilio SendGrid Email API
+  Not affiliated with or endorsed by Twilio Inc.)
+- mail_s module: mail_s_send_, 
+  mail_s_simple, mail_s_send, 
+  mail_s_send_html, 
+  mail_s_send_attach, 
+  mail_s_send_html_attach 
+- Total lines of code: 40194 
+  (34936 Java + 5258 Singkong)
+
 Version: 12.6 (2026-August-25 +07:00)
 - 400 built-in functions
   new: x_qrcode, x_qrcode_base64,

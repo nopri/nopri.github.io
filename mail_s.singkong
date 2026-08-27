@@ -1,0 +1,350 @@
+#
+    Client for the Twilio SendGrid Email API
+    Not affiliated with or endorsed by Twilio Inc.
+    mail_s.singkong
+
+    Part of Singkong Programming Language Interpreter
+    (c) Noprianto <nop@noprianto.com>
+
+    More information: https://nopri.github.io/singkong.html
+    Download Singkong: https://nopri.github.io/Singkong.jar
+    (License: Free to use or redistribute, no warranty)
+
+    To use this module:
+    load_module("mail_s")
+;
+
+require(12.6)
+
+load_module("json")
+
+var mail_s_send_ = fn(key, from, reply, 
+    to, cc, bcc, subject, contents, html, attachments) 
+"
+[mail_s] function: mail_s_send_: sends emails using the Twilio SendGrid Email API.
+Note: for simpler function, please use mail_s_simple
+Note: from (required) / reply_to (optional), one of:
+- ARRAY (of STRING [email, name])
+- ARRAY ([], optional reply_to)
+Note: to (required) / cc (optional) / bcc (optional), one of:
+- single address: STRING (email)
+- single address with name: ARRAY (of STRING [email, name])
+- multiple addresses with name: ARRAY of ARRAY (of STRING [email, name])
+Note: attachment (optional) (ARRAY of HASH) 
+- no attachment: []
+- one or more attachments: [{}, ...]
+- required HASH keys/values:
+  - filename: STRING (filename)
+  - content: STRING (Base64-encoded, built-in functions available)
+- optional HASH keys/values:
+  - type: STRING (MIME type)
+  - disposition: STRING, one of [attachment, inline]
+arguments: 10: STRING (API key), ARRAY (from), ARRAY (reply_to), STRING/ARRAY (to), STRING/ARRAY (cc), STRING/ARRAY (bcc), STRING (subject), STRING (content), BOOLEAN (is HTML), ARRAY (attachment)
+return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail]
+"
+{
+    var timeout = 60000
+
+    var url_mail_send = "https://api.sendgrid.com/v3/mail/send"
+
+    var disposition_types = ["attachment", "inline"]
+
+    var mail_type = fn(html) {
+        if (is(html, "BOOLEAN")) {
+            if (html) {
+                return "text/html"
+            }
+        }
+        return "text/plain"
+    }
+
+    var check_sender = fn(s) {
+        if (!is_array_and_of_len(s, "STRING", 2)) {
+            return null    
+        }
+        return s
+    }
+
+    var get_attachment = fn(a) {
+        var ret = []
+        if (!is_array_and_of(a, "HASH")) {
+            return ret
+        }
+        each(a, fn(e, i) {
+            var f = ifnull(e["filename"], "")
+            var c = ifnull(e["content"], "")
+            var t = ifnull(e["type"], "")
+            var d = ifnull(e["disposition"], "")
+            if (!in(disposition_types, d)) {
+                var d = ""
+            }
+            if (!none(f) & !none(c)) {
+                var h = {
+                    "filename": f,
+                    "content": c
+                }
+                if (!none(t)) {
+                    set(h, "type", t)
+                }
+                if (!none(d)) {
+                    set(h, "disposition", d)
+                }
+                ret + h
+            }
+        })
+        return ret
+    }
+
+    var get_address = fn(a) {
+        if (none(a)) {
+            return null
+        }
+
+        if (is(a, "STRING")) {
+            return [
+                {
+                    "email": trim(a)
+                }
+            ]
+        }
+
+        if (is_array_and_of_len(a, "STRING", 2)) {
+            return [
+                {
+                    "email": trim(a[0]),
+                    "name": a[1]
+                }
+            ]
+        }
+
+        if (is_array_and_of(a, "ARRAY")) {
+            var r = []
+            each(a, fn(e, i) {
+                if (len(e) == 2) {
+                    r + {
+                        "email": trim(e[0]),
+                        "name": e[1]
+                    }
+                }
+            })
+            return r
+        }
+
+        return null
+    }
+
+    var get_personalizations = fn(t, c, b) {
+        var p = {}
+        var to = get_address(t)
+        var cc = get_address(c)
+        var bcc = get_address(b)
+        if (!none(to)) {
+            set(p, "to", to)
+        } else {
+            return p 
+        }
+        if (!none(cc)) {
+            set(p, "cc", cc)
+        }
+        if (!none(bcc)) {
+            set(p, "bcc", bcc)
+        }
+        return p
+    }
+
+    var get_content = fn(c) {
+        var c = string(c)
+        var c = replace(c, crlf(), "\r\n")
+        var c = replace(c, cr(), "\r")
+        var c = replace(c, lf(), "\n")
+        return c
+    }
+
+    var get_message_id = fn(a) {
+        if (is_array_len(a, 3)) {
+            if (in([200, 202], a[1])) {
+                var res = a[0]
+                var m = ifnull(res["X-Message-Id"], [])
+                return join(", ", m)
+            }
+        }
+        return ""
+    }
+
+    var key = trim(string(key))
+    if (none(key)) {
+        return ["ERROR", "key", ""]
+    }
+    if (none(check_sender(from))) {
+        return ["ERROR", "from", ""]
+    }
+    var header = {
+        "Authorization": "Bearer " + key,
+        "Content-Type": "application/json"
+    }
+    var p = get_personalizations(to, cc, bcc)
+    if (none(p)) {
+        return ["ERROR", "personalizations", ""]
+    }
+    var subject = trim(string(subject))
+    if (none(subject)) {
+        return ["ERROR", "subject", ""]
+    }
+    var contents = trim(string(contents))
+    if (none(contents)) {
+        return ["ERROR", "content", ""]
+    }
+    var data = {
+        "personalizations": [p], 
+        "from": {
+            "email": from[0],
+            "name": from[1]
+        },
+        "subject": string(subject),
+        "content": [
+            {
+                "type": mail_type(html),
+                "value": get_content(contents)
+            }
+        ]
+    }
+    var a = get_attachment(attachments)
+    if (!none(a)) {
+        set(data, "attachments", a)
+    }
+    if (!none(check_sender(reply))) {
+        set(data, "reply_to", {
+            "email": reply[0],
+            "name": reply[1]
+        })
+    }
+    var r = http_post(url_mail_send, 
+        json_string(data), 
+        timeout, header
+    )
+    if (none(r)) {
+        return ["ERROR", "HTTP", last_error()]
+    }
+    var msg_id = get_message_id(r)
+    if (none(msg_id)) {
+        return ["ERROR", "X-Message-Id", ""]
+    }
+    return ["OK", msg_id, ""]    
+}
+
+var mail_s_simple = fn(key, from, to, subject, contents)
+"
+[mail_s] function: mail_s_simple : sends emails using the Twilio SendGrid Email API (simple function).
+Note: from (required): ARRAY (of STRING [email, name])
+Note: to (required), one of:
+- single address: STRING (email)
+- single address with name: ARRAY (of STRING [email, name])
+- multiple addresses with name: ARRAY of ARRAY (of STRING [email, name])
+arguments: 5: STRING (API key), ARRAY (from), STRING/ARRAY (to), STRING (subject), STRING (content)
+return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail]
+"
+{
+    return mail_s_send_(key, from, [], 
+        to, "", "", subject, contents, false, []
+    )
+}
+
+
+var mail_s_send = fn(key, from, reply, 
+    to, cc, bcc, subject, contents) 
+"
+[mail_s] function: mail_s_send: sends emails using the Twilio SendGrid Email API (plain text, no attachments).
+Note: from (required) / reply_to (optional), one of:
+- ARRAY (of STRING [email, name])
+- ARRAY ([], optional reply_to)
+Note: to (required) / cc (optional) / bcc (optional), one of:
+- single address: STRING (email)
+- single address with name: ARRAY (of STRING [email, name])
+- multiple addresses with name: ARRAY of ARRAY (of STRING [email, name])
+arguments: 8: STRING (API key), ARRAY (from), ARRAY (reply_to), STRING/ARRAY (to), STRING/ARRAY (cc), STRING/ARRAY (bcc), STRING (subject), STRING (content)
+return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail]
+"
+{
+    return mail_s_send_(key, from, reply, 
+        to, cc, bcc, subject, contents, false, []
+    )
+}
+
+var mail_s_send_html = fn(key, from, reply, 
+    to, cc, bcc, subject, contents) 
+"
+[mail_s] function: mail_s_send_html: sends emails using the Twilio SendGrid Email API (HTML, no attachments).
+Note: from (required) / reply_to (optional), one of:
+- ARRAY (of STRING [email, name])
+- ARRAY ([], optional reply_to)
+Note: to (required) / cc (optional) / bcc (optional), one of:
+- single address: STRING (email)
+- single address with name: ARRAY (of STRING [email, name])
+- multiple addresses with name: ARRAY of ARRAY (of STRING [email, name])
+arguments: 8: STRING (API key), ARRAY (from), ARRAY (reply_to), STRING/ARRAY (to), STRING/ARRAY (cc), STRING/ARRAY (bcc), STRING (subject), STRING (content)
+return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail]
+"
+{
+    return mail_s_send_(key, from, reply, 
+        to, cc, bcc, subject, contents, true, []
+    )
+}
+
+var mail_s_send_attach = fn(key, from, reply, 
+    to, cc, bcc, subject, contents, attachment) 
+"
+[mail_s] function: mail_s_send_attach: sends emails using the Twilio SendGrid Email API (plain text, with attachments).
+Note: from (required) / reply_to (optional), one of:
+- ARRAY (of STRING [email, name])
+- ARRAY ([], optional reply_to)
+Note: to (required) / cc (optional) / bcc (optional), one of:
+- single address: STRING (email)
+- single address with name: ARRAY (of STRING [email, name])
+- multiple addresses with name: ARRAY of ARRAY (of STRING [email, name])
+Note: attachment (optional) (ARRAY of HASH) 
+- no attachment: []
+- one or more attachments: [{}, ...]
+- required HASH keys/values:
+  - filename: STRING (filename)
+  - content: STRING (Base64-encoded, built-in functions available)
+- optional HASH keys/values:
+  - type: STRING (MIME type)
+  - disposition: STRING, one of [attachment, inline]
+arguments: 9: STRING (API key), ARRAY (from), ARRAY (reply_to), STRING/ARRAY (to), STRING/ARRAY (cc), STRING/ARRAY (bcc), STRING (subject), STRING (content), ARRAY (attachment)
+return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail]
+"
+{
+    return mail_s_send_(key, from, reply, 
+        to, cc, bcc, subject, contents, false, attachment
+    )
+}
+
+var mail_s_send_html_attach = fn(key, from, reply, 
+    to, cc, bcc, subject, contents, attachment) 
+"
+[mail_s] function: mail_s_send_html_attach: sends emails using the Twilio SendGrid Email API (HTML, with attachments).
+Note: from (required) / reply_to (optional), one of:
+- ARRAY (of STRING [email, name])
+- ARRAY ([], optional reply_to)
+Note: to (required) / cc (optional) / bcc (optional), one of:
+- single address: STRING (email)
+- single address with name: ARRAY (of STRING [email, name])
+- multiple addresses with name: ARRAY of ARRAY (of STRING [email, name])
+Note: attachment (optional) (ARRAY of HASH) 
+- no attachment: []
+- one or more attachments: [{}, ...]
+- required HASH keys/values:
+  - filename: STRING (filename)
+  - content: STRING (Base64-encoded, built-in functions available)
+- optional HASH keys/values:
+  - type: STRING (MIME type)
+  - disposition: STRING, one of [attachment, inline]
+arguments: 9: STRING (API key), ARRAY (from), ARRAY (reply_to), STRING/ARRAY (to), STRING/ARRAY (cc), STRING/ARRAY (bcc), STRING (subject), STRING (content), ARRAY (attachment)
+return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail]
+"
+{
+    return mail_s_send_(key, from, reply, 
+        to, cc, bcc, subject, contents, true, attachment
+    )
+}
+
