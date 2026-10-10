@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2026
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 12.7 (2026-August-27 +07:00)
+Version: 12.8 (2026-October-10 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -112,7 +112,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 12.7
+        Singkong 12.8
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -214,7 +214,7 @@ VAR
 Note: to get list of keywords, please use built-in function keywords.
 
 Data types:
-Related functions: builtins, eval, ifnull, is, is_array_and_of, 
+Related functions: builtins, eval, ifnone, ifnull, is, is_array_and_of, 
 is_array_and_of_len, is_array_len, is_array_of, 
 is_array_of_component_of, hash, none, none_and, none_or, 
 print, println, puts, string, type, types, variables
@@ -1004,13 +1004,13 @@ To get a list of built-in functions, please call builtins()
 "GRID_ADD", "GRID_CLEAR", "GRID_REMOVE", "GUI", "HASH", "HELP", "HIDE", 
 "HOUR", "HTML_ENCODE", "HTTP_DELETE", "HTTP_GET", "HTTP_GET_FILE", 
 "HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", 
-"HTTP_RESPONSE_OK", "IFNULL", "IN", "INDEX", "INET_ADDRESS", 
+"HTTP_RESPONSE_OK", "IFNONE", "IFNULL", "IN", "INDEX", "INET_ADDRESS", 
 "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTEGER_GCD", 
 "INTERACTIVE", "INTERPOLATE", "IS", "IS_ARRAY_AND_OF",
 "IS_ARRAY_AND_OF_LEN", "IS_ARRAY_LEN", "IS_ARRAY_OF", 
 "IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", "IS_RECT_ARRAY", 
 "IS_RECT_ARRAY_OF", "IS_UPDATE_AVAILABLE", "ISALNUM", "ISALNUMSPACE", 
-"ISALPHA", "ISDIGIT", "ISEMAIL", "ISLOWER", "ISUPPER", "JOIN", 
+"ISALPHA", "ISDIGIT", "ISEMAIL", "ISLOWER", "ISPRIME", "ISUPPER", "JOIN", 
 "KEYS", "KEYWORDS", "LAST", "LAST_ERROR", "LEFT", "LEFT_SHIFT", 
 "LEN", "LF", "LOAD", "LOAD_FILE_OR_RESOURCE", "LOAD_MODULE", 
 "LOAD_RESOURCE", "LOG", "LOG10", "LOGIN_DIALOG", "LOWER", 
@@ -1058,7 +1058,7 @@ To get a list of built-in functions, please call builtins()
 "X_QRCODE_DATA_BASE64", "YEAR"]
 
 >  len(builtins())
-400
+402
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -5211,12 +5211,13 @@ show()
   - load the built-in module
     load_module("mail_s")
 
-  - all functions in this module return:
+  - all email sending functions in this module return:
     ARRAY of STRING 
     [
         status (OK or ERROR), 
         value (X-Message-Id or error category), 
-        detail
+        detail,
+        custom_email_id
     ]
 
   - API key
@@ -5347,6 +5348,15 @@ show()
 -----------------------------------------------------------------------------
 
 34. Changelog
+Version: 12.8 (2026-October-10 +07:00)
+- 402 built-in functions
+  new: ifnone, isprime
+- 11 built-in modules
+- Update: mail_s module
+  (custom email id)
+- Total lines of code: 40317 
+  (35054 Java + 5263 Singkong)
+
 Version: 12.7 (2026-August-27 +07:00)
 - 400 built-in functions
 - 11 built-in modules

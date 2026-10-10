@@ -14,7 +14,7 @@
     load_module("mail_s")
 ;
 
-require(12.6)
+require(12.8)
 
 load_module("json")
 
@@ -40,7 +40,7 @@ Note: attachment (optional) (ARRAY of HASH)
   - type: STRING (MIME type)
   - disposition: STRING, one of [attachment, inline]
 arguments: 10: STRING (API key), ARRAY (from), ARRAY (reply_to), STRING/ARRAY (to), STRING/ARRAY (cc), STRING/ARRAY (bcc), STRING (subject), STRING (content), BOOLEAN (is HTML), ARRAY (attachment)
-return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail]
+return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail, custom_email_id]
 "
 {
     var timeout = 60000
@@ -48,6 +48,8 @@ return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or erro
     var url_mail_send = "https://api.sendgrid.com/v3/mail/send"
 
     var disposition_types = ["attachment", "inline"]
+    
+    var custom_email_id = uuid()
 
     var mail_type = fn(html) {
         if (is(html, "BOOLEAN")) {
@@ -173,10 +175,10 @@ return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or erro
 
     var key = trim(string(key))
     if (none(key)) {
-        return ["ERROR", "key", ""]
+        return ["ERROR", "key", "", custom_email_id]
     }
     if (none(check_sender(from))) {
-        return ["ERROR", "from", ""]
+        return ["ERROR", "from", "", custom_email_id]
     }
     var header = {
         "Authorization": "Bearer " + key,
@@ -184,15 +186,18 @@ return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or erro
     }
     var p = get_personalizations(to, cc, bcc)
     if (none(p)) {
-        return ["ERROR", "personalizations", ""]
+        return ["ERROR", "personalizations", "", custom_email_id]
     }
+    set(p, "custom_args", {
+        "custom_email_id": custom_email_id
+    })
     var subject = trim(string(subject))
     if (none(subject)) {
-        return ["ERROR", "subject", ""]
+        return ["ERROR", "subject", "", custom_email_id]
     }
     var contents = trim(string(contents))
     if (none(contents)) {
-        return ["ERROR", "content", ""]
+        return ["ERROR", "content", "", custom_email_id]
     }
     var data = {
         "personalizations": [p], 
@@ -223,13 +228,13 @@ return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or erro
         timeout, header
     )
     if (none(r)) {
-        return ["ERROR", "HTTP", last_error()]
+        return ["ERROR", "HTTP", last_error(), custom_email_id]
     }
     var msg_id = get_message_id(r)
     if (none(msg_id)) {
-        return ["ERROR", "X-Message-Id", ""]
+        return ["ERROR", "X-Message-Id", "", custom_email_id]
     }
-    return ["OK", msg_id, ""]    
+    return ["OK", msg_id, "", custom_email_id]    
 }
 
 var mail_s_simple = fn(key, from, to, subject, contents)
@@ -241,7 +246,7 @@ Note: to (required), one of:
 - single address with name: ARRAY (of STRING [email, name])
 - multiple addresses with name: ARRAY of ARRAY (of STRING [email, name])
 arguments: 5: STRING (API key), ARRAY (from), STRING/ARRAY (to), STRING (subject), STRING (content)
-return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail]
+return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail, custom_email_id]
 "
 {
     return mail_s_send_(key, from, [], 
@@ -262,7 +267,7 @@ Note: to (required) / cc (optional) / bcc (optional), one of:
 - single address with name: ARRAY (of STRING [email, name])
 - multiple addresses with name: ARRAY of ARRAY (of STRING [email, name])
 arguments: 8: STRING (API key), ARRAY (from), ARRAY (reply_to), STRING/ARRAY (to), STRING/ARRAY (cc), STRING/ARRAY (bcc), STRING (subject), STRING (content)
-return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail]
+return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail, custom_email_id]
 "
 {
     return mail_s_send_(key, from, reply, 
@@ -282,7 +287,7 @@ Note: to (required) / cc (optional) / bcc (optional), one of:
 - single address with name: ARRAY (of STRING [email, name])
 - multiple addresses with name: ARRAY of ARRAY (of STRING [email, name])
 arguments: 8: STRING (API key), ARRAY (from), ARRAY (reply_to), STRING/ARRAY (to), STRING/ARRAY (cc), STRING/ARRAY (bcc), STRING (subject), STRING (content)
-return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail]
+return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail, custom_email_id]
 "
 {
     return mail_s_send_(key, from, reply, 
@@ -311,7 +316,7 @@ Note: attachment (optional) (ARRAY of HASH)
   - type: STRING (MIME type)
   - disposition: STRING, one of [attachment, inline]
 arguments: 9: STRING (API key), ARRAY (from), ARRAY (reply_to), STRING/ARRAY (to), STRING/ARRAY (cc), STRING/ARRAY (bcc), STRING (subject), STRING (content), ARRAY (attachment)
-return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail]
+return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail, custom_email_id]
 "
 {
     return mail_s_send_(key, from, reply, 
@@ -340,7 +345,7 @@ Note: attachment (optional) (ARRAY of HASH)
   - type: STRING (MIME type)
   - disposition: STRING, one of [attachment, inline]
 arguments: 9: STRING (API key), ARRAY (from), ARRAY (reply_to), STRING/ARRAY (to), STRING/ARRAY (cc), STRING/ARRAY (bcc), STRING (subject), STRING (content), ARRAY (attachment)
-return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail]
+return value: ARRAY of STRING [status (OK or ERROR), value (X-Message-Id or error category), detail, custom_email_id]
 "
 {
     return mail_s_send_(key, from, reply, 
