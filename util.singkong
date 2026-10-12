@@ -285,33 +285,6 @@ return value: NUMBER or NULL
     return standard_deviation_(x, true)
 }
 
-var factorial = fn(x) 
-"
-[util] function: factorial: returns factorial of a NUMBER (integer >= 0).
-arguments: 1: NUMBER
-return value: NUMBER or NULL
-" 
-{
-    if (!is(x, "NUMBER")) {
-        return null
-    }
-    var x = integer(x)
-    if (x < 0) {
-        return null
-    }
-    
-    if (x == 0) {
-        return 1
-    }
-    
-    var r = [1]
-    each(range(2, x+1), fn(e, i) {
-        set(r, 0, r[0] * e)
-    })
-    
-    return r[0]
-}
-
 var binomial_coefficient = fn(n, k) 
 "
 [util] function: binomial_coefficient: returns binomial coefficient.

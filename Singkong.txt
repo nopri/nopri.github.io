@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2026
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 12.8 (2026-October-10 +07:00)
+Version: 12.9 (2026-October-12 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -112,7 +112,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 12.8
+        Singkong 12.9
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -231,8 +231,10 @@ print, println, puts, string, type, types, variables
   - precision: 10240, default scale: 4
   - to change the number scale, please use built-in function number_scale 
   - operators: + - * / == != %(remainder) ^(power) < <= > >=
-  - related functions: abs, array_number, chr, integer, integer_gcd, number, number_boolean,
-    number_group, number_to_byte, random, round, sort_number, words_en, words_id
+  - related functions: abs, array_number, chr, factor, factorial, 
+    prime_factor, integer, integer_gcd, isprime, number, 
+    number_boolean, number_group, number_to_byte, 
+    random, round, sort_number, words_en, words_id
   - system related functions: delay
   - Singkong related functions: require, require_runtime
   - thread related functions: thread, thread_alive, thread_join
@@ -297,7 +299,6 @@ print, println, puts, string, type, types, variables
   - more functions in util module:
         binomial_coefficient
         binomial_distribution
-        factorial
         geometric_distribution_failure
         geometric_distribution_success
         poisson_distribution
@@ -996,8 +997,9 @@ To get a list of built-in functions, please call builtins()
 "DRAW_WIDTH", "DRAW_WRITE_BMP", "DRAW_WRITE_JPG", "DRAW_WRITE_PNG", "EACH", 
 "EMPTY", "ENDSWITH", "ENV", "EQUALS", "EVAL", "EVENT", "EVENT_FOCUS", 
 "EVENT_FRAME", "EVENT_KEYBOARD_FRAME", "EVENT_MOUSE", "EVENT_MOUSE_FRAME", 
-"EXIT", "EXP", "EXTRACT", "EXTRACT_GROUP", "FILE_CONTENTS", "FILL_ARC", 
-"FILL_OVAL", "FILL_POLYGON", "FILL_RECT", "FILL_ROUND_RECT", "FIRST", "FONTS", 
+"EXIT", "EXP", "EXTRACT", "EXTRACT_GROUP", "FACTOR", "FACTORIAL", 
+"FILE_CONTENTS", "FILL_ARC", "FILL_OVAL", "FILL_POLYGON", 
+"FILL_RECT", "FILL_ROUND_RECT", "FIRST", "FONTS", 
 "FORMAT_DATE", "FORMAT_DATETIME", "FORMAT_DIFF", "FORMAT_TIME", "FRAME", 
 "FRAME_CLOSE", "FRAME_IMAGE", "FRAME_LOCATION", "FRAME_MAX", "FRAME_MIN", 
 "FRAME_NORMAL", "FRAME_TOP", "FROM_BIN", "FROM_HEX", "FROM_OCT", "GET", 
@@ -1015,27 +1017,28 @@ To get a list of built-in functions, please call builtins()
 "LEN", "LF", "LOAD", "LOAD_FILE_OR_RESOURCE", "LOAD_MODULE", 
 "LOAD_RESOURCE", "LOG", "LOG10", "LOGIN_DIALOG", "LOWER", 
 "MAIN_RESOURCE", "MATCHES", "MAX", "MD5", "MD5_FILE", "MENUBAR", 
-"MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", 
-"MONTH", "NEWLINE", "NONE", "NONE_AND", "NONE_OR", 
-"NUMBER", "NUMBER_AND", "NUMBER_BOOLEAN", "NUMBER_GROUP", 
-"NUMBER_NOT", "NUMBER_OR", "NUMBER_SCALE", "NUMBER_TO_BYTE", 
-"NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", "ORD", "PANEL_ADD", "PANEL_CLEAR", 
-"PANEL_DIALOG", "PANEL_REMOVE", "PARAM", "PARSE_ARRAY", "PARSE_HASH", 
-"PARSE_STRING", "PART", "PARTS", "PASSWORD", "PLAY_SOUND", "POP", 
-"POPUP_COMPONENT", "POPUP_HIDE", "POPUP_SHOW", "PRINT", "PRINTER", 
+"MESSAGE", "MIN", "MINUTE", "MKDIR", "MODULES", "MONTH", "NEWLINE", 
+"NONE", "NONE_AND", "NONE_OR", "NUMBER", "NUMBER_AND", "NUMBER_BOOLEAN", 
+"NUMBER_GROUP", "NUMBER_NOT", "NUMBER_OR", "NUMBER_SCALE", 
+"NUMBER_TO_BYTE", "NUMBER_TO_BYTE_ARRAY", "NUMBER_XOR", "OPEN", 
+"ORD", "PANEL_ADD", "PANEL_CLEAR", "PANEL_DIALOG", "PANEL_REMOVE", 
+"PARAM", "PARSE_ARRAY", "PARSE_HASH", "PARSE_STRING", "PART", 
+"PARTS", "PASSWORD", "PLAY_SOUND", "POP", "POPUP_COMPONENT", 
+"POPUP_HIDE", "POPUP_SHOW", "PRIME_FACTOR", "PRINT", "PRINTER", 
 "PRINTLN", "PROGRAM_EXT",  "PROPERTIES_READ", "PROPERTIES_WRITE", 
-"PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", "RANDOM", 
-"RANDOM_STRING", "RANGE", "READ", "READ_BYTE", "READ_BYTE_UNSIGNED", 
-"RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", "REMOVE", "REMOVE_E", 
-"REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", "REPLACE", "REQUIRE", 
-"REQUIRE_RUNTIME", "RESET", "RESIZABLE", "REST", "REVERSE", "RIGHT", 
-"RIGHT_SHIFT", "ROUND", "RUNTIME_COMMAND", "RUNTIME_PROGRAM", 
-"RUNTIME_VERSION", "SAVE", "SCREEN", "SECOND", "SEPARATOR", "SET", 
-"SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", "SHA384", "SHA384_FILE", 
-"SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", "SIN", "SINGKONG", 
-"SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", "SORT_ARRAY", 
-"SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", "SORT_NUMBER", "SORT_STRING", "SPLIT", 
-"SQRT", "START", "START_TIMER", "STARTSWITH", "STAT", "STATUSBAR", "STDIN", 
+"PUSH", "PUTS", "QUERY", "QUOTE", "RADIO_GROUP", 
+"RANDOM", "RANDOM_STRING", "RANGE", "READ", "READ_BYTE", 
+"READ_BYTE_UNSIGNED", "RECT_ARRAY_SIZE", "RECT_ARRAY_SIZE_OF", 
+"REMOVE", "REMOVE_E", "REMOVE_N", "REMOVE_S", "REMOVE_W", "RENAME", 
+"REPLACE", "REQUIRE", "REQUIRE_RUNTIME", "RESET", "RESIZABLE", "REST", 
+"REVERSE", "RIGHT", "RIGHT_SHIFT", "ROUND", "RUNTIME_COMMAND", 
+"RUNTIME_PROGRAM", "RUNTIME_VERSION", "SAVE", "SCREEN", "SECOND", 
+"SEPARATOR", "SET", "SHA1", "SHA1_FILE", "SHA256", "SHA256_FILE", 
+"SHA384", "SHA384_FILE", "SHA512", "SHA512_FILE", "SHOW", "SHUFFLE", 
+"SIN", "SINGKONG", "SINGKONG_INTERPRETER", "SINH", "SIZE", "SLICE", 
+"SORT_ARRAY", "SORT_BOOLEAN", "SORT_DATE", "SORT_HASH", 
+"SORT_NUMBER", "SORT_STRING", "SPLIT", "SQRT", "START", "START_TIMER", 
+"STARTSWITH", "STAT", "STATUSBAR", "STDIN", 
 "STOP", "STOP_TIMER", "STRING", "STRING_FROM_BYTE_ARRAY", 
 "STRING_TO_BYTE_ARRAY", "SUM", "SYSTEM", "TAB", "TAB_ADD", "TAB_CLEAR", 
 "TAB_REMOVE", "TABLE_ADD", "TABLE_BOTTOM", "TABLE_CENTER", "TABLE_COLUMN", 
@@ -1058,7 +1061,7 @@ To get a list of built-in functions, please call builtins()
 "X_QRCODE_DATA_BASE64", "YEAR"]
 
 >  len(builtins())
-402
+405
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -1181,7 +1184,7 @@ Functions in module: ui_util:
 
 Functions in module: util:
 ["ARRAY_COPY", "ARRAY_DIFF", "BINOMIAL_COEFFICIENT", "BINOMIAL_DISTRIBUTION", 
-"FACTORIAL", "GEOMETRIC_DISTRIBUTION_FAILURE", "GEOMETRIC_DISTRIBUTION_SUCCESS", 
+"GEOMETRIC_DISTRIBUTION_FAILURE", "GEOMETRIC_DISTRIBUTION_SUCCESS", 
 "HASH_COPY", "MEAN", "MEDIAN", "MODE", "NUMBER_GROUP_C_P", "NUMBER_GROUP_P_C", 
 "NUMBER_GROUP_S_C", "NUMBER_GROUP_S_P", "POISSON_DISTRIBUTION", "RANGE_", 
 "REPLACE_ARRAY", "REPLACE_HASH", "SIMPLE_FILE_DECRYPT", "SIMPLE_FILE_ENCRYPT", 
@@ -5348,6 +5351,15 @@ show()
 -----------------------------------------------------------------------------
 
 34. Changelog
+Version: 12.9 (2026-October-12 +07:00)
+- 405 built-in functions
+  new: factor, factorial, prime_factor
+- 11 built-in modules
+- Update: util module
+  (remove factorial)
+- Total lines of code: 40550 
+  (35314 Java + 5236 Singkong)
+
 Version: 12.8 (2026-October-10 +07:00)
 - 402 built-in functions
   new: ifnone, isprime
