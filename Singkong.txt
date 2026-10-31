@@ -2,7 +2,7 @@ Singkong Programming Language Interpreter
 (c) Noprianto <nop@noprianto.com>, 2019-2026
 Website: nopri.github.io
 License: Free to use or redistribute, no warranty
-Version: 13.0 (2026-October-20 +07:00)
+Version: 13.1 (2026-October-31 +07:00)
 
 Singkong is based on Monkey.java: an open source, simple implementation of 
 Monkey programming language interpreter in Java.
@@ -112,7 +112,7 @@ built-in functions, please set -DDISABLE=-.
   - No command line argument: interactive
         java -jar Singkong.jar
 
-        Singkong 13.0
+        Singkong 13.1
         Press ENTER to quit
         > var hello = "Hello World"
         > hello
@@ -232,7 +232,7 @@ print, println, puts, string, type, types, variables
   - to change the number scale, please use built-in function number_scale 
   - operators: + - * / == != %(remainder) ^(power) < <= > >=
   - related functions: abs, array_number, chr, factor, factorial, 
-    prime_factor, integer, integer_gcd, isprime, number, 
+    prime_factor, integer, integer_gcd, integer_lcm, isprime, number, 
     number_boolean, number_date, number_group, number_to_byte, 
     random, round, sort_number, words_en, words_id
   - system related functions: delay
@@ -358,6 +358,7 @@ print, println, puts, string, type, types, variables
   - HTTP client related functions: http_delete, http_get, http_get_file, 
     http_head, http_post, http_post_override, http_put, url_decode, url_encode 
   - HTML related functions: html_encode
+  - CGI related functions: cgi_print, cgi_text 
   - system related functions: cwd, inet_address_local, program_ext, 
     runtime_program, separator, user, userhome
   - Singkong related functions: load, load_file_or_resource, load_module, load_resource
@@ -985,9 +986,10 @@ To get a list of built-in functions, please call builtins()
 "BASE64_DECODE", "BASE64_ENCODE", "BEEP", "BOOLEAN_XOR", "BUILTINS", 
 "BUTTON_IMAGE", "BYTE_TO_UNSIGNED", "BYTES_TO_UNSIGNED", "BYTES_TO_UNSIGNED24", 
 "BYTES_TO_UNSIGNED32", "CALL", "CALL_INFO", "CBRT", "CENTER", "CGI_CONTENTS", 
-"CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", "CHR", "CLEAR", 
-"CLIPBOARD_GET", "CLIPBOARD_SET", "CLOSING", "COLOR_CHOOSER", "COMPONENT", 
-"COMPONENT_INFO", "COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY", 
+"CGI_GET", "CGI_HEADER", "CGI_POST", "CGI_POST_HASH", "CGI_PRINT", 
+"CGI_TEXT", "CHR", "CLEAR", "CLIPBOARD_GET", "CLIPBOARD_SET", 
+"CLOSING", "COLOR_CHOOSER", "COMPONENT", "COMPONENT_INFO", 
+"COMPONENT_TYPE", "COMPONENTS", "CONFIG", "CONFIRM", "COPY", 
 "COPY_RESOURCE", "COS", "COSH", "COUNT", "CR", "CRLF", "CUSTOM_DIALOG", 
 "CUSTOM_DIALOG_CLOSE", "CWD", "DATABASE", "DATABASE_CONNECTED", 
 "DATABASE_METADATA", "DATE", "DATETIME", "DAY", "DAYS_OF_MONTH", "DELAY", 
@@ -1008,7 +1010,7 @@ To get a list of built-in functions, please call builtins()
 "HTTP_HEAD", "HTTP_POST", "HTTP_POST_OVERRIDE", "HTTP_PUT", 
 "HTTP_RESPONSE_OK", "IFNONE", "IFNULL", "IN", "INDEX", "INET_ADDRESS", 
 "INET_ADDRESS_LOCAL", "INFO", "INPUT", "INTEGER", "INTEGER_GCD", 
-"INTERACTIVE", "INTERPOLATE", "IS", "IS_ARRAY_AND_OF",
+"INTEGER_LCM", "INTERACTIVE", "INTERPOLATE", "IS", "IS_ARRAY_AND_OF",
 "IS_ARRAY_AND_OF_LEN", "IS_ARRAY_LEN", "IS_ARRAY_OF", 
 "IS_ARRAY_OF_COMPONENT_OF", "IS_LEAP_YEAR", "IS_RECT_ARRAY", 
 "IS_RECT_ARRAY_OF", "IS_UPDATE_AVAILABLE", "ISALNUM", "ISALNUMSPACE", 
@@ -1061,7 +1063,7 @@ To get a list of built-in functions, please call builtins()
 "X_QRCODE_DATA_BASE64", "YEAR"]
 
 >  len(builtins())
-406
+409
 
 Note: a built-in function may be disabled when the interpreter is run. In such
 case, an error will be returned when the function is called. 
@@ -3050,6 +3052,9 @@ Interface (CGI).
   For example:
     cgi_header()
     print("Test")
+- To output a Content-Type: text/html (or text/plain, for cgi_text) header,
+  a STRING (or a STRING representation), and then exit, please use 
+  built-in function cgi_print or cgi_text. 
 - To get QUERY_STRING (x-www-form-urlencoded) from HTTP GET request as HASH 
   (decoded keys/values), please use built-in function cgi_get.
 - To get body (x-www-form-urlencoded) of HTTP POST request as HASH 
@@ -5353,7 +5358,23 @@ show()
     note: replace "/path/to/mail/" with the
     path to the directory where event data will
     be stored.
-    note: text, json, and CSV example
+    note: text, json, CSV, and database example
+    note: database example:
+    - PostgreSQL on localhost
+    - database: email
+    - user: email
+    - password: email
+    - table: email
+        create table email(
+            id serial, 
+            custom_email_id varchar, 
+            email varchar, 
+            event varchar, 
+            occurred timestamp,
+            data text,
+            primary key(id)
+        )
+
     (if the request method is POST)
         load_module("web")
         load_module("json")
@@ -5395,6 +5416,41 @@ show()
             var n = s + t + ".csv"
             write(n, csv_to_string(";", res))
             
+            load_module("db_util")
+            var db = db_connect(
+                "postgresql",
+                "//localhost/email",
+                "email",
+                "email"
+            )
+            each(res, fn(e, i) {
+                db_query_single(db, "
+                        insert into
+                            email(
+                                custom_email_id,
+                                email,
+                                event,
+                                occurred,
+                                data
+                            ) 
+                            values(
+                                ?,
+                                ?,
+                                ?,
+                                ?,
+                                ?
+                            )
+                    ",
+                    [
+                        e[0],
+                        e[1],
+                        e[2],
+                        number_date(e[3] * 1000),
+                        trim(d)
+                    ]
+                )
+            })
+
             cgi_header()
             println("OK")
             exit()
@@ -5408,6 +5464,13 @@ show()
 -----------------------------------------------------------------------------
 
 34. Changelog
+Version: 13.1 (2026-October-31 +07:00)
+- 409 built-in functions
+  new: cgi_print, cgi_text, integer_lcm
+- 11 built-in modules
+- Total lines of code: 40763 
+  (35527 Java + 5236 Singkong)
+
 Version: 13.0 (2026-October-20 +07:00)
 - 406 built-in functions
   new: number_date
